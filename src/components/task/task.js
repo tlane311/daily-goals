@@ -1,9 +1,23 @@
 import '../../styles/task.css';
+import {useState} from "react"
 
-export default function Task({name, completed}){
+//Task components are stateless. Data about completion and name are passed from the column component.
+
+export default function Task({name, completed, updateTask, columnID, taskID, deleteTask}){
+    const [completion, updateCompletion] = useState(completed);
     return (
-        <li className="task" onClick={() => {}}>
-            <span className={completed ? "strikethrough" : ""}>{name}</span>
-        </li>
+        <>
+            <li className="task">
+                <span 
+                    className={completion ? "strikethrough" : ""}
+                    onClick={() => {
+                    updateTask(columnID, taskID, !completed);
+                    updateCompletion(!completion)
+                }}>
+                    {name}
+                </span>
+                {completion ? <button onClick={()=>deleteTask(columnID,taskID)}> x </button> : <></>}
+            </li>
+        </>
     )
 }
