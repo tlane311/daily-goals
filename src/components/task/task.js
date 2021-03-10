@@ -1,4 +1,4 @@
-import '../../styles/task.css';
+import '../../component-styles/task.css';
 import {useState} from "react"
 
 //Task components are stateless. Data about completion and name are passed from the column component.

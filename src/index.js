@@ -1,4 +1,4 @@
 import ReactDOM from 'react-dom';
-import ColumnView from './components/column-view/column-view.js';
+import App from './components/app.js';
 
-ReactDOM.render(<ColumnView/>, document.getElementById('app'));
+ReactDOM.render(<App/>, document.getElementById('app'));

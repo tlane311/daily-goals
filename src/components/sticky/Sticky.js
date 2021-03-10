@@ -1,13 +1,13 @@
 import {useState} from 'react';
 
-import Task from '../../components/task/task.js';
+import Task from '../task/task.js';
 
 //The Column component holds Tasks. Columns are held in the Column-View component which displays only a few columns at a time.
 //Entries are passed from the Column-View
 //Column must contain new task btn
 
 
-export default function Column({name, id, entries, updateEntries, updateTask, deleteTask, deleteColumn}){
+export default function Sticky({name, id, entries, updateEntries, updateTask, deleteTask, deleteColumn}){
     const [newTask, setNewTask] = useState("");
 
     return (
