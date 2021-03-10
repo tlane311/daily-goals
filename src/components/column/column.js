@@ -12,7 +12,7 @@ export default function Column({name, id, entries, updateEntries, updateTask, de
 
     return (
         <div className="column">
-            <h3> {name} {id}</h3>
+            <h3> {name} </h3>
             <button onClick={() => {deleteColumn(id)}}>x</button>
             <ul>
                 {entries.map(
