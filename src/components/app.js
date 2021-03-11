@@ -2,6 +2,9 @@ import React, {useState} from 'react';
 
 import Sticky from './sticky/Sticky.js';
 import {homeworkColumn, choresColumn} from './dummy-data.js';
+import StickiesBar from './stickies-bar/StickiesBar.js';
+import DetailsBar from './details-bar/DetailsBar.js';
+
 
 //Column-View displays only a few Columns at a time. Columns hold Tasks.
 //Individual Column data is help in a database and passed to the child components here.
@@ -84,8 +87,9 @@ export default function App(){
 
     return(
         <>
-            <div id="view">
-                {stickies.map((column,index) => 
+            <StickiesBar listOfStickies={["Today", "Important", "Goals", "Chores"]} visibility={1}/>
+            
+            {stickies.filter( (ele, index) => index===0).map((column,index) => 
                     <Sticky
                         name={column.name} 
                         id={index}
@@ -95,11 +99,13 @@ export default function App(){
                         deleteTask={deleteTask}
                         deleteColumn={deleteSticky}
                     />)}
-            </div>
-            <input type="text" value={newStickyName} onChange={ e => {
+            {/* <input type="text" value={newStickyName} onChange={ e => {
                 setNewStickyName(e.target.value);
             }}/>
+            
             <button onClick={handleCreateNewSticky}> Create New Column </button>
+            */}
+            <DetailsBar goal={'test'} visibility={1}/>
         </>
 
     )

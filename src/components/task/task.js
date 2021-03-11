@@ -8,15 +8,29 @@ export default function Task({name, completed, updateTask, columnID, taskID, del
     return (
         <>
             <li className="task">
-                <span 
-                    className={completion ? "strikethrough" : ""}
-                    onClick={() => {
-                    updateTask(columnID, taskID, !completed);
-                    updateCompletion(!completion)
-                }}>
-                    {name}
-                </span>
-                {completion ? <button onClick={()=>deleteTask(columnID,taskID)}> x </button> : <></>}
+
+                <label>
+                    <input type="checkbox" checked={completion}/>
+                    <span 
+                        className="status-box" 
+                        onClick={(e)=> updateCompletion(!completion)}    
+                    />
+
+                    <span 
+                        className={(completion ? "strikethrough" : "")+" goal-text"}
+                        onClick={() => {
+                        updateTask(columnID, taskID, !completed);
+                        updateCompletion(!completion)
+                    }}>
+                        {name}
+                    </span>
+                    {completion ? <button onClick={()=>deleteTask(columnID,taskID)}> x </button> : <></>}
+
+
+
+                </label>
+
+
             </li>
         </>
     )

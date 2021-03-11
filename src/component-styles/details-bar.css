@@ -1,0 +1,164 @@
+#details-bar{
+    height:100vh;
+    width: 20%;
+    min-width: 256px;
+
+    /* display flex for easy positioning of content*/
+    display:flex;
+    flex-direction:column;
+    justify-content: center;
+
+    padding-left:2rem;
+    padding-right:2rem;
+
+    /* transition for when the bar moves in & out of screen*/
+    transition: .5s;
+}
+
+/* setting up pseudo animation for moving bar in & out of screen*/
+#details-bar.component-shown{
+    transform:none;
+    opacity:1;
+}
+#details-bar.component-hidden{
+    transform: translate(100%, 0%);
+    opacity:0;
+}
+
+
+
+
+.detail{
+    position:relative;
+
+    /* position content inside of .detail div */
+    display:flex;
+    justify-content:center;
+    flex-direction:column;
+
+    width:80%;
+    border-radius:16px;
+
+    /* add space above individual details; fixed max */
+    margin-top:min(1rem,16px);
+
+    padding: 10%;
+
+    background-color: var(--color-3);
+}
+
+
+/* checkboxes are hard to style. we make ours invisible and use .status-box as a placeholder */
+.detail input[type="checkbox"]{
+    position:absolute;
+	height:0;
+	width:0;
+	opacity:0;
+}
+
+/* styling and positioning status-box (i.e. the new checkbox)*/
+.detail .status-box{
+	cursor:pointer;
+
+    /*centering vertically; horizontal positioning*/
+	transform: translate(0%,-50%);
+    position:absolute;
+	top:50%;
+	left:1rem;
+
+	/*size & shape*/
+    height:1rem;
+	width:1rem;
+	border-radius:100%;
+
+    /* no fill and some border */
+	background-color:transparent;
+	border: 2px solid var(--font-color);
+}
+
+/* the check mark is stored as a pseudo-element with :after*/
+.detail .status-box:after{
+    content:"";
+
+    /* we will change display if the input is checked */
+	display:none;
+
+
+    /* positioning*/
+    position:absolute;
+    top:  .15rem;
+	left: .3rem;
+    /* size & shape */
+	height: .5rem;
+	width:.25rem;
+	border: solid var(--font-color);
+	border-width: 0px 3px 3px 0;
+
+    /* rotating to look like a check mark*/
+	-webkit-transform: rotate(45deg);
+	-ms-transform: rotate(45deg);
+	transform: rotate(45deg);
+}
+
+/* changes display when input is checked */
+.detail input:checked ~ .status-box:after{
+    display:block;
+}
+
+
+/* when hovering input that precedes status box, change background-color*/
+.detail:hover input ~ .status-box{
+    background-color: var(--color-4);
+}
+
+
+/* changing flex direction to row*/
+#goal-box{
+    flex-direction:row;
+
+    /* relative pos for children elements */
+    position:relative;
+}
+#goal-box label input{
+    cursor: pointer;
+
+    /* positioning */
+    position:absolute;
+    top: 50%;
+    left:2.3rem;
+    margin-left: .5rem;
+    
+    /* translating vertical for easy centering */
+    -webkit-transform: translate(0%,-50%);
+	-ms-transform: translate(0%,-50%);
+	transform: translate(0%,-50%);
+
+    /* size */
+    width:75%;
+    min-width: 196px;
+    
+}
+
+/* styling the form tags */
+#details-bar input, 
+#details-bar textarea, 
+#details-bar select{
+    /* size */
+    width:100%;
+    min-width: 216px;
+
+    border:none;
+    background-color: var(--color-3);
+
+    /* font */
+    font-family:'Spartan';
+    font-size:.75rem;
+}
+
+/* controlling font-size for datetimes with fixed max */
+#details-bar input[type="datetime-local"]{
+    font-size: min(.8rem,12px);
+}
+
+
+

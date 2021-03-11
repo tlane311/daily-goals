@@ -1,0 +1,38 @@
+#sticky-nav{
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-start;
+    align-items:center;
+
+    color:var(--color-2);
+    background-color: var(--font-color);
+
+    letter-spacing:.2rem;
+}
+
+
+
+#sticky-nav li{
+    cursor:pointer;
+
+    padding: 4px;
+
+    /* adding spacing above/below the li */
+    margin-top:.6rem;
+    margin-bottom:.6rem;
+
+    /* for the hover effect */
+    border-radius:2px;
+    transition:.5s;
+}
+
+/* on hover, background-color and color change*/
+#sticky-nav li:hover{
+    background-color:var(--color-1);
+    color: var(--font-color);
+}
+
+/* choosing the vertical positioning of the ul*/
+#sticky-nav ul{
+    margin-top: 10rem;
+}

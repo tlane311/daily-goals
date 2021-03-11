@@ -1,0 +1,97 @@
+.sticky{
+    /* this is just 800px when 1024px=100vh */
+    --sticky-length: 78.125vh; 
+
+    /* position relative so adjust position of new task*/
+    position:relative; 
+
+    background-color: var(--color-1);
+    color: var(--font-color);
+    
+
+    height: var(--sticky-length); /* sticky should be square */
+    width: var(--sticky-length);
+
+    max-width: 70vw; /* We want entire sticky to always be visible*/
+
+    box-shadow: 4px 4px rgba(0,0,0,.1); /* 3d effect */
+}
+
+.sticky h3{
+    font-size:2rem;
+    margin: 3rem 0rem .67rem 3rem;
+    /* note, margin-right is 3rem*/
+}
+
+/* control margins of individual tasks*/
+.sticky ul li{
+    position:relative;
+    margin: .67rem 0 .67rem 3rem;
+}
+
+
+/* new task contains a btn and an input */
+
+.new-task{
+    position:relative;
+    top:-.618rem;
+    display:flex;
+    align-items:center;
+}
+/* button styling */
+.new-task button{
+    /* centers plus in button*/
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    height:1.2rem;
+    width:1.2rem;
+    cursor:pointer;
+
+    margin:.67rem 0 2rem 3rem;
+    
+    
+    background-color:transparent;
+    color:var(--font-color);
+    
+    border:none;
+    border-radius:256px; /* setting radius now */
+    
+    font-size:1.618rem;
+
+    transition:.25s;
+}
+
+
+/* when hovering the button, the button is circled and highlighted*/
+.new-task button:hover{
+    transition:.25;
+    border: 2px solid var(--font-color);
+    background-color: var(--color-4);
+}
+
+/* styling the input */
+.sticky input[type="text"]{
+    position:relative; /* to fix positioning */
+    top:-.5rem;
+
+    height:1rem;
+    width:16rem;
+    max-width:50%;
+    margin-left:.618rem;
+
+    background-color:transparent;    
+    color: var(--font-color);
+    
+    border: solid var(--font-color);
+    border-width: 0px 0px 2px 0px;
+
+    /* input has some sort of inheritted font styling */
+    /* this is my incomplete attempt to correct that */
+    font-size:1.1rem; 
+    font-weight:lighter; 
+    letter-spacing:1px;
+}
+
+

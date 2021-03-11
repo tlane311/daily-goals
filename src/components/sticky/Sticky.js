@@ -1,4 +1,5 @@
 import {useState} from 'react';
+import '../../component-styles/sticky.css';
 
 import Task from '../task/task.js';
 
@@ -11,9 +12,9 @@ export default function Sticky({name, id, entries, updateEntries, updateTask, de
     const [newTask, setNewTask] = useState("");
 
     return (
-        <div className="column">
+        <div className="sticky" id="sticky">
             <h3> {name} </h3>
-            <button onClick={() => {deleteColumn(id)}}>x</button>
+            {/*<button onClick={() => {deleteColumn(id)}}>x</button>*/}
             <ul>
                 {entries.map(
                     (entry,index) => 
@@ -26,14 +27,19 @@ export default function Sticky({name, id, entries, updateEntries, updateTask, de
                             deleteTask={deleteTask}
                         />)}
             </ul>
-            <input type="text" value={newTask} onChange={ e => setNewTask( e.target.value)}/>
-            <button 
-                onClick={() => {
-                    updateEntries(id,newTask);
-                    setNewTask(""); 
-                }}>
-                New Task
-            </button>            
+            <span className="new-task">
+                <button 
+                    onClick={() => {
+                        updateEntries(id,newTask);
+                        setNewTask(""); 
+                    }}>
+                    +
+                </button> 
+
+                <input type="text" value={newTask} onChange={ e => setNewTask( e.target.value)}/>
+            </span>
+
+           
         </div>
     )
 }

@@ -1,0 +1,58 @@
+:root{
+    --color-1: #FFF9C7;
+    --color-2: #EDEAE5;
+    --color-3: #F6f6f5;
+    --color-4: #9FEDD7;
+    --font-color: #016670;
+}
+
+html{
+    font-size: max(2.25vh,16px);
+    width:100vw;
+    height:100vh;
+    overflow:hidden;
+    font-family: 'Spartan', sans-serif;
+    background-color: var(--color-2);
+    color:var(--font-color);
+}
+*{
+    margin:0;
+    padding:0;
+}
+*:focus{
+    outline:none;
+}
+li{
+    list-style: none;
+}
+
+#app{
+    display:flex;
+    height:100vh;
+    width:100vw;
+}
+
+#sticky{
+    align-self:center;
+    margin-left: min(25%, 256px);
+
+    background-color:var(--color-1);
+} 
+
+#details-bar{
+    position:absolute;
+    right:0%;
+    top:0%;
+}
+
+#sticky-nav{
+    position:absolute;
+    left:0%;
+    top:0%;
+
+    height:100vh;
+    width:20%;
+    max-width: 200px;
+}
+
+

@@ -1,3 +1,82 @@
+.task{
+	position:relative;
+	width:90%;
+	--checkbox-size: 1rem;
+}
+
+
+/* It is difficult to style input[type="checkbox"] directly */
+/* We are going to hide the checkbox input and use a span 
+to display checked status*/
+
+.task input[type="checkbox"]{
+	position:absolute;
+	cursor:pointer;
+	height:0;
+	width:0;
+	opacity:0;
+}
+
+.task .status-box{
+	position:absolute;
+	cursor:pointer;
+	top:0;
+	left:0;
+	height:var(--checkbox-size);
+	width:var(--checkbox-size);
+	border-radius:100%;
+	background-color:transparent;
+	border: 2px solid var(--font-color);
+	transform: translate(0%,-10%)
+}
+
+.task:hover input ~ .status-box{
+	background-color: var(--color-4);
+}
+
+.status-box:after{
+	content:"";
+	position:absolute;
+	display:none;
+}
+
+.task input:checked ~ .status-box:after{
+	display:block;
+}
+
+.task .status-box:after{
+	top:  .15rem;
+	left: .3rem;
+	height: .5rem;
+	width:.25rem;
+	border: solid var(--font-color);
+	border-width: 0px 3px 3px 0;
+	-webkit-transform: rotate(45deg);
+	-ms-transform: rotate(45deg);
+	transform: rotate(45deg);
+}
+
+.goal-text{
+	margin-left:calc(1.618*var(--checkbox-size));
+	cursor: pointer;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* strike-through animation below */
 .strikethrough{
     display: inline-block;
     position:relative;
@@ -13,7 +92,8 @@
 	margin-top: -0.6em;
 	background: black;
 	transform-origin: center left;
-	animation: strikethrough 1s 0.5s cubic-bezier(.55, 0, .1, 1) forwards;
+	transform: scaleX(0);
+	animation: strikethrough .5s 0s cubic-bezier(.55, 0, .1, 1) forwards;
 	transition: transform 0.5s cubic-bezier(.55, 0, .1, 1);
 }
 
