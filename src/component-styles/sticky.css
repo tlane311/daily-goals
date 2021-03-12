@@ -59,14 +59,11 @@
     border-radius:256px; /* setting radius now */
     
     font-size:1.618rem;
-
-    transition:.25s;
 }
 
 
 /* when hovering the button, the button is circled and highlighted*/
 .new-task button:hover{
-    transition:.25;
     border: 2px solid var(--font-color);
     background-color: var(--color-4);
 }
