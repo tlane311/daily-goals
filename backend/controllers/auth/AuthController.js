@@ -266,7 +266,7 @@ router.put('/update', verifyToken, async (req, res, next) =>{
     Note, it is okay that res.userId is defined twice (since this should be deterministic and retrieve the same info each time).
 */
 router.delete('/delete', verifyLogin, verifyToken, async (req, res) =>{
-    //verifyLogin ensures we are given login credentials
+    //verifyLogin ensures we are given valid login credentials
     //verifyToken makes sure we're given a valid token and then returns req.userId=(user_id)
 
     //by checking both id and username here we make sure that login credentials are tied to the token
@@ -283,6 +283,9 @@ router.delete('/delete', verifyLogin, verifyToken, async (req, res) =>{
             auth:true,
         });
         //if no rows were changed, we send the following
+        //this case only happens if the user was deleted 
+        //just after the middleware finishes and just before
+        //the next set of code runs
         return res.status(200).send({message: 'User was not deleted', auth: true});
     }
     
