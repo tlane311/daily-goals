@@ -55,14 +55,14 @@ export async function DeleteUser(credentials) {
 }
 
 
-export async function CreateList({ token, data }){
+export async function CreateList( { token, data } ){
     return await request(app)
         .post('/api/lists/new')
         .set('x-access-token', token)
         .send(data)
 }
 
-export async function DeleteList( {token, data} ){
+export async function DeleteList( { token, data } ){
     return await request(app)
         .delete('/api/lists/')
         .set('x-access-token', token)

@@ -74,7 +74,7 @@ router.post('/new', verifyToken, async (req, res) => {
 
 router.delete('/', verifyToken, async (req, res) => {
     if (!req.body.listId) return res.status(400).send({
-        auth: true,
+        auth: false,
         message: "No list provided."
     })
 
