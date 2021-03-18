@@ -7,8 +7,10 @@
     "@testing-library/jest-dom": "^5.11.6",
     "@testing-library/react": "^11.2.2",
     "@testing-library/user-event": "^12.6.0",
+    "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
     "dotenv": "^8.2.0",
+    "hash-object": "^0.1.7",
     "jsonwebtoken": "^8.5.1",
     "mysql": "^2.18.1",
     "nodemon": "^2.0.7",
@@ -20,7 +22,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "react-test": "react-scripts test",
+    "test": "jest --forceExit --watchAll --maxWorkers=1",
     "eject": "react-scripts eject",
     "dev-server": "npm run build && (cd backend && npx nodemon server)"
   },
@@ -41,5 +44,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "supertest": "^6.1.3"
   }
 }

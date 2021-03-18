@@ -84,10 +84,9 @@
     border: solid var(--font-color);
     border-width: 0px 0px 2px 0px;
 
-    /* input has some sort of inheritted font styling */
-    /* this is my incomplete attempt to correct that */
-    font-size:1.1rem; 
-    font-weight:lighter; 
+    /* font styling */
+    font-family:inherit;
+    font-size:1rem; 
     letter-spacing:1px;
 }
 

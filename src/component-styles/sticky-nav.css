@@ -36,3 +36,69 @@
 #sticky-nav ul{
     margin-top: 10rem;
 }
+
+.new-list{
+    position:relative;
+    top:-.618rem;
+    display:flex;
+    align-items:center;
+    
+
+    color:white;
+}
+/* button styling */
+.new-list button{
+    /* centers plus in button*/
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    height:1.2rem;
+    width:1.2rem;
+    cursor:pointer;
+
+    margin:.67rem 0 2rem 0rem;
+    
+    
+    background-color:transparent;
+    color:var(--font-color);
+    
+    border:none;
+    border-radius:256px; /* setting radius now */
+    
+    font-size:1.618rem;
+    
+    color:white;
+}
+
+
+/* when hovering the button, the button is circled and highlighted*/
+.new-list button:hover{
+    border: 2px solid var(--font-color);
+    background-color: var(--color-4);
+}
+
+/* styling the input */
+#sticky-nav input[type="text"]{
+    position:relative; /* to fix positioning */
+    top:-.65rem;
+
+    height:1rem;
+    width:6rem;
+    max-width:100%;
+    margin-left:.1rem;
+
+    background-color:transparent;    
+    color: var(--font-color);
+    
+    border: solid var(--font-color);
+    border-width: 0px 0px 2px 0px;
+
+    /* input has some sort of inheritted font styling */
+    /* this is my incomplete attempt to correct that */
+    font-family:inherit;
+    font-size:1rem;
+    letter-spacing:1px;
+
+    color:var(--color-2);
+}

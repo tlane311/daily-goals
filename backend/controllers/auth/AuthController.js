@@ -41,7 +41,10 @@ dotenv.config();
 router.post('/register', async (req,res,next) => {    
     //make sure none of the fields are empty
     if (!req.body.email || !req.body.username || !req.body.password) {
-        return res.status(400).send("Missing User Input Data");
+        return res.status(400).send({
+            message: "Missing User Input Data.",
+            auth: false
+        });
     }
     
     //create hashed password
@@ -59,7 +62,7 @@ router.post('/register', async (req,res,next) => {
 
     const queryCallback = (err, results, fields) => {
         //if there is an error with the query
-        if (err) return res.status(500).send('There was a problem registering the user.');
+        if (err) return res.status(500).send({message: 'There was a problem registering the user.', error: err});
 
 
         //creating token
@@ -91,45 +94,42 @@ router.post('/register', async (req,res,next) => {
 })
 
 
-
-
-
-
-
-
-
-
-
 // @route   GET api/me
 // @desc    get username and email from a token
 // @access  public
 /*
+    req.header = {'x-access-token': ...}
     req.body = {
         username: req.body.username,
         password: req.body.password,
         email: req.body.email
     }
 
-    verifyToken: (token) => {if (token===valid) req.userId = user_id}
-
-    verifyToken -> look up data
+    The middleware, verifyToken, will look at the token provided in the header. If valid, it will set req.userId = user_id (ie the id number in the db).
 */
 router.get('/me', verifyToken, async (req, res, next) => {
+     
+    //sqlStatement for finding user info with user_id
+    const sqlStatement = `SELECT username, email FROM users WHERE user_id = ?`;
+    
+    //this is called after executing sqlStatement
+    const queryCallback = (err, results, fields) => {
+        if (err) return res.status(500).send({
+            auth: true,
+            message: 'There was an error finding user info.'
+        });
+        //else
+        return res.status(200).send({
+            auth:true,
+            message: "Authentication successful.",
+            results: results[0]
+        });
+    }
+    
     try{
         const pool = await poolPromise; //if this resolves, it returns a mysql connection
-        
-        const sqlStatement = `SELECT username, email FROM users WHERE user_id = ?`;
-        
-        const queryCallback = (err, results, fields) => {
-            if (err) return res.status(500).send('There was an error finding user info.')
-            return res.status(200).send({
-                message: "Authentication successful",
-                results: results[0]
-            });
-        }
-
-        await pool.query(sqlStatement, [req.userId], queryCallback);
-    } catch(e){
+        await pool.query(sqlStatement, [req.userId], queryCallback); //query the db using data defined before try block
+    } catch(e) {
         res.status(500).send({
             message: "Server error",
             error: e
@@ -152,34 +152,24 @@ router.get('/me', verifyToken, async (req, res, next) => {
         password: req.body.password,
         email: req.body.email
     }
-
-    verifyLogin(username,password) => {
-        req.validCredentials = boolean
-        req.userId = user_id
-    }
+    The middleware, verifyLogin, will send a response if there was some issue with login credentials. If there was no issue, it will set res.userId = user_id and go next.
 */
 router.post('/login', verifyLogin, async (req, res, next) =>{
-    try{
-        //check if middleware verified login
-        //if invalid credentials
-        if (!req.validCredentials) return res.status(400).send({
-            message: 'Bad credentials',
-            auth: false
-        });
-
-        //otherwise, create token and sign with user_id
+    try{   
+        //if verifyLogin called next, then the user was authenticated
+        //create token and sign with user_id
         const token = jwt.sign( {id: req.userId}, process.env.SECRET,{
             expiresIn: 86400 //expires in 24 hrs
         });
         
-        //and then send this:
+        //success response:
         return res.status(200).send({
             message: 'Login was successful.',
             auth:true,
             token:token
         });
 
-    }catch(e){
+    } catch(e) {
         res.status(500).send({
             message: "Server error",
             error: e
@@ -193,6 +183,7 @@ router.post('/login', verifyLogin, async (req, res, next) =>{
 // @desc    update user info
 // @access  public
 /*
+    req.header = {'x-access-token': ...}
     req.body = {
         username: req.body.username,
         password: req.body.password,
@@ -200,24 +191,19 @@ router.post('/login', verifyLogin, async (req, res, next) =>{
         fieldData: req.body.fieldData
     }
 
-    verifyToken: (token) => { if (token===valid)  req.userId = user_id}
-
-    verifyToken -> verify old login credentials -> attempt to update row
-
-
-    YOU NEED TO UPDATE TO USE verifyLogin MIDDLEWARE
+    The middleware, verifyToken, will look at the token provided in the header. If valid, it will set req.userId = user_id (ie the id number in the db).
 */
 
 // Update needs to be revisited
-router.put('/update', verifyLogin, verifyToken, async (req, res, next) =>{
-    //verifyLogin makes sure that username password and given and valid
-    //verifyToken returns the user_id as req.userId
+router.put('/update', verifyToken, async (req, res, next) =>{
 
     //checking that we aren't missing field data
     if (!req.body.field || !req.body.fieldData) return res.status(400).send({
-        message: "Missing updated field data"
-    })
+        auth: false,
+        message: "Missing updated field data."
+    });
 
+    
 
     //if user wants to update the password, we will need to hash it
     const fieldIsPassword = req.body.field === 'password'
@@ -267,14 +253,17 @@ router.put('/update', verifyLogin, verifyToken, async (req, res, next) =>{
 // @desc    delete user from database
 // @access  public
 /*
+    req.header = {'x-access-token': ...}
     req.body = {
         username: req.body.username,
         password: req.body.password,
     }
 
-    verifyToken: (token) => { if (token===valid)  req.userId = user_id}
+    The middleware, verifyLogin, will send a response if there was some issue with login credentials. If there was no issue, it will set res.userId = user_id and go next.
 
-    verify login credentials -> verifyToken -> attempt to delete 
+    The middleware, verifyToken, will look at the token provided in the header. If valid, it will set req.userId = user_id (ie the id number in the db).
+
+    Note, it is okay that res.userId is defined twice (since this should be deterministic and retrieve the same info each time).
 */
 router.delete('/delete', verifyLogin, verifyToken, async (req, res) =>{
     //verifyLogin ensures we are given login credentials
@@ -285,7 +274,7 @@ router.delete('/delete', verifyLogin, verifyToken, async (req, res) =>{
 
     const queryCallback = (err, results, fields) => {
         if (err) return res.status(500).send({
-            message:'Server error. There was a problem updating info.',
+            message:'Server error. There was a problem.',
             error: err                
         });
         //if the number of changedRows is positive we send the following

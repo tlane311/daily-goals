@@ -2,6 +2,7 @@ import express from "express";
 
 import {poolPromise} from '../../db.js'; //this is a promise that resolves to a connection
 
+
 import verifyToken from '../auth/VerifyToken.js';   // middleware for authenticating tokens
 
 // note we are not using verifyLogin here because we don't want to double check auth for goal CRUD
@@ -13,8 +14,6 @@ const router = express.Router();
 
 // For each of our routes, we first verify (explicitly or in middleware) that the req.body req.headers actually have data and that is in the correct shape.
 // If there is a problem with data, the db is never queried.
-
-
 
 
 
@@ -33,6 +32,12 @@ const router = express.Router();
         goals: req.body.goal,
     }
 
+    each goal: {
+        list_id,
+        goal,
+        order_number,
+    }
+
 verifyToken -> "INSERT INTO goals(...) VALUES (...), (...), ... , (...);" -> return status
 */
 
@@ -41,7 +46,7 @@ router.post('/new', verifyToken, async (req, res, next) => {
     const goals = req.body.goals; //this should be a non-empty array
     //making sure the user sends an (1)array and (2)array with positive length
     if (!goals.length || !Array.isArray(goals)) return res.status(400).send({
-        message: 'No goals were submitted for deletion.'
+        message: 'No goals were submitted.'
     })
 
     const queryCallback = (err, results,fields) => {
@@ -63,19 +68,15 @@ router.post('/new', verifyToken, async (req, res, next) => {
         //we are dynamically generating a string to add on to our sqlStatement specifying which elements to delete
         const goalsArr = await goals.map( obj => {
             let newString = `(${pool.escape(req.userId)}` //escaping is important to prevent sql injections
+                +`, ${pool.escape(obj.listId)}`
                 +`, ${pool.escape(obj.goal)}`
-                +`, ${pool.escape(obj.priority)}`
-                +`, ${pool.escape("03-08-21")}`
-                +`, ${pool.escape(obj.deadline)}`
-                +`, ${pool.escape(obj.status)}`
-                +`, ${pool.escape(obj.note)}`
-                +`, ${pool.escape(obj.color)}`
+                +`, ${pool.escape(obj.orderNumber)}`
                 +`)`;
             return newString;
         });
         const goalsAddon = goalsArr.join(` , `)
 
-        const sqlStatement=`INSERT INTO goals (user_id, goal, priority, creation_date, deadline, status, note, color) 
+        const sqlStatement=`INSERT INTO goals (user_id, list_id, goal, order_number) 
         VALUES`+goalsAddon+`;`;
 
 
@@ -119,9 +120,9 @@ router.get('/me', verifyToken, async (req, res) => {
 /*
     req.header['x-access-token'] = token
     req.body = {
-        goal_id: int, 
-        goal: 
-        priority: ,  
+        goalId: int,
+        goal,
+        orderNumber: ,  
         deadline: , 
         status: , 
         note: , 
@@ -133,8 +134,8 @@ router.get('/me', verifyToken, async (req, res) => {
 router.put('/update', verifyToken, async (req, res) => {
     
     //here all of the values we will grab from the request body
-    const sqlValues = [ req.body.goal, req.body.priority, req.body.deadline, req.body.status, 
-        req.body.note, req.body.color, req.body.goal_id, req.userId]
+    const sqlValues = [ req.body.goal, req.body.orderNumber, req.body.deadline, req.body.status, 
+        req.body.note, req.body.color, req.body.goalId, req.userId]
     // we're going to make sure each value is defined
     if (!sqlValues.reduce( (accumulator, currentValue) => accumulator || currentValue, false)) {
         return res.status(400).send({
@@ -144,8 +145,8 @@ router.put('/update', verifyToken, async (req, res) => {
         
     const sqlStatement=`UPDATE goals 
         SET 
-            goal = ?, 
-            priority = ?,
+            goal = ?,
+            order_number = ?,
             deadline = ?,
             status = ?,
             note = ?,

@@ -9,12 +9,12 @@ export default async function verifyLogin(req,res,next){
     //check to make sure we aren't missing data in the body
     if (!req.body.password || !req.body.username){
         return res.status(400).send({
+            auth: false,
             message: 'Missing login data.'
         })
     }
     
-    try{
-        
+    try{ 
         const pool = await poolPromise;
         
         const sqlStatement = `SELECT * FROM users WHERE username = ? `;
@@ -24,7 +24,10 @@ export default async function verifyLogin(req,res,next){
                 message:'Server error',
                 error: err
             });
+
+            //if no user is found with that username
             if (!results.length) return res.status(400).send({
+                auth: false,
                 message:'Bad credentials.',
             });
             
@@ -34,17 +37,17 @@ export default async function verifyLogin(req,res,next){
             //compare submitted password to hashed password in db
             const passwordIsValid = bcrypt.compareSync(req.body.password, dbPassword)
             
-            //if hashed submission doesn't match, then:
+            //if hashed password doesn't match, then:
             if (!passwordIsValid) {
                 req.validCredentials = false;
                 return res.status(400).send({
+                    auth: false,
                     message:'Bad credentials.',
                 });    
             }
 
             //otherwise, attach data to req object
             req.userId = results[0].user_id;
-            req.validCredentials = true;
 
             next(); //by calling next inside of the query callback, we guarantee that next is called AFTER the sqlStatement has been executed
         }

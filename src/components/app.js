@@ -6,6 +6,8 @@ import StickiesBar from './stickies-bar/StickiesBar.js';
 import DetailsBar from './details-bar/DetailsBar.js';
 
 
+import useApi from '../hooks/useAPI.js';
+
 //Column-View displays only a few Columns at a time. Columns hold Tasks.
 //Individual Column data is help in a database and passed to the child components here.
 //Column-View will allow for alternative views: 1.Carousel, 2.Drop Down
@@ -17,8 +19,33 @@ export default function App(){
     
     An alternative to this is to have ColumnView pass an id number to each child Column. Then, each Column will query the database for the column data. The downside is we query the database multiple times.
     */
+    
+    
+
+//
+    const {data, response, error, isLoading, fetch} = useApi({
+        "method":"GET",
+        "url":"localhost:4000/api/me",
+        "headers":{
+        "content-type":"application/octet-stream",
+        "x-rapidapi-host":"currency-exchange.p.rapidapi.com",
+        "x-rapidapi-key":"08670f6036msh087f2b8073d8296p1956a9jsn2560793564ed",
+        "useQueryString":true
+        }
+    });
+    
+    console.log('data',data);
+    console.log('response', response);
+
+
+
+
     const [, updateState] = React.useState();
     const forceUpdate = React.useCallback(() => updateState({}), []);
+
+
+
+
 
 
     //the columns will come from a db query
