@@ -1,7 +1,9 @@
 {
   "name": "daily-goals",
   "jest": {
-    "modulePathIgnorePatterns": ["<rootDir>/__tests__/api/apiHelpers.js"]
+    "modulePathIgnorePatterns": ["<rootDir>/__tests__/api/apiHelpers.js",
+      "<rootDir>/__tests__/api/goalsAPI.test.js",
+      "<rootDir>/__tests__/api/listsAPI.test.js"]
   },
   "type": "module",
   "version": "0.1.0",

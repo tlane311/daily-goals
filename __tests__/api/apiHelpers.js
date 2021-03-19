@@ -54,7 +54,6 @@ export async function DeleteUser(credentials) {
     }
 }
 
-
 export async function CreateList( { token, data } ){
     return await request(app)
         .post('/api/lists/new')
@@ -71,6 +70,26 @@ export async function GetLists( {token} ){
 export async function DeleteList( { token, data } ){
     return await request(app)
         .delete('/api/lists/')
+        .set('x-access-token', token)
+        .send(data);
+}
+
+export async function CreateGoal( {token, data}){
+    return await request(app)
+        .post('/api/goals/new')
+        .set('x-access-token', token)
+        .send(data);
+}
+
+export async function GetGoals( {token} ) {
+    return await request(app)
+        .get('/api/goals/me')
+        .set('x-access-token', token);
+}
+
+export async function DeleteGoal({ token, data }){
+    return await request(app)
+        .delete('/api/goals/')
         .set('x-access-token', token)
         .send(data);
 }

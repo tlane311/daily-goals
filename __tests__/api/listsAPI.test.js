@@ -113,8 +113,8 @@ describe("POST /api/lists/new", () => {
         // shape
         expect(response.body).toHaveProperty('auth');
         expect(response.body).toHaveProperty('message');
-        expect(response.body).toHaveProperty('results')
-        expect(response.body.results).toHaveProperty('insertId')
+        expect(response.body).toHaveProperty('results');
+        expect(response.body.results).toHaveProperty('insertId');
         // accuracy
         expect(response.body.auth).toBe(true);
         expect(response.body.message).toBe("List added.");
