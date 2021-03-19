@@ -154,7 +154,7 @@ router.get('/me', verifyToken, async (req, res) => {
 
 
 
-// @route   PUT api/goals/update
+// @route   PUT api/goals/
 // @desc    update goals
 // @access  public
 /*
@@ -174,15 +174,24 @@ router.get('/me', verifyToken, async (req, res) => {
 
 */
 
-router.put('/update', verifyToken, async (req, res) => {
+router.put('/', verifyToken, async (req, res) => {
     
     //here all of the values we will grab from the request body
     const sqlValues = [ req.body.goal, req.body.orderNumber, req.body.deadline, req.body.status, 
         req.body.note, req.body.color, req.body.goalId, req.userId]
-    // we're going to make sure each value is defined
-    if (!sqlValues.reduce( (accumulator, currentValue) => accumulator || currentValue, false)) {
+    
+    
+    // To verify that all values are defined, we are going to first check if they are undefined, and if at least one of them are, we will send a 400 response
+    // this is an array of booleans which should be true unless some sqlValue in sqlValues was undefined
+    const valuesAreDefined = sqlValues.map(element => typeof element !== 'undefined')
+    // we reduce the array so that it only returns true if every element of valuesAreDefined are true
+    const bodyHasCorrectShape = valuesAreDefined.reduce( (accumulator, currentValue) => accumulator && currentValue, true)
+
+    // bodyHasCorrectShape is truthy only when every value in sqlValues is defined (i.e not undefined).
+    if (!bodyHasCorrectShape) {
         return res.status(400).send({
-            message: "Missing data to update goals."
+            auth: true,
+            message: "Bad request."
         });
     }
         
@@ -206,18 +215,21 @@ router.put('/update', verifyToken, async (req, res) => {
 
         //if not rows were found
         if (!results.affectedRows) return res.status(400).send({
-            message: "Problem with selected goal id or user credentials.",
+            auth: true,
+            message: "Bad request.",
             results: results
         });
 
         // no rows were changed
         if (!results.changedRows) return res.status(400).send({
-            message: "Server received request, but data was not updated.",
+            auth: true,
+            message: "Bad request.",
             results: results
         });
 
         //case: rows were found and rows were updated
         return res.status(200).send({
+            auth: true,
             message: "Data was successfully updated.",
             results: results
         });
@@ -232,7 +244,7 @@ router.put('/update', verifyToken, async (req, res) => {
 });
 
 
-// @route   DELETE api/goals/delete
+// @route   DELETE api/goals/
 // @desc    delete goals
 // @access  public
 /*

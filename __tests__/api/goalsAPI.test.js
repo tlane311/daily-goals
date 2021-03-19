@@ -364,10 +364,147 @@ describe( 'GET /api/goals/me', () => {
     });
 }); //done
 
-
 describe( 'PUT /api/goals', () =>{
+    // S E T U P
+    
+    //dummy user
+    const userData = {
+        username: 'Update_Goal',
+        password: "some_password",
+        email: 'update@goal.com'
+    }
+    //dummy list
+    const listData = {
+        listName: 'update-goals-list',
+        orderNumber: 1
+    }
 
-})
+    const updatedGoal = {
+        goal: 'updated-goal',
+        orderNumber: 2,
+        deadline: '2021-3-19 19:00:00',
+        status: false,
+        note: "Don't forget to do this.",
+        color: '#333'
+    }
+
+    // dummy goals
+    // We will need the listId to define this. We will assign goalsData during beforeEach
+    let goalData;
+    
+    // We will need to access the goal ids later during tests. We will assign these in beforeAll
+    let goalId;
+
+    // We will need to access the listId and token during tests. We will define these in beforeAll
+    let listId, token;
+
+    // create user and list before all tests
+    beforeAll( async () => {
+        //create user
+        const newUser = await CreateUser(userData); //expect response.body = { auth, message, token }
+        token = newUser.body.token; //grab token
+
+        const newList = await CreateList({token, data: listData}); //expect response.body = { auth, message, results = {..., insertId, ...} }
+        listId = newList.body.results.insertId; //grab listId
+
+        return newUser;
+    });
+
+    // create goals before each test
+    beforeEach( async () => {
+        //assigning the goalsData
+        //note, we don't want this to be reassigned each time, so we condition
+        if (!goalData){
+            goalData = [
+                {
+                    listId,
+                    orderNumber: 1,
+                    goal: 'update-goal'
+                },
+            ]
+        }
+
+        const newGoals = await CreateGoals({ token, data: { goals: goalData } });
+        //expect response.body = { auth, message, results: [ {..., insertId, ... }, {..., insertId, ... }, ... ] }
+        goalId = newGoals.body.results.insertId;   //grabbing the insertIds
+    });
+
+    // T E A R D O W N
+
+    // delete goals after each test
+    afterEach( async () => {
+        //delete goals
+        await DeleteGoals({ token, data: { goal_ids: [goalId]}});
+        goalId = undefined; //reset goalId
+        return goalId;
+    });
+
+    // delete list and then user after all tests
+    afterAll( async () => {
+        //delete list
+        await DeleteList({token, data: {listId: listId}});
+
+        //delete user
+        return await DeleteUser(userData);
+
+        // Note: order matters.
+        // We must delete the list before the user.
+        // Otherwise, the db will throw an exception.
+    });
+
+    // T E S T S
+
+    it('fails when body has wrong shape', async () => {
+        const response = await request(app)
+            .put('/api/goals/')
+            .set('x-access-token', token)
+            .send({...updatedGoal, goalId: undefined});
+    
+        // expecting: response.body = { auth: true, message: ...}
+        // shape
+        expect(response.body).toHaveProperty('auth');
+        expect(response.body).toHaveProperty('message');
+        // accuracy
+        expect(response.body.auth).toBe(true);
+        expect(response.body.message).toBe("Bad request.");
+        // status code
+        expect(response.statusCode).toBe(400);
+    });
+
+    it('fails when given bad goal id', async () => {
+        const response = await request(app)
+            .put('/api/goals/')
+            .set('x-access-token', token)
+            .send({...updatedGoal, goalId: 2*goalId});
+
+        // expecting: response.body = { auth: true, message: ...}
+        // shape
+        expect(response.body).toHaveProperty('auth');
+        expect(response.body).toHaveProperty('message');
+        // accuracy
+        expect(response.body.auth).toBe(true);
+        expect(response.body.message).toBe("Bad request.");
+        // status code
+        expect(response.statusCode).toBe(400);
+    });
+
+    it('updates goal', async () => {
+        const response = await request(app)
+            .put('/api/goals/')
+            .set('x-access-token', token)
+            .send({...updatedGoal, goalId});
+        
+        // expecting: response.body = { auth: true, message: ...}
+        // shape
+        expect(response.body).toHaveProperty('auth');
+        expect(response.body).toHaveProperty('message');
+        // accuracy
+        expect(response.body.auth).toBe(true);
+        expect(response.body.message).toBe("Data was successfully updated.");
+        // status code
+        expect(response.statusCode).toBe(200);
+    });
+}); //done
 
 describe( 'DELETE /api/goals', () =>{
     // S E T U P
@@ -469,7 +606,7 @@ describe( 'DELETE /api/goals', () =>{
             data: {'goal_ids': undefined}
         });
 
-        // expecting: response.body = { auth: true, message: ..., token: ... }
+        // expecting: response.body = { auth: true, message: ... }
         // shape
         expect(response.body).toHaveProperty('auth');
         expect(response.body).toHaveProperty('message');
@@ -487,7 +624,7 @@ describe( 'DELETE /api/goals', () =>{
             data: {'goal_ids': []}
         });
 
-        // expecting: response.body = { auth: true, message: ..., token: ... }
+        // expecting: response.body = { auth: true, message: ...}
         // shape
         expect(response.body).toHaveProperty('auth');
         expect(response.body).toHaveProperty('message');
@@ -505,7 +642,7 @@ describe( 'DELETE /api/goals', () =>{
             data: {'goal_ids': 'value'}
         });
 
-        // expecting: response.body = { auth: true, message: ..., token: ... }
+        // expecting: response.body = { auth: true, message: ... }
         // shape
         expect(response.body).toHaveProperty('auth');
         expect(response.body).toHaveProperty('message');
@@ -523,7 +660,7 @@ describe( 'DELETE /api/goals', () =>{
             data: {'goal_ids': goalIds.map( id => 2*id)}
         });
 
-        // expecting: response.body = { auth: true, message: ..., token: ... }
+        // expecting: response.body = { auth: true, message: ... }
         // shape
         expect(response.body).toHaveProperty('auth');
         expect(response.body).toHaveProperty('message');
@@ -541,7 +678,7 @@ describe( 'DELETE /api/goals', () =>{
             data: {'goal_ids': goalIds}
         });
         
-        // expecting: response.body = { auth: true, message: ..., token: ... }
+        // expecting: response.body = { auth: true, message: ...}
         // shape
         expect(response.body).toHaveProperty('auth');
         expect(response.body).toHaveProperty('message');
