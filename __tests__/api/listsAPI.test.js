@@ -3,8 +3,8 @@ import app from '../../backend/server.js';
 
 import request from 'supertest';
 
-import {CreateUser, LoginUser, GetUser, DeleteUser} from './apiHelpers.js';
-import {CreateList, DeleteList} from './apiHelpers.js';
+import {CreateUser, LoginUser, DeleteUser} from './apiHelpers.js';
+import {CreateList, DeleteList, GetLists} from './apiHelpers.js';
 
 //routes
 //POST /lists/new
@@ -150,7 +150,7 @@ describe( 'GET /api/lists/me', () => {
             listName: 'third-list'
         }];
 
-    //we are going to add list ids when actually create our list
+    //we are going to add the list ids when actually create our list
     let listIds = [];
     
     //dummy user data
@@ -162,7 +162,6 @@ describe( 'GET /api/lists/me', () => {
 
     //we are going to grab an authentication token when we create out user
     let token;
-
 
     //create user and their list data
     beforeAll( async () => {
@@ -189,9 +188,7 @@ describe( 'GET /api/lists/me', () => {
         return await DeleteUser(userData);
         // The order matters here.
         // If we try to delete the user before we delete all of the lists, the db will throw an error since lists have a reference to the user_id.
-    })
-
-
+    });
     
     // T E S T S
 
@@ -218,7 +215,165 @@ describe( 'GET /api/lists/me', () => {
         // status code
         expect(response.statusCode).toBe(200);   
     });
-})
+}); //done
+
+describe( 'PUT /api/lists/', () => {
+    
+    // S E T U P
+
+    //dummy user data
+    const userData = {
+        username: 'Update_Lists',
+        password: 'some_password',
+        email: 'update@lists.com'
+    }
+    //dummy list data
+    const listData = {
+        listName: 'update-list',
+        orderNumber: 5
+    }
+    //update data for listName
+    const updateListName = {
+        field: 'list_name',
+        fieldData: 'updated-list'
+    }
+    //update data for orderNumber
+    const updateOrderNumber = {
+        field: 'order_number',
+        fieldData: 1
+    }
+
+    // We need to grab a listId when we create a list in beforeEach so we can delete it in afterEach.
+    // Same with the token from the user.
+    let listId, token;
+
+    //create user before tests begin
+    beforeAll( async () => {
+        //create user
+        const newUser = await CreateUser(userData);
+        //define token
+        token = newUser.body.token;
+
+        return newUser;
+    });
+    //create list before each test
+    beforeEach( async () => {
+        //create list
+        const newList = await CreateList({token, data: listData})
+        //define listId
+        listId = newList.body.results.insertId;
+
+        return newList;
+    });
+    
+    // T E A R D O W N
+    
+    //delete list after each test
+    afterEach( async () => {
+        //delete list using listId
+        return await DeleteList( { token, data: { listId: listId } });
+    });
+
+    //delete user after all tests
+    afterAll( async () => {
+        //delete user
+        return await DeleteUser(userData);
+    })
+
+    // T E S T S
+
+    it('fails when missing field', async () => {
+        //attempting to update
+        const response = await request(app)
+            .put('/api/lists/')
+            .set('x-access-token', token)
+            .send({field: undefined, fieldData: 2, listId: listId});
+
+        //expecting: response.body = { auth, message }
+
+        //shape
+        expect(response.body).toHaveProperty('auth');
+        expect(response.body).toHaveProperty('message');
+        //accuracy
+        expect(response.body.auth).toBe(false);
+        expect(response.body.message).toBe('Missing updated field data.');
+        //status code
+        expect(response.statusCode).toBe(400);
+    });
+    it('fails when missing fieldData', async () => {
+        //attempting to update
+        const response = await request(app)
+            .put('/api/lists/')
+            .set('x-access-token', token)
+            .send({fieldData: undefined, field: 'list_name', listId: listId});
+
+        //expecting: response.body = { auth, message }
+
+        //shape
+        expect(response.body).toHaveProperty('auth');
+        expect(response.body).toHaveProperty('message');
+        //accuracy
+        expect(response.body.auth).toBe(false);
+        expect(response.body.message).toBe('Missing updated field data.');
+        //status code
+        expect(response.statusCode).toBe(400);
+    });
+
+    it('updates listsNames', async()=>{
+        //attempting to update db
+        const response = await request(app)
+            .put('/api/lists/')
+            .set('x-access-token', token)
+            .send({...updateListName, listId: listId}) //need to send { field, fieldData, listId}
+        
+        // expecting: response.body = { auth: true, message: ... }
+
+        // shape
+        expect(response.body).toHaveProperty('auth');
+        expect(response.body).toHaveProperty('message');
+        // accuracy
+        expect(response.body.auth).toBe(true);
+        expect(response.body.message).toBe("List data was updated successfully.");
+        // status code
+        expect(response.statusCode).toBe(200);
+
+        //we are going to verify that the updates are correct
+        const verifyUpdates = await GetLists({ token }); //expecting res.body = {auth, message, results = [ {...}, ...]}
+        const theList = verifyUpdates.body.results[0];
+        expect(theList).toHaveProperty('list_name');
+        expect(theList).toHaveProperty('order_number');
+        expect(theList['list_name']).toBe(updateListName.fieldData);
+        expect(theList['order_number']).toBe(listData.orderNumber);
+
+    });
+
+    it('updates orderNumber', async()=>{
+        //attempting to update db
+        const response = await request(app)
+            .put('/api/lists/')
+            .set('x-access-token', token)
+            .send({...updateOrderNumber, listId: listId}); //need to send { field, fieldData, listId}
+        
+        // expecting: response.body = { auth: true, message: ... }
+
+        // shape
+        expect(response.body).toHaveProperty('auth');
+        expect(response.body).toHaveProperty('message');
+        // accuracy
+        expect(response.body.auth).toBe(true);
+        expect(response.body.message).toBe("List data was updated successfully.");
+        // status code
+        expect(response.statusCode).toBe(200);   
+
+        //we are going to verify that the updates are correct
+        const verifyUpdates = await GetLists({ token }); //expecting res.body = {auth, message, results = [ {...}, ...]}
+        const theList = verifyUpdates.body.results[0];
+        expect(theList).toHaveProperty('list_name');
+        expect(theList).toHaveProperty('order_number');
+        expect(theList['list_name']).toBe(listData.listName);
+        expect(theList['order_number']).toBe(updateOrderNumber.fieldData);
+    });
+}); //done
 
 describe( 'DELETE api/lists/', () => {
     

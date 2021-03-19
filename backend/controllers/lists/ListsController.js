@@ -74,8 +74,6 @@ router.post('/new', verifyToken, async (req, res) => {
 
 
 router.get('/me', verifyToken, async (req, res) => {
-
-    
     const sqlStatement = "SELECT list_id, list_name, order_number FROM lists WHERE user_id = ? ;";
     const queryCallback = (err, results, fields) => {
         if (err) {
@@ -98,7 +96,55 @@ router.get('/me', verifyToken, async (req, res) => {
     } catch(e) {
         return res.status(500).send({message:"Sever error.", error: e});
     }
-})
+});
+
+
+// @route   PUT api/lists/
+// @desc    update a list
+// @access  public
+/*
+
+    The middleware, verifyToken, will look at the token provided in the header. If valid, it will set req.userId = user_id (ie the id number in the db).    
+
+    req.header = {'x-access-token'}
+    req.body = { field, fieldData, listId }
+
+*/
+
+
+router.put('/', verifyToken, async (req, res) => {
+    
+    //checking that we aren't missing field data
+    if (!req.body.field || !req.body.fieldData) return res.status(400).send({
+        auth: false,
+        message: "Missing updated field data."
+    });
+    
+    const sqlStatement = "UPDATE lists SET ?? = ? WHERE user_id = ? AND list_id = ?;"; // ? for value and ?? for column name
+
+    const queryCallback = (err, results, fields) => {
+        if (err) {
+            return res.status(500).send({
+                auth: true,
+                message: "Server error.",
+                error: err
+            });
+        }
+        
+        return res.status(200).send({
+            message: 'List data was updated successfully.',
+            auth:true,
+        });
+    }
+    
+    try {
+        const pool = await poolPromise;
+        await pool.query(sqlStatement,[req.body.field, req.body.fieldData, req.userId, req.body.listId],queryCallback
+            ); //the array escapes those values before they are placed in our sql statement
+    } catch(e) {
+        return res.status(500).send({message:"Sever error.", error: e});
+    }
+});
 
 
 

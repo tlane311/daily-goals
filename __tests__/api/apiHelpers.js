@@ -59,12 +59,18 @@ export async function CreateList( { token, data } ){
     return await request(app)
         .post('/api/lists/new')
         .set('x-access-token', token)
-        .send(data)
+        .send(data);
+}
+
+export async function GetLists( {token} ){
+    return await request(app)
+        .get('/api/lists/me')
+        .set('x-access-token', token);
 }
 
 export async function DeleteList( { token, data } ){
     return await request(app)
         .delete('/api/lists/')
         .set('x-access-token', token)
-        .send(data)
+        .send(data);
 }
