@@ -131,6 +131,95 @@ describe("POST /api/lists/new", () => {
     });
 }); //done
 
+describe( 'GET /api/lists/me', () => {
+    
+    // S E T U P
+
+    //dummy list data
+    const listData = [
+        {
+            orderNumber: 1,
+            listName: 'first-list'
+        },
+        {
+            orderNumber: 2,
+            listName: 'second-list'
+        },
+        {
+            orderNumber: 3,
+            listName: 'third-list'
+        }];
+
+    //we are going to add list ids when actually create our list
+    let listIds = [];
+    
+    //dummy user data
+    const userData = {
+        username: 'Get_Lists',
+        password: 'some_password',
+        email: 'get@lists.com'
+    };
+
+    //we are going to grab an authentication token when we create out user
+    let token;
+
+
+    //create user and their list data
+    beforeAll( async () => {
+        const user = await CreateUser(userData);
+        token = user.body.token; //here is our token
+
+        // this is where we get the listIds
+        listData.map( async data => {
+            const list = await CreateList({token: token, data: data});
+            listIds.push(list.body.results.insertId);
+            return list;       
+        });
+
+        return user;
+    });
+
+    // T E A R D O W N
+
+    //delete user and their list data
+    afterAll( async() => {
+        await DeleteList({token, data: { listId: listIds[0]}});
+        await DeleteList({token, data: { listId: listIds[1]}});
+        await DeleteList({token, data: { listId: listIds[2]}});
+        return await DeleteUser(userData);
+        // The order matters here.
+        // If we try to delete the user before we delete all of the lists, the db will throw an error since lists have a reference to the user_id.
+    })
+
+
+    
+    // T E S T S
+
+    // This all that we need to test here.
+
+    it('gets all the lists', async()=>{
+        const response = await request(app)
+            .get('/api/lists/me')
+            .set('x-access-token', token)
+        
+        // expecting: response.body = { auth: true, message: ..., results: [ ... ]}
+
+        // shape
+        expect(response.body).toHaveProperty('auth');
+        expect(response.body).toHaveProperty('message');
+        expect(response.body).toHaveProperty('results');
+
+        // accuracy
+        expect(response.body.auth).toBe(true);
+        expect(response.body.message).toBe("All lists associated with given credentials.");
+        const results = response.body.results;
+        expect(Array.isArray(results)).toBe(true); //make sure results are an array
+
+        // status code
+        expect(response.statusCode).toBe(200);   
+    });
+})
+
 describe( 'DELETE api/lists/', () => {
     
     // S E T U P

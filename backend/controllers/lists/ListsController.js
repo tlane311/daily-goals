@@ -28,7 +28,6 @@ const router = express.Router();
 
 */
 
-
 router.post('/new', verifyToken, async (req, res) => {
     if (!req.body.listName || !req.body.orderNumber) return res.status(400).send({
         auth: true,
@@ -59,6 +58,61 @@ router.post('/new', verifyToken, async (req, res) => {
     }
 });
 
+
+
+
+// @route   GET api/lists/me
+// @desc    get all lists with my userId
+// @access  public
+/*
+
+    The middleware, verifyToken, will look at the token provided in the header. If valid, it will set req.userId = user_id (ie the id number in the db).    
+
+    req.header = {'x-access-token'}
+
+*/
+
+
+router.get('/me', verifyToken, async (req, res) => {
+
+    
+    const sqlStatement = "SELECT list_id, list_name, order_number FROM lists WHERE user_id = ? ;";
+    const queryCallback = (err, results, fields) => {
+        if (err) {
+            return res.status(500).send({
+                message: "Server error.",
+                error: err
+            });
+        }
+
+        return res.status(200).send({
+            auth: true,
+            message: "All lists associated with given credentials.",
+            results: results
+        });
+    }
+    
+    try {
+        const pool = await poolPromise;
+        await pool.query(sqlStatement,[req.userId], queryCallback)
+    } catch(e) {
+        return res.status(500).send({message:"Sever error.", error: e});
+    }
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // @route   DELETE api/lists/
 // @desc    delete a list
 // @access  public
@@ -70,7 +124,6 @@ router.post('/new', verifyToken, async (req, res) => {
     req.body = { listId }
 
 */
-
 
 router.delete('/', verifyToken, async (req, res) => {
     if (!req.body.listId) return res.status(400).send({
