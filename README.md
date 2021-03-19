@@ -2,11 +2,7 @@
 
 An app to help you keep track of your day-to-day tasks.
 
-## Things I need to add
+## Things I need to do
 
-* Backend
-  * SQL database
-  * ColumnView component queries db
-* Design & Polish
-* Basic Features
-  * Hide TaskGroups
+* Connect database to frontend
+* Make sure mobile view looks good
