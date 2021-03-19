@@ -3,9 +3,9 @@ import app from '../../backend/server.js';
 
 import request from 'supertest';
 
-import { CreateUser, LoginUser, DeleteUser } from './apiHelpers.js';
-import { CreateList, DeleteList, GetLists } from './apiHelpers.js';
-import { CreateGoals, DeleteGoals, GetGoals } from './apiHelpers.js';
+import { CreateUser, DeleteUser } from './apiHelpers.js';
+import { CreateList, DeleteList } from './apiHelpers.js';
+import { CreateGoals, DeleteGoals } from './apiHelpers.js';
 
 
 //routes
