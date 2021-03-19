@@ -10,7 +10,7 @@ import verifyToken from '../auth/VerifyToken.js';   // middleware for authentica
 
 
 const router = express.Router();
-// Routes in this file in order top to btm: POST /new, GET /me, PUT /update, DELETE /delete
+// Routes in this file in order top to btm: POST /new, GET /me, PUT /, DELETE /
 
 // For each of our routes, we first verify (explicitly or in middleware) that the req.body req.headers actually have data and that is in the correct shape.
 // If there is a problem with data, the db is never queried.
@@ -42,12 +42,19 @@ verifyToken -> "INSERT INTO goals(...) VALUES (...), (...), ... , (...);" -> ret
 */
 
 router.post('/new', verifyToken, async (req, res, next) => {
+    //missing data handling
+    if (!req.body.goals) return res.status(400).send({
+        auth: true,
+        message: 'Bad request'
+    })
+
     //grabbing payload from req.body    
     const goals = req.body.goals; //this should be a non-empty array
     //Each member of goals should have shape {listId, goal, orderNumber}
+    console.log(goals, !goals.length, !Array.isArray(goals))
 
     //Making sure the user sends an (1)array and (2)array with positive length
-    if (!goals.length || !Array.isArray(goals)) return res.status(400).send({
+    if (!(goals.length) || !Array.isArray(goals)) return res.status(400).send({
         auth: true,
         message: 'No goals were submitted.'
     });
@@ -77,7 +84,8 @@ router.post('/new', verifyToken, async (req, res, next) => {
     const queryCallback = (err, results,fields) => {
         if (err) {
             return res.status(500).send({
-                message: "Server error",
+                auth:true,
+                message: "Server error.",
                 error: err
             });
         }
@@ -119,19 +127,24 @@ router.post('/new', verifyToken, async (req, res, next) => {
 // verifyToken -> req.userId = user_id
 /*
     req.header['x-access-token'] = token
+    req.body={ listId }
 */
 router.get('/me', verifyToken, async (req, res) => {
-    const sqlStatement=`SELECT * FROM goals WHERE user_id = ? ;`;
+    if (!req.body.listId) return res.status(400).send({ auth: true, message: 'Bad request' });
+
+    const sqlStatement=`SELECT * FROM goals WHERE user_id = ? AND list_id = ? ;`;
     const queryCallback = (err, results,fields) => {
-        if (err) return res.status(500).send({message:'Server error', error: err})
+        if (err) return res.status(400).send({ auth: true, message:'Bad request', error: err });
         return res.send({
+            auth: true,
+            message: "These are all goals from that list.",
             results: results
         });
     }
     
     try {
         const pool = await poolPromise;
-        await pool.query(sqlStatement,[req.userId],queryCallback) //escaping values is handled by the array 
+        await pool.query(sqlStatement,[req.userId, req.body.listId],queryCallback) //escaping values is handled by the array 
     } catch(e) {
         return res.status(500).send({message:'Server error', error: e})
     }

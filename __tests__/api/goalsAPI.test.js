@@ -5,7 +5,7 @@ import request from 'supertest';
 
 import { CreateUser, LoginUser, DeleteUser } from './apiHelpers.js';
 import { CreateList, DeleteList, GetLists } from './apiHelpers.js';
-import { CreateGoal, DeleteGoal, GetGoals } from './apiHelpers.js';
+import { CreateGoals, DeleteGoals, GetGoals } from './apiHelpers.js';
 
 
 //routes
@@ -36,7 +36,7 @@ describe( 'POST /api/goals/new', () => {
         orderNumber: 1,
     }
 
-    //listId, token and goalId
+    //create variables to hold listId, token and goalId
     let listId, token, goalId;
 
     // create user & grab token
@@ -45,6 +45,7 @@ describe( 'POST /api/goals/new', () => {
         //create user
         const newUser = await CreateUser(userData); //expect response.body = { auth, message, token }
         token = newUser.body.token; //grab token
+        console.log(token)
 
         const newList = await CreateList({token, data: listData}); //expect response.body = { auth, message, results = {..., insertId, ...} }
         listId = newList.body.results.insertId; //grab listId
@@ -62,14 +63,14 @@ describe( 'POST /api/goals/new', () => {
         //Otherwise do nothing.
 
         if (goalId) {
-            const deleteGoal = await DeleteGoal({ token, data: { 'goals_ids': [goalId] } })
+            const deleteGoal = await DeleteGoals({ token, data: { 'goal_ids': [goalId] } })
             goalId = undefined;
             return deleteGoal;
         }
         return ;
     });
 
-    //delete list, user
+    //delete list, user after all tests have run
     afterAll( async () => {
         //delete list
         await DeleteList({token, data: {listId: listId}});
@@ -97,7 +98,7 @@ describe( 'POST /api/goals/new', () => {
         expect(response.body).toHaveProperty('message');
         // accuracy
         expect(response.body.auth).toBe(true);
-        expect(response.body.message).toBe("Bad request.");
+        expect(response.body.message).toBe("Bad request");
         // status code
         expect(response.statusCode).toBe(400);
     }); //done
@@ -181,6 +182,7 @@ describe( 'POST /api/goals/new', () => {
     });//done
 
     it('creates new goals', async()=>{
+        console.log({...goalData, listId});
         //attempt to create a new goal
         const response = await request(app)
             .post('/api/goals/new')
@@ -198,12 +200,132 @@ describe( 'POST /api/goals/new', () => {
         expect(response.body.results).toHaveProperty('insertId');
         // accuracy
         expect(response.body.auth).toBe(true);
-        expect(response.body.message).toBe("User account was successfully created.");
+        expect(response.body.message).toBe("Goals added.");
         // status code
         expect(response.statusCode).toBe(200);
     });//done
 }) //done
 
+    /*
+describe( 'GET /api/goals/me', () => {
+    
+    // S E T U P
+
+    //dummy user
+    const userData = {
+        username: 'Get_Goals',
+        password: 'some_password',
+        email: 'get@goals.com'
+    }
+    //dummy list
+    const listData = {
+        orderNumber: 1,
+        listName: 'get-goals-list'
+    }
+
+    //create variables to hold listId, token
+    let listId, token;
+
+    const goalsData = [
+        {
+            listId,
+            orderNumber: 1,
+            goal: 'first-get-goal'
+        },
+        {
+            listId,
+            orderNumber: 2,
+            goal: 'second-get-goal'
+        },
+        {
+            listId,
+            orderNumber: 3,
+            goal: 'third-get-goal'
+        },
+    ]
+
+    let goalsIds = [];
+
+    // create user, list and new goals before all
+    beforeAll( async () => {
+        //create user
+        const newUser = await CreateUser(userData); //expect response.body = { auth, message, token }
+        token = newUser.body.token; //grab token
+
+        const newList = await CreateList({token, data: listData}); //expect response.body = { auth, message, results = {..., insertId, ...} }
+        listId = newList.body.results.insertId; //grab listId
+
+        const newGoals = await CreateGoals({ token, data: { goals: goalsData } });
+        //expect response.body = { auth, message, results: [ {..., insertId, ... }, {..., insertId, ... }, ... ] }
+
+        goalsIds.push(newGoals.body.results[0].insertId); //grabbing the insertIds
+        goalsIds.push(newGoals.body.results[1].insertId);
+        goalsIds.push(newGoals.body.results[2].insertId);
+
+        return newUser;
+    });
+    
+    // T E A R D O W N
+    
+    //delete list, user after all tests have run
+    afterAll( async () => {
+        //delete goals
+        await DeleteGoals({ token, data: { goal_ids: goalsIds}});
+
+        //delete list
+        await DeleteList({token, data: {listId: listId}});
+
+        //delete user
+        return await DeleteUser(userData);
+
+        // Note: order matters.
+        // We must delete goals before list before the user.
+        // Otherwise, the db will throw an exception.
+    })
+
+    // T E S T S
+
+    it('gets users goals', async () => {
+        //create a user
+        const response = await request(app)
+            .get('/api/goals')
+            .send(registerData);
+        
+        // expecting: response.body = { auth: true, message: ..., token: ... }
+
+        // shape
+        expect(response.body).toHaveProperty('auth');
+        expect(response.body).toHaveProperty('message');
+        expect(response.body).toHaveProperty('results');
+
+        // accuracy
+        expect(response.body.auth).toBe(true);
+        expect(response.body.message).toBe("User account was successfully created.");
+        
+        //checking the results
+        const results = response.body.results;
+        expect(Array.isArray(results)).toBe(true); //make sure results are an array
+        for (let i = 0; i < 3; i++){
+            expect(results[i]).toHaveProperty('list_id');
+            expect(results[i]).toHaveProperty('goal');
+            expect(results[i]).toHaveProperty('order_number');
+            expect(results[i]['list_id']).toBe(goalData[i].listId);
+            expect(results[i]['goal']).toBe(goalData[i].goal);
+            expect(results[i]['order_number']).toBe(goalData[i].orderNumber);
+        }
+        // status code
+        expect(response.statusCode).toBe(200);
+    });
+});
+*/
+
+describe( 'PUT /api/goals', () =>{
+
+})
+
+describe( 'DELETE /api/goals', () =>{
+
+})
 
 
 /* test suite format

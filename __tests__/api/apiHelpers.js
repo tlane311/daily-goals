@@ -74,20 +74,21 @@ export async function DeleteList( { token, data } ){
         .send(data);
 }
 
-export async function CreateGoal( {token, data}){
+export async function CreateGoals( {token, data}){
     return await request(app)
         .post('/api/goals/new')
         .set('x-access-token', token)
         .send(data);
 }
 
-export async function GetGoals( {token} ) {
+export async function GetGoals( {token, listId} ) {
     return await request(app)
         .get('/api/goals/me')
-        .set('x-access-token', token);
+        .set('x-access-token', token)
+        .send({ listId });
 }
 
-export async function DeleteGoal({ token, data }){
+export async function DeleteGoals({ token, data }){
     return await request(app)
         .delete('/api/goals/')
         .set('x-access-token', token)
