@@ -51,10 +51,9 @@ router.post('/new', verifyToken, async (req, res, next) => {
     //grabbing payload from req.body    
     const goals = req.body.goals; //this should be a non-empty array
     //Each member of goals should have shape {listId, goal, orderNumber}
-    console.log(goals, !goals.length, !Array.isArray(goals))
 
     //Making sure the user sends an (1)array and (2)array with positive length
-    if (!(goals.length) || !Array.isArray(goals)) return res.status(400).send({
+    if (!goals.length || !Array.isArray(goals)) return res.status(400).send({
         auth: true,
         message: 'No goals were submitted.'
     });

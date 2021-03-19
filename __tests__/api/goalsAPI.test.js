@@ -45,7 +45,6 @@ describe( 'POST /api/goals/new', () => {
         //create user
         const newUser = await CreateUser(userData); //expect response.body = { auth, message, token }
         token = newUser.body.token; //grab token
-        console.log(token)
 
         const newList = await CreateList({token, data: listData}); //expect response.body = { auth, message, results = {..., insertId, ...} }
         listId = newList.body.results.insertId; //grab listId
@@ -182,7 +181,6 @@ describe( 'POST /api/goals/new', () => {
     });//done
 
     it('creates new goals', async()=>{
-        console.log({...goalData, listId});
         //attempt to create a new goal
         const response = await request(app)
             .post('/api/goals/new')
@@ -206,7 +204,7 @@ describe( 'POST /api/goals/new', () => {
     });//done
 }) //done
 
-    /*
+
 describe( 'GET /api/goals/me', () => {
     
     // S E T U P
@@ -226,23 +224,7 @@ describe( 'GET /api/goals/me', () => {
     //create variables to hold listId, token
     let listId, token;
 
-    const goalsData = [
-        {
-            listId,
-            orderNumber: 1,
-            goal: 'first-get-goal'
-        },
-        {
-            listId,
-            orderNumber: 2,
-            goal: 'second-get-goal'
-        },
-        {
-            listId,
-            orderNumber: 3,
-            goal: 'third-get-goal'
-        },
-    ]
+    let goalsData
 
     let goalsIds = [];
 
@@ -255,12 +237,29 @@ describe( 'GET /api/goals/me', () => {
         const newList = await CreateList({token, data: listData}); //expect response.body = { auth, message, results = {..., insertId, ...} }
         listId = newList.body.results.insertId; //grab listId
 
+        goalsData = [
+            {
+                listId,
+                orderNumber: 1,
+                goal: 'first-get-goal'
+            },
+            {
+                listId,
+                orderNumber: 2,
+                goal: 'second-get-goal'
+            },
+            {
+                listId,
+                orderNumber: 3,
+                goal: 'third-get-goal'
+            },
+        ]
         const newGoals = await CreateGoals({ token, data: { goals: goalsData } });
         //expect response.body = { auth, message, results: [ {..., insertId, ... }, {..., insertId, ... }, ... ] }
 
-        goalsIds.push(newGoals.body.results[0].insertId); //grabbing the insertIds
-        goalsIds.push(newGoals.body.results[1].insertId);
-        goalsIds.push(newGoals.body.results[2].insertId);
+        goalsIds.push(newGoals.body.results.insertId); //grabbing the insertIds
+        goalsIds.push(newGoals.body.results.insertId+10);
+        goalsIds.push(newGoals.body.results.insertId+20);
 
         return newUser;
     });
@@ -285,11 +284,58 @@ describe( 'GET /api/goals/me', () => {
 
     // T E S T S
 
-    it('gets users goals', async () => {
-        //create a user
+    //no listId provided
+
+
+    //bad listId provided
+
+    it('fails when listId is not provided', async () => {
+        //attempting to get a user/list goals
         const response = await request(app)
-            .get('/api/goals')
-            .send(registerData);
+            .get('/api/goals/me')
+            .set('x-access-token',token)
+            .send({listId: undefined});
+
+        // expecting response.body = {auth : true, message: 'Bad request'}
+
+        // shape
+        expect(response.body).toHaveProperty('auth');
+        expect(response.body).toHaveProperty('message');
+        // accuracy
+        expect(response.body.auth).toBe(true);
+        expect(response.body.message).toBe('Bad request');
+        // status
+        expect(response.status).toBe(400);
+    });
+
+    it('returns nothing when given a bad listId', async () => {
+        //attempting to get a user/list goals
+
+        const response = await request(app)
+            .get('/api/goals/me')
+            .set('x-access-token',token)
+            .send({listId: listId-10});
+
+        // expecting response.body = {auth : true, message: 'Bad request'}
+
+        // shape
+        expect(response.body).toHaveProperty('auth');
+        expect(response.body).toHaveProperty('message');
+        expect(response.body).toHaveProperty('results');
+        // accuracy
+        expect(response.body.auth).toBe(true);
+        expect(response.body.message).toBe('These are all goals from that list.');
+        expect(response.body.results.length).toBe(0);
+        // status
+        expect(response.status).toBe(200);
+    });
+
+    it('gets users goals', async () => {
+        //attempting to get a user/list goals
+        const response = await request(app)
+            .get('/api/goals/me')
+            .set('x-access-token', token)
+            .send({ listId });
         
         // expecting: response.body = { auth: true, message: ..., token: ... }
 
@@ -300,7 +346,7 @@ describe( 'GET /api/goals/me', () => {
 
         // accuracy
         expect(response.body.auth).toBe(true);
-        expect(response.body.message).toBe("User account was successfully created.");
+        expect(response.body.message).toBe("These are all goals from that list.");
         
         //checking the results
         const results = response.body.results;
@@ -309,15 +355,15 @@ describe( 'GET /api/goals/me', () => {
             expect(results[i]).toHaveProperty('list_id');
             expect(results[i]).toHaveProperty('goal');
             expect(results[i]).toHaveProperty('order_number');
-            expect(results[i]['list_id']).toBe(goalData[i].listId);
-            expect(results[i]['goal']).toBe(goalData[i].goal);
-            expect(results[i]['order_number']).toBe(goalData[i].orderNumber);
+            expect(results[i]['list_id']).toBe(goalsData[i].listId);
+            expect(results[i]['goal']).toBe(goalsData[i].goal);
+            expect(results[i]['order_number']).toBe(goalsData[i].orderNumber);
         }
         // status code
         expect(response.statusCode).toBe(200);
     });
-});
-*/
+}); //done
+
 
 describe( 'PUT /api/goals', () =>{
 
