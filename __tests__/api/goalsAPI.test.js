@@ -370,8 +370,189 @@ describe( 'PUT /api/goals', () =>{
 })
 
 describe( 'DELETE /api/goals', () =>{
+    // S E T U P
 
-})
+    // dummy user
+    const userData = {
+        username: 'Delete_Goals',
+        password: 'some_password',
+        email: 'delete@goals.com'
+    }
+    // dummy list
+    const listData = {
+        listName: 'delete-goals-list',
+        orderNumber: 1
+    }
+    
+    // dummy goals
+    // We will need the listId to define this. We will assign goalsData during beforeEach
+    let goalsData;
+    
+    // We will need to access the goal ids later during tests. We will assign these in beforeAll
+    let goalIds = [];
+
+    // We will need to access the listId and token during tests. We will define these in beforeAll
+    let listId, token;
+
+    // create user and list before all tests
+    beforeAll( async () => {
+        //create user
+        const newUser = await CreateUser(userData); //expect response.body = { auth, message, token }
+        token = newUser.body.token; //grab token
+
+        const newList = await CreateList({token, data: listData}); //expect response.body = { auth, message, results = {..., insertId, ...} }
+        listId = newList.body.results.insertId; //grab listId
+
+        return newUser;
+    });
+
+    // create goals before each test
+    beforeEach( async () => {
+        //assigning the goalsData
+        //note, we don't want this to be reassigned each time, so we condition
+        if (!goalsData){
+            goalsData = [
+                {
+                    listId,
+                    orderNumber: 1,
+                    goal: 'first-get-goal'
+                },
+                {
+                    listId,
+                    orderNumber: 2,
+                    goal: 'second-get-goal'
+                },
+                {
+                    listId,
+                    orderNumber: 3,
+                    goal: 'third-get-goal'
+                },
+            ]
+        }
+
+        const newGoals = await CreateGoals({ token, data: { goals: goalsData } });
+        //expect response.body = { auth, message, results: [ {..., insertId, ... }, {..., insertId, ... }, ... ] }
+        goalIds.push(newGoals.body.results.insertId);   //grabbing the insertIds
+        goalIds.push(newGoals.body.results.insertId+10); //note: our db increments ids by 10
+        goalIds.push(newGoals.body.results.insertId+20);
+    });
+
+
+    // T E A R D O W N
+
+    // delete goals after each test (if they haven't already been deleted)
+    afterEach( async () => {
+        //delete goals
+        await DeleteGoals({ token, data: { goal_ids: goalIds}});
+    });
+
+
+    // delete list and then user after all tests
+    afterAll( async () => {
+        //delete list
+        await DeleteList({token, data: {listId: listId}});
+
+        //delete user
+        return await DeleteUser(userData);
+
+        // Note: order matters.
+        // We must delete the list before the user.
+        // Otherwise, the db will throw an exception.
+    });
+    
+    // T E S T S
+
+    it( "fails when body doesn't have correct shape", async () => {
+        //attempting to deleteGoals
+        const response = await DeleteGoals( {
+            token,
+            data: {'goal_ids': undefined}
+        });
+
+        // expecting: response.body = { auth: true, message: ..., token: ... }
+        // shape
+        expect(response.body).toHaveProperty('auth');
+        expect(response.body).toHaveProperty('message');
+        // accuracy
+        expect(response.body.auth).toBe(true);
+        expect(response.body.message).toBe("Bad request");
+        // status code
+        expect(response.statusCode).toBe(400);
+    });
+
+    it( 'fails when goal_ids has empty array', async () => {
+        //attempting to deleteGoals
+        const response = await DeleteGoals( {
+            token,
+            data: {'goal_ids': []}
+        });
+
+        // expecting: response.body = { auth: true, message: ..., token: ... }
+        // shape
+        expect(response.body).toHaveProperty('auth');
+        expect(response.body).toHaveProperty('message');
+        // accuracy
+        expect(response.body.auth).toBe(true);
+        expect(response.body.message).toBe("Bad request");
+        // status code
+        expect(response.statusCode).toBe(400);
+    });
+
+    it( 'fails when goal_ids is not an array', async () => {
+        //attempting to deleteGoals
+        const response = await DeleteGoals( {
+            token,
+            data: {'goal_ids': 'value'}
+        });
+
+        // expecting: response.body = { auth: true, message: ..., token: ... }
+        // shape
+        expect(response.body).toHaveProperty('auth');
+        expect(response.body).toHaveProperty('message');
+        // accuracy
+        expect(response.body.auth).toBe(true);
+        expect(response.body.message).toBe("Bad request");
+        // status code
+        expect(response.statusCode).toBe(400);
+    });
+
+    it( 'fails when goals_ids are bad', async () => {
+        //attempting to deleteGoals
+        const response = await DeleteGoals( {
+            token,
+            data: {'goal_ids': goalIds.map( id => 2*id)}
+        });
+
+        // expecting: response.body = { auth: true, message: ..., token: ... }
+        // shape
+        expect(response.body).toHaveProperty('auth');
+        expect(response.body).toHaveProperty('message');
+        // accuracy
+        expect(response.body.auth).toBe(true);
+        expect(response.body.message).toBe("Bad request.");
+        // status code
+        expect(response.statusCode).toBe(400);
+    });
+
+    it('deletes goals', async () => {  
+        //attempting to deleteGoals      
+        const response = await DeleteGoals( {
+            token,
+            data: {'goal_ids': goalIds}
+        });
+        
+        // expecting: response.body = { auth: true, message: ..., token: ... }
+        // shape
+        expect(response.body).toHaveProperty('auth');
+        expect(response.body).toHaveProperty('message');
+        // accuracy
+        expect(response.body.auth).toBe(true);
+        expect(response.body.message).toBe("3 goals were deleted.");
+        // status code
+        expect(response.statusCode).toBe(200);
+
+    });
+}); //done
 
 
 /* test suite format

@@ -27,7 +27,10 @@ const router = express.Router();
 // @access  public
 /*
 
-    req.header contains token
+    The middleware, verifyToken, will look at the token provided in the header. If valid, it will set req.userId = user_id (ie the id number in the db).    
+
+
+    req.header['x-access-token'] = token
     req.body = {
         goals: req.body.goal,
     }
@@ -37,8 +40,6 @@ const router = express.Router();
         goal,
         order_number,
     }
-
-verifyToken -> "INSERT INTO goals(...) VALUES (...), (...), ... , (...);" -> return status
 */
 
 router.post('/new', verifyToken, async (req, res, next) => {
@@ -123,12 +124,14 @@ router.post('/new', verifyToken, async (req, res, next) => {
 // @route   GET api/goals/me
 // @desc    get all goals I have created
 // @access  public
-// verifyToken -> req.userId = user_id
 /*
+    The middleware, verifyToken, will look at the token provided in the header. If valid, it will set req.userId = user_id (ie the id number in the db).    
+
     req.header['x-access-token'] = token
     req.body={ listId }
 */
 router.get('/me', verifyToken, async (req, res) => {
+    //making sure the body has the correct shape
     if (!req.body.listId) return res.status(400).send({ auth: true, message: 'Bad request' });
 
     const sqlStatement=`SELECT * FROM goals WHERE user_id = ? AND list_id = ? ;`;
@@ -154,8 +157,10 @@ router.get('/me', verifyToken, async (req, res) => {
 // @route   PUT api/goals/update
 // @desc    update goals
 // @access  public
-// verifyToken -> req.userId = user_id
 /*
+
+    The middleware, verifyToken, will look at the token provided in the header. If valid, it will set req.userId = user_id (ie the id number in the db).    
+
     req.header['x-access-token'] = token
     req.body = {
         goalId: int,
@@ -230,8 +235,9 @@ router.put('/update', verifyToken, async (req, res) => {
 // @route   DELETE api/goals/delete
 // @desc    delete goals
 // @access  public
-// verifyToken -> req.userId = user_id
 /*
+    The middleware, verifyToken, will look at the token provided in the header. If valid, it will set req.userId = user_id (ie the id number in the db).    
+
     req.header['x-access-token'] = token
     req.body = {
         goal_ids: [
@@ -241,23 +247,30 @@ router.put('/update', verifyToken, async (req, res) => {
 
 */
 
-
 router.delete('/', verifyToken, async (req,res) => {
+
     const goals = req.body.goal_ids;
+
+    if (!goals) return res.status(400).send({message: 'Bad request', auth: true})
+    
     //making sure the user sends an (1)array and (2)array with positive length
     if (!goals.length || !Array.isArray(goals)) return res.status(400).send({
-        message: 'No goals were submitted for deletion.'
+        auth: true,
+        message: 'Bad request'
     })
     
     const queryCallback = (err, results,fields) => {
         if (err) return res.status(500).send({message:'Server error', error: err});
         //if the submitted rows weren't found
         if (!results.affectedRows) return res.status(400).send({
-            message: 'No goals were found with the info given.'
+            auth:true,
+            message: 'Bad request.'
         });
         //if the rows are found, then they are deleted
         return res.status(200).send({
-            message: `${results.changedRows} goals were deleted.`
+            auth: true,
+            message: `${results.affectedRows} goals were deleted.`,
+            results: results
         });
     }
     
