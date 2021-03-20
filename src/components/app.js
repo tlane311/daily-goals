@@ -33,9 +33,6 @@ export default function App(){
         "useQueryString":true
         }
     });
-    
-    console.log('data',data);
-    console.log('response', response);
 
 
 

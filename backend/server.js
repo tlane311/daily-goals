@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: false })); //restricts urlencoded so that
 
 app.use(express.static('../build'));
 
-const port = process.env.PORT || 0; 
+const port = process.env.SERVERPORT || 0; 
 
 //if the server receives a get request at '/', it will send back a string
 //if we were going to make a real website, we would instead serve something else

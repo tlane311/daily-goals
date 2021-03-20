@@ -7,9 +7,9 @@ dotenv.config()
 //this means we don't have to directly connect to the database as many times
 
 const poolConfig = {
-    host: process.env.HOST,
-    user: process.env.USER,
-    password: process.env.PASSWORD,
+    host: process.env.DBHOST,
+    user: process.env.DBUSER,
+    password: process.env.DBPASSWORD,
     database: process.env.DATABASE
 }
 
