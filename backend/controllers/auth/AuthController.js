@@ -99,11 +99,6 @@ router.post('/register', async (req,res,next) => {
 // @access  public
 /*
     req.header = {'x-access-token': ...}
-    req.body = {
-        username: req.body.username,
-        password: req.body.password,
-        email: req.body.email
-    }
 
     The middleware, verifyToken, will look at the token provided in the header. If valid, it will set req.userId = user_id (ie the id number in the db).
 */
