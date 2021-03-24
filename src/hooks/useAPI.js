@@ -11,7 +11,7 @@ returns
     result, response, error, isLoading, fetch
 */
 
-export default function useRestAPI(config, initialFetch=true){
+export default function useAPI(config, initialFetch=true){
     const [state, updateState] = useState({
         response: undefined,
         error: undefined,

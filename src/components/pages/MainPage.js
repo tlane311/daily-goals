@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 
 
 import Sticky from '../sticky/Sticky.js';
@@ -6,16 +6,23 @@ import {homeworkColumn, choresColumn} from '../dummy-data.js';
 import StickiesBar from '../stickies-bar/StickiesBar.js';
 import DetailsBar from '../details-bar/DetailsBar.js';
 
+import useApi from '../../hooks/useAPI.js';
 
-export default function Main({loginToken}){
+import axios from 'axios';
+
+
+export default function MainPage({lists, selectedList, goals}){
     /*
     Our data will be stored in a db. Ideally, we would like to query the database as few times as possible. If we query once, we will pull an array of columns. When we update these columns, react doesn't rerender; react fails to rerender because of the deeper shape of the array of columns. We introduce an artificial forceUpdate function to force rerenders.
     */
     const [, updateState] = React.useState();
     const forceUpdate = React.useCallback(() => updateState({}), []);
 
-    const [token, setToken] = useState(loginToken);
-    console.log(token)
+
+    
+
+    
+
 
 
     //the columns will come from a db query
@@ -84,7 +91,7 @@ export default function Main({loginToken}){
 
     return(
         <>
-            <StickiesBar listOfStickies={["Today", "Important", "Goals", "Chores"]} visibility={1}/>
+            <StickiesBar listOfStickies={lists.map(element => element['list_name'])} visibility={1}/>
                             
             {stickies.filter( (ele, index) => index===0).map((column,index) => 
                     <Sticky
@@ -99,7 +106,7 @@ export default function Main({loginToken}){
             {/* <input type="text" value={newStickyName} onChange={ e => {
                 setNewStickyName(e.target.value);
             }}/>
-            
+            ["Today", "Important", "Goals", "Chores"]
             <button onClick={handleCreateNewSticky}> Create New Column </button>
             */}
             <DetailsBar goal={'test'} visibility={1}/>
