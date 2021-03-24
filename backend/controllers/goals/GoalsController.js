@@ -124,11 +124,12 @@ router.post('/new', verifyToken, async (req, res, next) => {
     The middleware, verifyToken, will look at the token provided in the header. If valid, it will set req.userId = user_id (ie the id number in the db).    
 
     req.header['x-access-token'] = token
-    req.body={ listId }
+    req.query.listId={ listId }
 */
 router.get('/me', verifyToken, async (req, res) => {
+    console.log(req.query.listId)
     //making sure the body has the correct shape
-    if (!req.body.listId) return res.status(400).send({ auth: true, message: 'Bad request' });
+    if (!req.query.listId) return res.status(400).send({ auth: true, message: 'Bad request' });
 
     const sqlStatement=`SELECT * FROM goals WHERE user_id = ? AND list_id = ? ;`;
     const queryCallback = (err, results,fields) => {
@@ -142,7 +143,7 @@ router.get('/me', verifyToken, async (req, res) => {
     
     try {
         const pool = await poolPromise;
-        await pool.query(sqlStatement,[req.userId, req.body.listId],queryCallback) //escaping values is handled by the array 
+        await pool.query(sqlStatement,[req.userId, req.query.listId],queryCallback) //escaping values is handled by the array 
     } catch(e) {
         return res.status(500).send({message:'Server error', error: e})
     }
