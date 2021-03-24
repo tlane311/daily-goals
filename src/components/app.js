@@ -1,40 +1,39 @@
 import React, {useState} from 'react';
 
-import Register from './register/Register.js';
-
 import MainPage from './pages/MainPage.js';
 import LoginPage from './pages/LoginPage.js';
 import RegisterPage from './pages/RegisterPage.js';
 
-import {BrowserRouter as Router, Switch, Route, Link} from 'react-router-dom';
+import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 
-import axios from 'axios';
-
-
-import useApi from '../hooks/useAPI.js';
-
-//Column-View displays only a few Columns at a time. Columns hold Tasks.
-//Individual Column data is help in a database and passed to the child components here.
-//Column-View will allow for alternative views: 1.Carousel, 2.Drop Down
-//In Column-View, we will be able to add new tasks and create new Columns
 
 export default function App(){
+    /*
+        When one logs in, the token will be stored in this component
+        Then, main page can use the token to get user data
+    */
+   // Note, use local storage for token
+    const [token, setToken] = useState(null);
+
+    const updateToken = (token) => {
+        return setToken(token);
+    }
 
     return(
         <>
             <Router>
+                <div>{token ? 'token stored' : 'no token'}</div>
                 <Switch>
                     <Route exact path="/">
-                        <MainPage/>
+                        <MainPage loginToken={token}/>
                     </Route>
                     <Route exact path="/login">
-                        <LoginPage/>
+                        <LoginPage updateToken={updateToken}/>
                     </Route>
                     <Route exact path="/register">
-                        <RegisterPage/>
+                        <RegisterPage updateToken={updateToken}/>
                     </Route>
                 </Switch>
-
             </Router>
 
 

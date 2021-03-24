@@ -7,12 +7,15 @@ import StickiesBar from '../stickies-bar/StickiesBar.js';
 import DetailsBar from '../details-bar/DetailsBar.js';
 
 
-export default function Main(){
+export default function Main({loginToken}){
     /*
     Our data will be stored in a db. Ideally, we would like to query the database as few times as possible. If we query once, we will pull an array of columns. When we update these columns, react doesn't rerender; react fails to rerender because of the deeper shape of the array of columns. We introduce an artificial forceUpdate function to force rerenders.
     */
     const [, updateState] = React.useState();
     const forceUpdate = React.useCallback(() => updateState({}), []);
+
+    const [token, setToken] = useState(loginToken);
+    console.log(token)
 
 
     //the columns will come from a db query
