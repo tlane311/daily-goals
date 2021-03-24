@@ -146,7 +146,12 @@ export default function App(){
                         <DetailsBar goal={'test'} visibility={1}/>
                     </Route>
                     <Route exact path="/login">
-                        <Login loginRoute={"/api/login"} loginIdentifier="username" next={req => {}}/>
+                        <Login 
+                            loginRoute={"/api/login"} 
+                            loginIdentifier="username" 
+                            next={req => {}}
+                            handleError={err => {}}
+                            />
                     </Route>
                 </Switch>
 
