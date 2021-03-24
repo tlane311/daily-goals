@@ -23,15 +23,6 @@ export const poolPromise = new Promise( (resolve, reject) => {
     try{
         const pool = mysql.createPool(poolConfig);
         resolve(pool);
-        
-        /* this was bad code from before
-        pool.getConnection( (err, connection) => {
-            if (err) reject({message: 'database error', error: err});   // failure throws err
-            resolve(connection);    // resolve returns connection object which can be then queried
-                                    // e.g.
-                                    // const pool = await poolPromise
-                                    // pool.query('SELECT * FROM table1', (err, results) => {//do stuff})
-        })*/
     } catch (e){
         console.log(e.message, e.error)
     }
