@@ -127,7 +127,6 @@ router.post('/new', verifyToken, async (req, res, next) => {
     req.query.listId={ listId }
 */
 router.get('/me', verifyToken, async (req, res) => {
-    console.log(req.query.listId)
     //making sure the body has the correct shape
     if (!req.query.listId) return res.status(400).send({ auth: true, message: 'Bad request' });
 
