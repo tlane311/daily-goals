@@ -4,6 +4,11 @@ import Sticky from './sticky/Sticky.js';
 import {homeworkColumn, choresColumn} from './dummy-data.js';
 import StickiesBar from './stickies-bar/StickiesBar.js';
 import DetailsBar from './details-bar/DetailsBar.js';
+import Login from './login/Login.js';
+
+import {BrowserRouter as Router, Switch, Route, Link} from 'react-router-dom';
+
+import axios from 'axios';
 
 
 import useApi from '../hooks/useAPI.js';
@@ -19,20 +24,26 @@ export default function App(){
     
     An alternative to this is to have ColumnView pass an id number to each child Column. Then, each Column will query the database for the column data. The downside is we query the database multiple times.
     */
-    
-    
 
-//
-    const {data, response, error, isLoading, fetch} = useApi({
-        "method":"GET",
-        "url":"localhost:4000/api/me",
+    
+    
+    const config = {
+        "method":"post",
+        "url":"api/login",
         "headers":{
-        "content-type":"application/octet-stream",
-        "x-rapidapi-host":"currency-exchange.p.rapidapi.com",
-        "x-rapidapi-key":"08670f6036msh087f2b8073d8296p1956a9jsn2560793564ed",
-        "useQueryString":true
+        "Content-Type":"application/json",
+        "useQueryString":true,
+        'rejectUnauthorized': false,
+        },
+        data: {
+            'username': 'tlane',
+            'password': 'some_password'
         }
-    });
+    }
+
+    const {data, response, error, isLoading, fetch} = useApi(config);
+    console.log('data', data, 'response', response);
+    
 
 
 
@@ -111,25 +122,38 @@ export default function App(){
 
     return(
         <>
-            <StickiesBar listOfStickies={["Today", "Important", "Goals", "Chores"]} visibility={1}/>
-            
-            {stickies.filter( (ele, index) => index===0).map((column,index) => 
-                    <Sticky
-                        name={column.name} 
-                        id={index}
-                        entries={column.entries} 
-                        updateEntries={updateEntries}
-                        updateTask={updateTask}
-                        deleteTask={deleteTask}
-                        deleteColumn={deleteSticky}
-                    />)}
-            {/* <input type="text" value={newStickyName} onChange={ e => {
-                setNewStickyName(e.target.value);
-            }}/>
-            
-            <button onClick={handleCreateNewSticky}> Create New Column </button>
-            */}
-            <DetailsBar goal={'test'} visibility={1}/>
+            <Router>
+                <Switch>
+                    <Route exact path="/">
+                        <StickiesBar listOfStickies={["Today", "Important", "Goals", "Chores"]} visibility={1}/>
+                        
+                        {stickies.filter( (ele, index) => index===0).map((column,index) => 
+                                <Sticky
+                                    name={column.name} 
+                                    id={index}
+                                    entries={column.entries} 
+                                    updateEntries={updateEntries}
+                                    updateTask={updateTask}
+                                    deleteTask={deleteTask}
+                                    deleteColumn={deleteSticky}
+                                />)}
+                        {/* <input type="text" value={newStickyName} onChange={ e => {
+                            setNewStickyName(e.target.value);
+                        }}/>
+                        
+                        <button onClick={handleCreateNewSticky}> Create New Column </button>
+                        */}
+                        <DetailsBar goal={'test'} visibility={1}/>
+                    </Route>
+                    <Route exact path="/login">
+                        <Login loginRoute={"/api/login"} loginIdentifier="username" next={req => {}}/>
+                    </Route>
+                </Switch>
+
+            </Router>
+
+
+
         </>
 
     )

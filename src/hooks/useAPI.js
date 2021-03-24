@@ -12,7 +12,6 @@ returns
 */
 
 export default function useRestAPI(config, initialFetch=true){
-    console.log('useApi ran')
     const [state, updateState] = useState({
         response: undefined,
         error: undefined,
@@ -58,3 +57,37 @@ export default function useRestAPI(config, initialFetch=true){
     const data = response ? response.data : undefined;
     return { data, response, error, isLoading, fetch };
 }
+
+/*
+
+    const config = {
+        "method":"post",
+        "url":"api/login",
+        "headers":{
+        "Content-Type":"application/json",
+        "useQueryString":true,
+        'rejectUnauthorized': false,
+        },
+        data: {
+            'username': 'tlane',
+            'password': 'some_password'
+        }
+    }
+    
+
+
+
+    const getData = async () => {
+        try{
+            return await axios(config)
+            .then( (res) => {
+                console.log('response',res);
+            })
+        } catch (e) {
+            console.log('error', e)
+        }
+    }
+
+    getData();
+
+*/

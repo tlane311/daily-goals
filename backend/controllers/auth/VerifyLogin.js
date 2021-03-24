@@ -5,7 +5,6 @@ dotenv.config();
 
 
 export default async function verifyLogin(req,res,next){
-    
     //check to make sure we aren't missing data in the body
     if (!req.body.password || !req.body.username){
         return res.status(400).send({
@@ -13,7 +12,6 @@ export default async function verifyLogin(req,res,next){
             message: 'Missing login data.'
         })
     }
-    
     try{ 
         const pool = await poolPromise;
         
