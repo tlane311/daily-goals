@@ -60,7 +60,8 @@ export default function App(){
                 <Switch>
                     <Route exact path="/">
                         {dataRetrieved 
-                            ? <MainPage 
+                            ? <MainPage
+                                    token={token} 
                                     lists={lists}
                                     selectedList={selectedList}
                                     goals={goals}

@@ -4,7 +4,7 @@ import React, {useState} from 'react';
 import Sticky from '../sticky/Sticky.js';
 import StickiesBar from '../stickies-bar/StickiesBar.js';
 import DetailsBar from '../details-bar/DetailsBar.js';
-import axios from 'axios';
+
 
 
 
@@ -19,7 +19,7 @@ import axios from 'axios';
 */
 
 
-export default function MainPage({lists, selectedList, goals, updateApp}){
+export default function MainPage({token, lists, selectedList, goals, updateApp}){
     
 
     /*
@@ -46,29 +46,21 @@ export default function MainPage({lists, selectedList, goals, updateApp}){
     : [];
 
     const [currentGoals, setCurrentGoals] = useState(goalsForCurrentSticky);
-
-    const updateEntries = () => {};
-    const updateTask = () => {};
-    const deleteTask = () => {};
-    const deleteSticky = () => {};
     
     return(
         <>
             <StickiesBar
+                token={token}
                 lists={lists}
                 selectedList={selectedList}
                 visibility={1}
-                createNewList={() => {}}    
+                updateApp={updateApp} 
             />
                        
             <Sticky
+                token={token}
                 theList={currentSticky}
                 theGoals={currentGoals}
-
-                updateEntries={updateEntries}
-                updateTask={updateTask}
-                deleteTask={deleteTask}
-                deleteColumn={deleteSticky}
             />
              {/*
              <input type="text" value={newStickyName} onChange={ e => {
