@@ -44,7 +44,7 @@ const goalManagement = {
             headers: {
                 'x-access-token': token,
             },
-            data: [goalId]
+            data: {'goal_ids': [goalId]}
         }
         return axios(config);
     },
