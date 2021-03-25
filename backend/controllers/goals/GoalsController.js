@@ -28,7 +28,7 @@ const router = express.Router();
 
     req.header['x-access-token'] = token
     req.body = {
-        goals: req.body.goal,
+        goals: [goal0, goal1, ... , goaln]
     }
 
     each goal: {
