@@ -1,10 +1,15 @@
 import '../../component-styles/task.css';
 import {useState} from "react"
+import goalManagement from '../../services/goalManagement.js';
 
-//Task components are stateless. Data about completion and name are passed from the column component.
+export default function Task({ token, goal, updateApp }){
+    const [completion, updateCompletion] = useState(goal.status);
 
-export default function Task({name, completed, updateTask, columnID, taskID, deleteTask}){
-    const [completion, updateCompletion] = useState(completed);
+    const handleGoalDeletion = e => {
+        goalManagement.delete(token, goal['goal_id']);
+        updateApp();
+    }
+
     return (
         <>
             <li className="task">
@@ -19,12 +24,12 @@ export default function Task({name, completed, updateTask, columnID, taskID, del
                     <span 
                         className={(completion ? "strikethrough" : "")+" goal-text"}
                         onClick={() => {
-                        updateTask(columnID, taskID, !completed);
-                        updateCompletion(!completion)
+                            
+                            updateCompletion(!completion)
                     }}>
-                        {name}
+                        {goal.goal}
                     </span>
-                    {completion ? <button onClick={()=>deleteTask(columnID,taskID)}> x </button> : <></>}
+                    {completion ? <button onClick={handleGoalDeletion}> x </button> : <></>}
 
 
 

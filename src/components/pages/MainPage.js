@@ -54,13 +54,14 @@ export default function MainPage({token, lists, selectedList, goals, updateApp})
                 lists={lists}
                 selectedList={selectedList}
                 visibility={1}
-                updateApp={updateApp} 
+                updateApp={updateApp}
             />
                        
             <Sticky
                 token={token}
                 theList={currentSticky}
                 theGoals={currentGoals}
+                updateApp={updateApp}
             />
              {/*
              <input type="text" value={newStickyName} onChange={ e => {

@@ -20,12 +20,9 @@ export default function Sticky({theList, theGoals, token, updateApp}){
                 {theGoals.map(
                     (goal,index) => 
                         <Task 
-                            name={goal.goal} 
-                            columnID={goal['list_id']}
-                            taskID={goal['goal_id']}
-                            completed={goal.status} 
-                            updateTask={()=>{}} 
-                            deleteTask={()=>{}}
+                            token={token}
+                            goal={goal}
+                            updateApp={updateApp}
                         />)}
             </ul>
             <span className="new-task">
