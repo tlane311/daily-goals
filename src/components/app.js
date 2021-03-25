@@ -36,7 +36,8 @@ export default function App(){
         grabUserData({
             token, 
             setUsername, 
-            setEmail, 
+            setEmail,
+            setSelectedList, 
             setLists,
             setGoals
         });
@@ -84,7 +85,7 @@ export default function App(){
     Note, listData.length === goalsData.length and the order is the same.
 */
 
-async function grabUserData({token, setUsername, setEmail, setLists, setGoals}){
+async function grabUserData({token, setUsername, setEmail, setSelectedList, setLists, setGoals}){
     let userData;
     let listData;
     let goalsData=[];
@@ -109,7 +110,8 @@ async function grabUserData({token, setUsername, setEmail, setLists, setGoals}){
             return userData = res.data.results;
         });
     setUsername(userData.username);   
-    setEmail(userData.email);   
+    setEmail(userData.email);
+    setSelectedList( userData['selected_list'] ); 
     await axios(getListsConfig)
         .then( res => {
             return listData = res.data.results;
@@ -136,5 +138,4 @@ async function grabUserData({token, setUsername, setEmail, setLists, setGoals}){
     }
 
     setGoals(goalsData);
-    console.log('the data', userData, listData, goalsData);
 }
