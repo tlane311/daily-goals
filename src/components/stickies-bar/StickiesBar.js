@@ -1,8 +1,15 @@
 import '../../component-styles/sticky-nav.css'
 import {useState} from 'react';
 
-export default function StickiesBar({lists, selectedList, visibility, createNewList }) {
+import listManagement from '../../services/listManagement.js';
+
+export default function StickiesBar({ token, lists, selectedList, visibility, updateApp }) {
     const [newList, setNewList] = useState("");
+
+    const handleNewListCreation = (e) => {
+        listManagement.create(token, newList, lists.length+1);
+        updateApp();
+    }
 
     return(
         <nav id="sticky-nav">
@@ -12,7 +19,7 @@ export default function StickiesBar({lists, selectedList, visibility, createNewL
                 })}
 
                     <span className="new-list">
-                        <button onClick={() => {}}> + </button>
+                        <button onClick={handleNewListCreation}> + </button>
                         <input type="text" placeholder={newList} onChange={ e => { return setNewList(e.target.value); }}/>
                     </span>
 
