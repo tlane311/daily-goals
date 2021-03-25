@@ -105,7 +105,7 @@ router.post('/register', async (req,res,next) => {
 router.get('/me', verifyToken, async (req, res, next) => {
      
     //sqlStatement for finding user info with user_id
-    const sqlStatement = `SELECT username, email FROM users WHERE user_id = ?`;
+    const sqlStatement = `SELECT username, email, selected_list FROM users WHERE user_id = ?`;
     
     //this is called after executing sqlStatement
     const queryCallback = (err, results, fields) => {
