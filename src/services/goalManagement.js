@@ -13,7 +13,7 @@ const goalManagement = {
             headers: {
                 'x-access-token': token,
             },
-            data: [form]
+            data: { goals: [{listId, goal, orderNumber}] }
         }
         return axios(config);
     },
