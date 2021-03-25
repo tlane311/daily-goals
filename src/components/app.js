@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 
 import MainPage from './pages/MainPage.js';
 import LoginPage from './pages/LoginPage.js';
@@ -25,37 +25,42 @@ export default function App(){
         setToken(token);
     }
     const [dataRetrieved, setDataRetrieved] = useState(false);
+    //might have to force reload once data is retrieved
+
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [lists, setLists] = useState([]); // An array of objects each of which represents a list. Shape: {listId, listName, orderNumber}
     const [selectedList, setSelectedList] = useState(0); // This should be the list id number
     const [goals, setGoals] = useState([]); // An array of object each of which represents a goal. Shape: {goalId, listId, goal, orderNumber, deadline, status, note, color}
 
-    // Whenever the token updates, we want to do a get request to grab user data
-    if(token && !dataRetrieved){
-        grabUserData({
-            token, 
-            setUsername, 
-            setEmail,
-            setSelectedList, 
-            setLists,
-            setGoals
-        });
-        setDataRetrieved(true);
-    }
+
+    useEffect( () => {
+        // Whenever the token updates, we want to do a get request to grab user data
+        if(token && !dataRetrieved){
+            grabUserData({
+                token, 
+                setUsername, 
+                setEmail,
+                setSelectedList, 
+                setLists,
+                setGoals,
+                setDataRetrieved
+            });
+        }
+    }, [token])
+
 
     return(
         <>
             <Router>
-                <div>{token ? 'token stored' : 'no token'}</div>
                 <Switch>
                     <Route exact path="/">
-                        <MainPage 
+                        {dataRetrieved ? <MainPage 
                             loginToken={token}
                             getRoute={'/api/me'}
                             lists={lists}
                             selectedList={selectedList}
-                            goals={goals}/>
+                            goals={goals}/>: <div>loading</div>}
                     </Route>
                     <Route exact path="/login">
                         <LoginPage updateToken={updateToken}/>
@@ -85,7 +90,7 @@ export default function App(){
     Note, listData.length === goalsData.length and the order is the same.
 */
 
-async function grabUserData({token, setUsername, setEmail, setSelectedList, setLists, setGoals}){
+async function grabUserData({token, setUsername, setEmail, setSelectedList, setLists, setGoals, setDataRetrieved}){
     let userData;
     let listData;
     let goalsData=[];
@@ -138,4 +143,5 @@ async function grabUserData({token, setUsername, setEmail, setSelectedList, setL
     }
 
     setGoals(goalsData);
+    setDataRetrieved(true);
 }

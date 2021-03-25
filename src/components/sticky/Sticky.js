@@ -8,21 +8,21 @@ import Task from '../task/task.js';
 //Column must contain new task btn
 
 
-export default function Sticky({name, id, entries, updateEntries, updateTask, deleteTask, deleteColumn}){
+export default function Sticky({theList, theGoals, updateEntries, updateTask, deleteTask, deleteColumn}){
     const [newTask, setNewTask] = useState("");
 
     return (
         <div className="sticky" id="sticky">
-            <h3> {name} </h3>
+            <h3> {theList['list_name']} </h3>
             {/*<button onClick={() => {deleteColumn(id)}}>x</button>*/}
             <ul>
-                {entries.map(
+                {theGoals.map(
                     (entry,index) => 
                         <Task 
-                            name={entry.name} 
-                            columnID={id}
-                            taskID={index}
-                            completed={entry.completed} 
+                            name={entry.goal} 
+                            columnID={entry['list_id']}
+                            taskID={entry['goal_id']}
+                            completed={entry.status} 
                             updateTask={updateTask} 
                             deleteTask={deleteTask}
                         />)}
@@ -30,7 +30,7 @@ export default function Sticky({name, id, entries, updateEntries, updateTask, de
             <span className="new-task">
                 <button 
                     onClick={() => {
-                        updateEntries(id,newTask);
+                        updateEntries(newTask); //this will throw an error
                         setNewTask(""); 
                     }}>
                     +

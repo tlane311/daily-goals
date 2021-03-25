@@ -1,16 +1,14 @@
 import '../../component-styles/sticky-nav.css'
 import {useState} from 'react';
-//  listOfStickies is an array: ['Sticky1', 'Sticky2', 'Sticky3',...]
-//  handleStickySelect is a callback that will update state in App
 
-export default function StickiesBar({listOfStickies, handleStickySelect}) {
+export default function StickiesBar({lists, selectedList, visibility, createNewList }) {
     const [newList, setNewList] = useState("");
 
     return(
         <nav id="sticky-nav">
             <ul>
-                {listOfStickies.map( sticky => {
-                    return (<li onClick={handleStickySelect}> {sticky} </li>)
+                {lists.map( list => {
+                    return (<li onClick={()=>{}}> {list['list_name']} </li>)
                 })}
 
                     <span className="new-list">

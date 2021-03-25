@@ -1,115 +1,80 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 
 
 import Sticky from '../sticky/Sticky.js';
-import {homeworkColumn, choresColumn} from '../dummy-data.js';
 import StickiesBar from '../stickies-bar/StickiesBar.js';
 import DetailsBar from '../details-bar/DetailsBar.js';
 
-import useApi from '../../hooks/useAPI.js';
 
-import axios from 'axios';
+
+/*
+    MainPage holds the current sticky, the details-bar and the stickies-bar.
+
+    MainPage will receieve lists, selectedList and goals from App.
+
+    MainPage serves to pass on the info to its children.
+*/
 
 
 export default function MainPage({lists, selectedList, goals}){
+    
+
     /*
     Our data will be stored in a db. Ideally, we would like to query the database as few times as possible. If we query once, we will pull an array of columns. When we update these columns, react doesn't rerender; react fails to rerender because of the deeper shape of the array of columns. We introduce an artificial forceUpdate function to force rerenders.
     */
+
     const [, updateState] = React.useState();
     const forceUpdate = React.useCallback(() => updateState({}), []);
 
+    const currentSelection = lists.length  //currentSelection if defined is a listId
+        ? selectedList || lists[0]['list_id']
+        : selectedList;
+    const currentList = lists.length
+        ? lists.find( list => list['list_id'] === currentSelection )
+        : { 'list_name': 'New List', 'order_number': 1}
 
+    const [currentSticky, setCurrentSticky] = useState(currentList);
+
+    const listIndex = lists.length 
+        ? lists.findIndex(list => list['list_id'] === currentSelection )
+        : 0;
+    const goalsForCurrentSticky = currentSelection
+    ? goals[listIndex]
+    : [];
+
+    const [currentGoals, setCurrentGoals] = useState(goalsForCurrentSticky);
+
+    const updateEntries = () => {};
+    const updateTask = () => {};
+    const deleteTask = () => {};
+    const deleteSticky = () => {};
     
-
-    
-
-
-
-    //the columns will come from a db query
-    const [stickies, setStickies] = useState([homeworkColumn, choresColumn]);
-    
-    const [nextID, setNextID] = useState(stickies.length);
-    const [newStickyName, setNewStickyName] = useState(""); //this state handles the new column input
-
-
-    //this function creates a new column data object
-
-    const createNewSticky = (name) =>{
-        const oldID = nextID;
-        setNextID(oldID+1);
-        return {
-            id:oldID,
-            name: name,
-            entries: []
-        }
-
-    }
-
-    //this callback is for the onClick
-    const handleCreateNewSticky = e => {
-        if (!newStickyName) return;
-        const newSticky = createNewSticky(newStickyName);
-        const newStickyArray = stickies.concat(newSticky);
-        setStickies(newStickyArray);
-        setNewStickyName("");
-    }
-
-
-    //this method updates state whenever you add a new entry
-    const updateEntries = (columnID,data)=>{
-        if (!data) return;
-        const newEntries = stickies[columnID].entries.concat({
-            name:data,
-            completed:false
-        })
-        const updatedSticky = stickies[columnID];
-        updatedSticky.entries = newEntries;
-        
-        const newStickies = stickies;
-        newStickies[columnID] = updatedSticky;
-        setStickies(newStickies);
-        forceUpdate(); //necessary for react to rerender
-    }
-    const updateTask = (columnID, taskID, newStatus)=>{
-        const newStickies = stickies;
-        newStickies[columnID].entries[taskID].completed=newStatus
-        setStickies(newStickies);
-        forceUpdate();
-    }
-    //asd
-    const deleteTask = (columnID, taskID)=>{
-        const newStickies = stickies
-        newStickies[columnID].entries= newStickies[columnID].entries.filter( (element,index) => index!==taskID);
-        setStickies(newStickies);
-        forceUpdate();
-    }
-
-    const deleteSticky = (columnID) =>{
-        const newStickies = stickies;
-        setStickies(newStickies.filter( (ele, index) => index!==columnID))
-    }
-
     return(
         <>
-            <StickiesBar listOfStickies={lists.map(element => element['list_name'])} visibility={1}/>
-                            
-            {stickies.filter( (ele, index) => index===0).map((column,index) => 
-                    <Sticky
-                        name={column.name} 
-                        id={index}
-                        entries={column.entries} 
-                        updateEntries={updateEntries}
-                        updateTask={updateTask}
-                        deleteTask={deleteTask}
-                        deleteColumn={deleteSticky}
-                    />)}
-            {/* <input type="text" value={newStickyName} onChange={ e => {
+            <StickiesBar
+                lists={lists}
+                selectedList={selectedList}
+                visibility={1}
+                createNewList={() => {}}    
+            />
+                       
+            <Sticky
+                theList={currentSticky}
+                theGoals={currentGoals}
+
+                updateEntries={updateEntries}
+                updateTask={updateTask}
+                deleteTask={deleteTask}
+                deleteColumn={deleteSticky}
+            />
+             {/*
+             <input type="text" value={newStickyName} onChange={ e => {
                 setNewStickyName(e.target.value);
             }}/>
             ["Today", "Important", "Goals", "Chores"]
             <button onClick={handleCreateNewSticky}> Create New Column </button>
             */}
-            <DetailsBar goal={'test'} visibility={1}/>
+            <DetailsBar goal={'test'} goals={goals} visibility={1}/>
         </>
     )
 }
