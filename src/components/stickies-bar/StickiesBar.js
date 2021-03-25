@@ -3,7 +3,7 @@ import {useState} from 'react';
 
 import listManagement from '../../services/listManagement.js';
 
-export default function StickiesBar({ token, lists, selectedList, visibility, updateApp }) {
+export default function StickiesBar({ token, lists, selectedList, visibility, updateApp, swapList }) {
     const [newList, setNewList] = useState("");
 
     const handleNewListCreation = (e) => {
@@ -11,11 +11,17 @@ export default function StickiesBar({ token, lists, selectedList, visibility, up
         updateApp();
     }
 
+    const swapToThisList = id => {
+        return (e) => {
+            swapList(lists.find( list => list['list_id'] === id));
+        }
+    }
+
     return(
         <nav id="sticky-nav">
             <ul>
                 {lists.map( list => {
-                    return (<li onClick={()=>{}}> {list['list_name']} </li>)
+                    return (<li onClick={swapToThisList(list['list_id'])}> {list['list_name']} </li>)
                 })}
 
                     <span className="new-list">

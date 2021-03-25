@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 
 
 import Sticky from '../sticky/Sticky.js';
@@ -16,6 +16,8 @@ import DetailsBar from '../details-bar/DetailsBar.js';
     MainPage serves to pass on the info to its children.
 
     updateApp will force the main app fetch data again. We call this when we make changes to db.
+
+    I need to update selectedList to be a local storage thing
 */
 
 
@@ -32,7 +34,7 @@ export default function MainPage({token, lists, selectedList, goals, updateApp})
     const currentSelection = lists.length  //currentSelection if defined is a listId
         ? selectedList || lists[0]['list_id']
         : selectedList;
-    const currentList = lists.length
+    const currentList = lists.length // currentList is a list object
         ? lists.find( list => list['list_id'] === currentSelection )
         : { 'list_name': 'New List', 'order_number': 1}
 
@@ -46,6 +48,14 @@ export default function MainPage({token, lists, selectedList, goals, updateApp})
     : [];
 
     const [currentGoals, setCurrentGoals] = useState(goalsForCurrentSticky);
+
+    useEffect( () => {
+        console.log('effect ran')
+        if (currentSticky['list_id']){
+            const newIndex = lists.findIndex( list => list['list_id'] === currentSticky['list_id']);
+            setCurrentGoals(goals[newIndex]);
+        }
+    }, [currentSticky])
     
     return(
         <>
@@ -55,6 +65,7 @@ export default function MainPage({token, lists, selectedList, goals, updateApp})
                 selectedList={selectedList}
                 visibility={1}
                 updateApp={updateApp}
+                swapList={setCurrentSticky}
             />
                        
             <Sticky
