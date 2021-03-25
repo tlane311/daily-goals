@@ -47,7 +47,11 @@ export default function App(){
                 setDataRetrieved
             });
         }
-    }, [token])
+    }, [token, dataRetrieved])
+
+    const updateApp = () => {
+        setDataRetrieved(false);
+    }
 
 
     return(
@@ -55,12 +59,14 @@ export default function App(){
             <Router>
                 <Switch>
                     <Route exact path="/">
-                        {dataRetrieved ? <MainPage 
-                            loginToken={token}
-                            getRoute={'/api/me'}
-                            lists={lists}
-                            selectedList={selectedList}
-                            goals={goals}/>: <div>loading</div>}
+                        {dataRetrieved 
+                            ? <MainPage 
+                                    lists={lists}
+                                    selectedList={selectedList}
+                                    goals={goals}
+                                    updateApp={updateApp}
+                                />
+                            : <div>loading</div>}
                     </Route>
                     <Route exact path="/login">
                         <LoginPage updateToken={updateToken}/>

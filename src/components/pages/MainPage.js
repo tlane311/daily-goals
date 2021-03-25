@@ -4,6 +4,7 @@ import React, {useState} from 'react';
 import Sticky from '../sticky/Sticky.js';
 import StickiesBar from '../stickies-bar/StickiesBar.js';
 import DetailsBar from '../details-bar/DetailsBar.js';
+import axios from 'axios';
 
 
 
@@ -13,10 +14,12 @@ import DetailsBar from '../details-bar/DetailsBar.js';
     MainPage will receieve lists, selectedList and goals from App.
 
     MainPage serves to pass on the info to its children.
+
+    updateApp will force the main app fetch data again. We call this when we make changes to db.
 */
 
 
-export default function MainPage({lists, selectedList, goals}){
+export default function MainPage({lists, selectedList, goals, updateApp}){
     
 
     /*
@@ -78,3 +81,5 @@ export default function MainPage({lists, selectedList, goals}){
         </>
     )
 }
+
+
