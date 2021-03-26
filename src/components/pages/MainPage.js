@@ -50,7 +50,6 @@ export default function MainPage({token, lists, selectedList, goals, updateApp})
     const [currentGoals, setCurrentGoals] = useState(goalsForCurrentSticky);
 
     useEffect( () => {
-        console.log('effect ran')
         if (currentSticky['list_id']){
             const newIndex = lists.findIndex( list => list['list_id'] === currentSticky['list_id']);
             setCurrentGoals(goals[newIndex]);
