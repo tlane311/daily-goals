@@ -55,3 +55,5 @@ const userManagement = {
         return axios(config);
     }
 }
+
+export default userManagement;
