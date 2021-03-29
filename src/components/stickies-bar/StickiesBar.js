@@ -3,7 +3,7 @@ import {useState} from 'react';
 
 import listManagement from '../../services/listManagement.js';
 
-export default function StickiesBar({ token, lists, selectedList, visibility, updateApp, swapList }) {
+export default function StickiesBar({ token, lists, selectedList, setSelectedList, visibility, updateApp, swapList }) {
     const [newList, setNewList] = useState("");
 
     const handleNewListCreation = (e) => {
@@ -14,6 +14,7 @@ export default function StickiesBar({ token, lists, selectedList, visibility, up
     const swapToThisList = id => {
         return (e) => {
             swapList(lists.find( list => list['list_id'] === id));
+            setSelectedList(id);
         }
     }
 

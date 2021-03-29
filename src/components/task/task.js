@@ -1,12 +1,31 @@
 import '../../component-styles/task.css';
-import {useState} from "react"
+import {useEffect, useState} from "react"
 import goalManagement from '../../services/goalManagement.js';
 
-export default function Task({ token, goal, updateApp }){
+export default function Task({ token, goal, setGoalSelected, updateApp }){
     const [completion, updateCompletion] = useState(goal.status);
+
+    useEffect( () => {
+        updateCompletion(goal.status);
+    }, [token, goal])
 
     const handleGoalDeletion = e => {
         goalManagement.delete(token, goal['goal_id']);
+        updateApp();
+    }
+
+    const handleGoalStatusChange = e => {
+        goalManagement.update(
+            token,
+            goal['goal_id'],
+            goal['goal'],
+            goal['order_number'],
+            goal['deadline'],
+            !completion ? 1 : 0,
+            goal['note'],
+            goal['color']
+        );
+        updateCompletion(!completion);
         updateApp();
     }
 
@@ -18,15 +37,15 @@ export default function Task({ token, goal, updateApp }){
                     <input type="checkbox" checked={completion}/>
                     <span 
                         className="status-box" 
-                        onClick={(e)=> updateCompletion(!completion)}    
+                        onClick={handleGoalStatusChange}    
                     />
 
                     <span 
                         className={(completion ? "strikethrough" : "")+" goal-text"}
                         onClick={() => {
-                            
-                            updateCompletion(!completion)
-                    }}>
+                            setGoalSelected(goal['goal_id']);
+                        }
+                    }>
                         {goal.goal}
                     </span>
                     {completion ? <button onClick={handleGoalDeletion}> x </button> : <></>}

@@ -21,7 +21,7 @@ import DetailsBar from '../details-bar/DetailsBar.js';
 */
 
 
-export default function MainPage({token, lists, selectedList, goals, updateApp}){
+export default function MainPage({token, lists, selectedList, setSelectedList, goals, updateApp}){
     
 
     /*
@@ -40,6 +40,18 @@ export default function MainPage({token, lists, selectedList, goals, updateApp})
 
     const [currentSticky, setCurrentSticky] = useState(currentList);
 
+    useEffect(() => {
+        const currentSelection = lists.length  //currentSelection if defined is a listId
+            ? selectedList || lists[0]['list_id']
+            : selectedList;
+        const currentList = lists.length // currentList is a list object
+            ? lists.find( list => list['list_id'] === currentSelection )
+            : { 'list_name': 'New List', 'order_number': 1}
+
+        setCurrentSticky(currentList);
+    }, [lists, selectedList])
+
+
     const listIndex = lists.length 
         ? lists.findIndex(list => list['list_id'] === currentSelection )
         : 0;
@@ -55,6 +67,9 @@ export default function MainPage({token, lists, selectedList, goals, updateApp})
             setCurrentGoals(goals[newIndex]);
         }
     }, [currentSticky])
+
+
+    const [goalSelected, setGoalSelected] = useState(null);
     
     return(
         <>
@@ -62,6 +77,7 @@ export default function MainPage({token, lists, selectedList, goals, updateApp})
                 token={token}
                 lists={lists}
                 selectedList={selectedList}
+                setSelectedList={setSelectedList}
                 visibility={1}
                 updateApp={updateApp}
                 swapList={setCurrentSticky}
@@ -71,6 +87,7 @@ export default function MainPage({token, lists, selectedList, goals, updateApp})
                 token={token}
                 theList={currentSticky}
                 theGoals={currentGoals}
+                setGoalSelected={setGoalSelected}
                 updateApp={updateApp}
             />
              {/*
@@ -80,7 +97,7 @@ export default function MainPage({token, lists, selectedList, goals, updateApp})
             ["Today", "Important", "Goals", "Chores"]
             <button onClick={handleCreateNewSticky}> Create New Column </button>
             */}
-            <DetailsBar goal={'test'} goals={goals} visibility={1}/>
+            <DetailsBar token={token} goals={goals} goalSelected={goalSelected} setGoalSelected={setGoalSelected} visibility={1} updateApp={updateApp}/>
         </>
     )
 }

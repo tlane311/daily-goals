@@ -64,6 +64,7 @@ export default function App(){
                                     token={token} 
                                     lists={lists}
                                     selectedList={selectedList}
+                                    setSelectedList={setSelectedList}
                                     goals={goals}
                                     updateApp={updateApp}
                                 />

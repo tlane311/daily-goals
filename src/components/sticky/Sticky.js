@@ -6,7 +6,7 @@ import Task from '../task/task.js';
 import goalManagement from '../../services/goalManagement.js';
 
 import useKeyDown from '../../hooks/useKeyDown.js';
-export default function Sticky({theList, theGoals, token, updateApp}){
+export default function Sticky({theList, theGoals, token, setGoalSelected, updateApp}){
     
     const enterKeyIsDown = useKeyDown('Enter'); // We would like for the user to be able create a new goal using "Enter" key
 
@@ -37,6 +37,7 @@ export default function Sticky({theList, theGoals, token, updateApp}){
                         <Task 
                             token={token}
                             goal={goal}
+                            setGoalSelected={setGoalSelected}
                             updateApp={updateApp}
                         />)}
             </ul>
