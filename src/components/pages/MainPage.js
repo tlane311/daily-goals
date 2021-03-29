@@ -78,7 +78,7 @@ export default function MainPage({token, lists, selectedList, setSelectedList, g
                 lists={lists}
                 selectedList={selectedList}
                 setSelectedList={setSelectedList}
-                visibility={1}
+                visibility={true}
                 updateApp={updateApp}
                 swapList={setCurrentSticky}
             />
@@ -90,8 +90,15 @@ export default function MainPage({token, lists, selectedList, setSelectedList, g
                 setGoalSelected={setGoalSelected}
                 updateApp={updateApp}
             />
-            
-            <DetailsBar token={token} goals={goals} goalSelected={goalSelected} setGoalSelected={setGoalSelected} visibility={1} updateApp={updateApp}/>
+
+            <DetailsBar 
+                token={token}
+                goals={goals}
+                goalSelected={goalSelected}
+                setGoalSelected={setGoalSelected}
+                visibility={true}
+                updateApp={updateApp}
+            />
         </>
     )
 }

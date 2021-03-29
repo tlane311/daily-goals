@@ -17,6 +17,8 @@ import userManagement from '../../services/userManagement.js'; // for user servi
 export default function StickiesBar({ token, lists, selectedList, setSelectedList, visibility, updateApp, swapList }) {
     const [newList, setNewList] = useState("");
 
+    const [isHidden, setIsHidden] = useState(visibility);
+
     const handleNewListCreation = (e) => {
         if (!newList) return;
         listManagement.create(token, newList, lists.length+1);
@@ -34,10 +36,16 @@ export default function StickiesBar({ token, lists, selectedList, setSelectedLis
     }
 
     return(
-        <nav id="sticky-nav">
+        <nav id="sticky-nav" className={!isHidden ? "": ' hide-left-bar'}>
             <ul>
                 {lists.map( list => {
-                    return (<li onClick={swapToThisList(list['list_id'])}> {list['list_name']} </li>)
+                    return (
+                        <li 
+                            onClick={swapToThisList(list['list_id'])} 
+                            className={list['list_id'] === selectedList ? ' selected-list' : ""}> 
+                            {list['list_name']} 
+                        </li>
+                    );
                 })}
 
                     <span className="new-list">
@@ -45,6 +53,7 @@ export default function StickiesBar({ token, lists, selectedList, setSelectedLis
                         <input type="text" placeholder={newList} onChange={ e => { return setNewList(e.target.value); }}/>
                     </span>
             </ul>
+            <button onClick={e => { setIsHidden(!isHidden)}}> Hide </button>
         </nav>
     )
 }
