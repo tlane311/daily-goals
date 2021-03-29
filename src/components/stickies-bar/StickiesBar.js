@@ -26,7 +26,7 @@ export default function StickiesBar({ token, lists, selectedList, visibility, up
     const swapToThisList = id => {
         if (id !== selectedList) return (e) => {
             swapList(lists.find( list => list['list_id'] === id));
-            userManagement.update(token, 'selected_list', id);
+            userManagement.update(token, 'selected_list', selectedList);
         }
         return e => {};
     }
@@ -42,7 +42,6 @@ export default function StickiesBar({ token, lists, selectedList, visibility, up
                         <button onClick={handleNewListCreation}> + </button>
                         <input type="text" placeholder={newList} onChange={ e => { return setNewList(e.target.value); }}/>
                     </span>
-
             </ul>
         </nav>
     )
