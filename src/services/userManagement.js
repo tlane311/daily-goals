@@ -20,10 +20,8 @@ const userManagement = {
 
         return axios(config);
     },
-    update: async (token, username, password, field, fieldData) => {
+    update: async (token, field, fieldData) => {
         const form = new FormData();
-        form.append('username', username);
-        form.append('password', password);
         form.append('field',field);
         form.append('fieldData', fieldData);
 
