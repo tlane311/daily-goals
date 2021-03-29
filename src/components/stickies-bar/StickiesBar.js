@@ -18,8 +18,9 @@ export default function StickiesBar({ token, lists, selectedList, visibility, up
     const [newList, setNewList] = useState("");
 
     const handleNewListCreation = (e) => {
+        if (!newList) return;
         listManagement.create(token, newList, lists.length+1);
-        updateApp();
+        return updateApp();
     }
 
     const swapToThisList = id => {
