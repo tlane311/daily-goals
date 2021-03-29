@@ -36,7 +36,7 @@ export default function App(){
 
     useEffect( () => {
         // Whenever the token updates, we want to do a get request to grab user data
-        if(token && !dataRetrieved){
+        if (token && !dataRetrieved){
             grabUserData({
                 token, 
                 setUsername, 
@@ -59,16 +59,14 @@ export default function App(){
             <Router>
                 <Switch>
                     <Route exact path="/">
-                        {dataRetrieved 
-                            ? <MainPage
-                                    token={token} 
-                                    lists={lists}
-                                    selectedList={selectedList}
-                                    setSelectedList={setSelectedList}
-                                    goals={goals}
-                                    updateApp={updateApp}
-                                />
-                            : <div>loading</div>}
+                        <MainPage
+                            token={token} 
+                            lists={lists}
+                            selectedList={selectedList}
+                            setSelectedList={setSelectedList}
+                            goals={goals}
+                            updateApp={updateApp}
+                        />
                     </Route>
                     <Route exact path="/login">
                         <LoginPage updateToken={updateToken}/>

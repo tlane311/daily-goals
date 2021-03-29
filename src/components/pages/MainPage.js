@@ -21,6 +21,8 @@ import DetailsBar from '../details-bar/DetailsBar.js';
 */
 
 
+const blankList = { 'list_name': undefined, 'order_number': undefined}
+
 export default function MainPage({token, lists, selectedList, setSelectedList, goals, updateApp}){
     
 
@@ -31,43 +33,27 @@ export default function MainPage({token, lists, selectedList, setSelectedList, g
     const [, updateState] = React.useState();
     const forceUpdate = React.useCallback(() => updateState({}), []);
 
-    const currentSelection = lists.length  //currentSelection if defined is a listId
-        ? selectedList || lists[0]['list_id']
-        : selectedList;
-    const currentList = lists.length // currentList is a list object
-        ? lists.find( list => list['list_id'] === currentSelection )
-        : { 'list_name': 'New List', 'order_number': 1}
 
-    const [currentSticky, setCurrentSticky] = useState(currentList);
-
-    useEffect(() => {
-        const currentSelection = lists.length  //currentSelection if defined is a listId
-            ? selectedList || lists[0]['list_id']
-            : selectedList;
-        const currentList = lists.length // currentList is a list object
-            ? lists.find( list => list['list_id'] === currentSelection )
-            : { 'list_name': 'New List', 'order_number': 1}
-
-        setCurrentSticky(currentList);
-    }, [lists, selectedList])
-
-
-    const listIndex = lists.length 
-        ? lists.findIndex(list => list['list_id'] === currentSelection )
-        : 0;
-    const goalsForCurrentSticky = currentSelection
-    ? goals[listIndex]
-    : [];
-
-    const [currentGoals, setCurrentGoals] = useState(goalsForCurrentSticky);
+    // first we flatten
+    const [allGoals, setAllGoals] = useState(goals.flat());
 
     useEffect( () => {
-        if (currentSticky['list_id']){
-            const newIndex = lists.findIndex( list => list['list_id'] === currentSticky['list_id']);
-            setCurrentGoals(goals[newIndex]);
-        }
-    }, [currentSticky])
+        setAllGoals(goals.flat());
+    }, [goals,lists])
+ 
 
+    // the current list might be undefined
+    const [currentList, setCurrentList] = useState(lists.find(list => list['list_id'] === selectedList) || blankList );
+
+    useEffect( () => {
+        setCurrentList( lists.find(list => list['list_id'] === selectedList )|| blankList);
+    }, [selectedList, lists]);
+
+    const [currentGoals, setCurrentGoals] = useState(allGoals.filter( goal => goal['list_id']===selectedList));
+ 
+    useEffect( () => {
+        setCurrentGoals(allGoals.filter( goal => goal['list_id']===selectedList));
+    }, [selectedList, allGoals, token])
 
     const [goalSelected, setGoalSelected] = useState(null);
     
@@ -80,12 +66,11 @@ export default function MainPage({token, lists, selectedList, setSelectedList, g
                 setSelectedList={setSelectedList}
                 visibility={true}
                 updateApp={updateApp}
-                swapList={setCurrentSticky}
             />
                        
             <Sticky
                 token={token}
-                theList={currentSticky}
+                theList={currentList}
                 theGoals={currentGoals}
                 setGoalSelected={setGoalSelected}
                 updateApp={updateApp}
