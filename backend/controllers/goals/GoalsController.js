@@ -217,9 +217,9 @@ router.put('/', verifyToken, async (req, res) => {
         });
 
         // no rows were changed
-        if (!results.changedRows) return res.status(400).send({
+        if (!results.changedRows) return res.status(200).send({
             auth: true,
-            message: "Bad request.",
+            message: "Data was not updated.",
             results: results
         });
 
