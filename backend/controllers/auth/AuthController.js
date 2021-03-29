@@ -180,8 +180,6 @@ router.post('/login', verifyLogin, async (req, res, next) =>{
 /*
     req.header = {'x-access-token': ...}
     req.body = {
-        username: req.body.username,
-        password: req.body.password,
         field: req.body.field,
         fieldData: req.body.fieldData
     }
