@@ -58,6 +58,7 @@ export default function Sticky({theList, theGoals, token, setGoalSelected, updat
 
     const handleNewGoalCreation = async e => {
         await goalManagement.create(token, theList['list_id'], newTask, theGoals.length+1);
+        setNewTask("");
         return await updateApp();
     }
 
