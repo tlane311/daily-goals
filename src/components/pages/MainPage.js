@@ -21,7 +21,7 @@ import DetailsBar from '../details-bar/DetailsBar.js';
 */
 
 
-const blankList = { 'list_name': undefined, 'order_number': undefined}
+const blankList = { 'list_name': 'Create a New List', 'order_number': undefined}
 
 export default function MainPage({token, lists, selectedList, setSelectedList, goals, updateApp}){
     
