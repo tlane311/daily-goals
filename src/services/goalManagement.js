@@ -48,6 +48,17 @@ const goalManagement = {
         }
         return axios(config);
     },
+    deleteMany: async (token, idsArray) => {
+        const config = {
+            method:"delete",
+            url:"/api/goals/",
+            headers: {
+                'x-access-token': token,
+            },
+            data: {'goal_ids': idsArray}
+        }
+        return axios(config);
+    }
 }
 
 export default goalManagement;
