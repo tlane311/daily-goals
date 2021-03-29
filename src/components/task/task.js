@@ -1,8 +1,10 @@
 import '../../component-styles/task.css';
-import {useEffect, useState} from "react"
+
+import OrderButtons from './OrderButtons.js';
+import {useEffect, useState} from "react";
 import goalManagement from '../../services/goalManagement.js';
 
-export default function Task({ token, goal, setGoalSelected, updateApp }){
+export default function Task({ token, goal, setGoalSelected, updateApp, handleIncreasePriority, handleDecreasePriority}){
     const [completion, updateCompletion] = useState(goal.status);
 
     useEffect( () => {
@@ -28,12 +30,13 @@ export default function Task({ token, goal, setGoalSelected, updateApp }){
         updateCompletion(!completion);
         updateApp();
     }
-
+   
     return (
         <>
             <li className="task">
 
                 <label>
+                    
                     <input type="checkbox" checked={completion}/>
                     <span 
                         className="status-box" 
@@ -49,8 +52,10 @@ export default function Task({ token, goal, setGoalSelected, updateApp }){
                         {goal.goal}
                     </span>
                     {completion ? <button onClick={handleGoalDeletion}> x </button> : <></>}
-
-
+                    <OrderButtons 
+                        handleIncreasePriority={ () => { handleIncreasePriority(goal['goal_id']) } }
+                        handleDecreasePriority={ () => { handleDecreasePriority(goal['goal_id']) } }
+                    />
 
                 </label>
 

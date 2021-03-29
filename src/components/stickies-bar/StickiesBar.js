@@ -14,7 +14,7 @@ import userManagement from '../../services/userManagement.js'; // for user servi
 // swapList is a callback that updates the Sticky component.
 
 
-export default function StickiesBar({ token, lists, selectedList, visibility, updateApp, swapList }) {
+export default function StickiesBar({ token, lists, selectedList, setSelectedList, visibility, updateApp, swapList }) {
     const [newList, setNewList] = useState("");
 
     const handleNewListCreation = (e) => {
@@ -23,10 +23,12 @@ export default function StickiesBar({ token, lists, selectedList, visibility, up
         return updateApp();
     }
 
-    const swapToThisList = id => {
+    const swapToThisList = id => { // look here at async behavior
         if (id !== selectedList) return (e) => {
+            
             swapList(lists.find( list => list['list_id'] === id));
-            userManagement.update(token, 'selected_list', selectedList);
+            userManagement.update(token, 'selected_list', id);
+            setSelectedList(id);
         }
         return e => {};
     }

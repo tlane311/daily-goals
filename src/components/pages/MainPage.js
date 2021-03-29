@@ -90,13 +90,7 @@ export default function MainPage({token, lists, selectedList, setSelectedList, g
                 setGoalSelected={setGoalSelected}
                 updateApp={updateApp}
             />
-             {/*
-             <input type="text" value={newStickyName} onChange={ e => {
-                setNewStickyName(e.target.value);
-            }}/>
-            ["Today", "Important", "Goals", "Chores"]
-            <button onClick={handleCreateNewSticky}> Create New Column </button>
-            */}
+            
             <DetailsBar token={token} goals={goals} goalSelected={goalSelected} setGoalSelected={setGoalSelected} visibility={1} updateApp={updateApp}/>
         </>
     )
