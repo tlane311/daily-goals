@@ -52,7 +52,7 @@ export default function StickiesBar({ token, lists, selectedList, setSelectedLis
                         <input type="text" placeholder={newList} onChange={ e => { return setNewList(e.target.value); }}/>
                     </span>
             </ul>
-            <button onClick={e => { setIsHidden(!isHidden)}}> Hide </button>
+            <button id="hide-left-bar-btn" onClick={e => { setIsHidden(!isHidden)}}/>
         </nav>
     )
 }
