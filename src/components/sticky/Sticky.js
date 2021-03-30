@@ -160,7 +160,7 @@ export default function Sticky({theList, theGoals, token, setGoalSelected, updat
     }
 
     return (
-        <div className="sticky" id="sticky">
+        <div className="sticky" id="sticky"> {/* why do I have redundant class and id*/}
             <h3 onClick={()=>{ setRenameList(!renameList); }}> {theList['list_name']} </h3>
             { renameList ? <RenameListInput setNewListName={setNewListName} updateList = {handleListUpdate} />: <></>}
             <button onClick={handleListDeletion}> Delete This List </button>
@@ -189,8 +189,6 @@ export default function Sticky({theList, theGoals, token, setGoalSelected, updat
     )
 }
 
-
-// Function component
 function RenameListInput({setNewListName, updateList}){
     return (
         <>

@@ -11,6 +11,7 @@ html{
     width:100vw;
     height:100vh;
     overflow:hidden;
+    overflow-x:hidden;
     font-family: 'Spartan', sans-serif;
     background-color: var(--color-2);
     color:var(--font-color);
@@ -55,4 +56,33 @@ li{
     max-width: 300px;
 }
 
+
+
+
+
+
+
+/* SCROLL BAR STYLING */
+
+
+/* Works on Firefox */
+*{
+scrollbar-width: thin;
+scrollbar-color: var(--font-color) transparent;
+}
+
+/* Works on Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+width: 8px;
+}
+
+*::-webkit-scrollbar-track {
+background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+background-color: var(--font-color);
+border-radius: 64px;
+border:2px solid var(--color-1);
+}
 

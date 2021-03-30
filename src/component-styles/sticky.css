@@ -15,6 +15,7 @@
     max-width: 70vw; /* We want entire sticky to always be visible*/
 
     box-shadow: 4px 4px rgba(0,0,0,.1); /* 3d effect */
+    overflow-y:scroll;
 }
 
 .sticky h3{
