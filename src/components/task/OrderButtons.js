@@ -1,8 +1,8 @@
 export default function OrderButtons({handleIncreasePriority, handleDecreasePriority}){
     return(
         <div className="order-buttons">
-            <button onClick={handleIncreasePriority}>up</button>
-            <button onClick={handleDecreasePriority}>down</button>
+            <button className="up-btn" onClick={handleIncreasePriority}/>
+            <button className="down-btn" onClick={handleDecreasePriority}/>
         </div>
     )
 }
