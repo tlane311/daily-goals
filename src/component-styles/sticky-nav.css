@@ -7,7 +7,7 @@
     background-color: var(--font-color);
 
     letter-spacing:0;
-    line-height:16px;
+    line-height:24px;
 
     transition: transform .5s linear;
 
@@ -123,12 +123,11 @@
 
     color:var(--color-2);
 }
-
+/* styling the input placeholder */
 #sticky-nav input::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
     color: var(--color-2);
     opacity: .8; /* Firefox */
 }
-
 #sticky-nav input::-ms-input-placeholder { /* Microsoft Edge */
     color: var(--color-2);
     opacity:.8
