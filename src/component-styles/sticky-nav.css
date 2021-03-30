@@ -124,6 +124,19 @@
     color:var(--color-2);
 }
 
+#sticky-nav input::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: var(--color-2);
+    opacity: .8; /* Firefox */
+}
+
+#sticky-nav input::-ms-input-placeholder { /* Microsoft Edge */
+    color: var(--color-2);
+    opacity:.8
+}
+
+
+
+
 
 /* selected-list highlighting */
 .selected-list{

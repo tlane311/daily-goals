@@ -34,6 +34,10 @@ export default function StickiesBar({ token, lists, selectedList, setSelectedLis
         return e => {};
     }
 
+    const handleHideBar = e => {
+        setIsHidden(!isHidden);
+    }
+
     return(
         <nav id="sticky-nav" className={!isHidden ? "": ' hide-left-bar'}>
             <ul>
@@ -50,10 +54,10 @@ export default function StickiesBar({ token, lists, selectedList, setSelectedLis
 
                     <span className="new-list">
                         <button onClick={handleNewListCreation}> + </button>
-                        <input type="text" placeholder={newList} onChange={ e => { return setNewList(e.target.value); }}/>
+                        <input type="text" placeholder={'New List'} onChange={ e => { return setNewList(e.target.value); }}/>
                     </span>
             </ul>
-            <button id="hide-left-bar-btn" onClick={e => { setIsHidden(!isHidden)}}/>
+            <button id="hide-left-bar-btn" onClick={handleHideBar}/>
         </nav>
     )
 }
