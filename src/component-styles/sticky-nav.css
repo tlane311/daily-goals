@@ -102,3 +102,10 @@
 
     color:var(--color-2);
 }
+
+
+/* selected-list highlighting */
+.selected-list{
+    background-color:var(--color-1);
+    color: var(--font-color);
+}
