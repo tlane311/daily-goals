@@ -1,21 +1,31 @@
 #sticky-nav{
     display:flex;
     flex-direction:column;
-    justify-content:flex-start;
-    align-items:center;
+    justify-content:center;
 
     color:var(--color-2);
     background-color: var(--font-color);
 
-    letter-spacing:.2rem;
+    letter-spacing:0;
+    line-height:16px;
+
+    transition: transform .5s linear;
+
+    --skill-icon-size: 37.5px;
+    --skill-icon-margin: calc(.5*calc(min(max(5vw, 50px), 75px) - var(--skill-icon-size)));
+    /* This is a precise calculation for the perfect margin for our .skill-icon. */
 }
 
 
 
 #sticky-nav li{
+    position:relative; /* This is just so we can use absolute positioning for .list-icon */
+
     cursor:pointer;
 
-    padding: 4px;
+    padding: 8px;
+    padding-left: 4px;
+    padding-right: 4px;
 
     /* adding spacing above/below the li */
     margin-top:.6rem;
@@ -23,7 +33,14 @@
 
     /* for the hover effect */
     border-radius:2px;
-    transition:.5s;
+    transition:.5s all ease-in;
+
+
+    display: flex;
+    justify-content: flex-start;
+}
+.hide-left-bar li { /* When this bar is hidden, the list elements are ...*/
+    color:transparent;
 }
 
 /* on hover, background-color and color change*/
@@ -31,10 +48,14 @@
     background-color:var(--color-1);
     color: var(--font-color);
 }
+#sticky-nav.hide-left-bar li:hover{ /* When this bar is hidden, hover does ...*/
+    background-color:transparent;
+    color:transparent;
+}
 
 /* choosing the vertical positioning of the ul*/
 #sticky-nav ul{
-    margin-top: 10rem;
+    margin-top: 0rem;
 }
 
 .new-list{
@@ -109,18 +130,27 @@
     background-color:var(--color-1);
     color: var(--font-color);
 }
+.hide-left-bar .selected-list{ /* When this bar is hidden, the selected-list is ... */
+    background-color:transparent;
+    color:transparent;
+}
+.hide-left-bar .selected-list .list-icon{ /* When the bar is hidden, the selected-list's .list-icon is ... */
+    background-color:var(--color-1);
+}
 
 
+/* When hidden, move the entire bar off screen by 75%*/
 .hide-left-bar{
     transform: translate(-75%,0%);
 }
+
 
 #hide-left-bar-btn{
     position:absolute;
 
     /* make the button square */
-    width:12.5%; /* 12.5% is exactly half the width remaining when the bar is hidden */
-    height:2.5vw; /* 2.5vw is exactly 12.5% of the sticky-bar*/
+    width: calc(.75*var(--skill-icon-size));
+    height: calc(.75*var(--skill-icon-size));
 
     /* positioning in the bottom right-hand corner*/
     bottom:2.5%; 
@@ -136,8 +166,40 @@
     transition: transform .5s linear;
 }
 
+
+/* whenever the stickies-bar is hidden, the hide-left-bar-btn needs to be transformed and moved around */
 .hide-left-bar #hide-left-bar-btn{
     
     right: calc(6.25% + 3.125%); /* Whenever we flip the button, we need to adjust horizontal position. This places it exactly in center the bar is hidden*/
-    transform: rotateZ(180deg) rotate(45deg); /* flip over and rotate */
+    transform: rotateZ(180deg) rotate(405deg); /* flip over and rotate */
+}
+
+.list-icon { /* These are the little dots with letters in them that display when the stickies-bar is hidden. */
+    color:var(--font-color);
+    position:absolute;
+    top:50%;
+    right:0%;
+    height: var(--skill-icon-size);
+    width: var(--skill-icon-size);
+    margin-right: var(--skill-icon-margin);
+
+    border-radius: 100%;
+    opacity: 0; /* Notice the default opacity. */
+    transition: all .5s ease-out;
+    background-color: var(--color-2);
+    transform: translate(0%,-50%);
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    font-weight: bold;
+    font-size: 1.618rem;
+}
+.hide-left-bar .list-icon:hover{
+    background-color:var(--color-1);
+}
+/* When the bar is hidden, show the .list-icon*/
+.hide-left-bar ul li .list-icon{
+    opacity:1;
 }

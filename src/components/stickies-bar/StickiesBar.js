@@ -42,7 +42,8 @@ export default function StickiesBar({ token, lists, selectedList, setSelectedLis
                         <li 
                             onClick={swapToThisList(list['list_id'])} 
                             className={list['list_id'] === selectedList ? ' selected-list' : ""}> 
-                            {list['list_name']} 
+                            <span className="list-name">{list['list_name']}</span>
+                            <span className="list-icon">{list['list_name'][0].toUpperCase()}</span>
                         </li>
                     );
                 })}

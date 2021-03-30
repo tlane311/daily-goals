@@ -54,6 +54,7 @@ li{
     height:100vh;
     width:20%;
     max-width: 300px;
+    min-width:200px;
 }
 
 
