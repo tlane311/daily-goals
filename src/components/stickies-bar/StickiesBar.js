@@ -52,11 +52,17 @@ export default function StickiesBar({ token, lists, selectedList, setSelectedLis
                     );
                 })}
 
-                    <span className="new-list">
-                        <button onClick={handleNewListCreation}> + </button>
-                        <input type="text" placeholder={'New List'} onChange={ e => { return setNewList(e.target.value); }}/>
-                    </span>
+                <span className="new-list">
+                    <button onClick={handleNewListCreation}> + </button>
+                    <input type="text" placeholder={'New List'} onChange={ e => { return setNewList(e.target.value); }}/>
+                </span>
             </ul>
+
+            <div id="redirect-buttons">
+                <button> Manage Account </button>
+                <button> Sign Out </button>
+            </div>
+
             <button id="hide-left-bar-btn" onClick={handleHideBar}/>
         </nav>
     )

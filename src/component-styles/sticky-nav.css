@@ -1,7 +1,7 @@
 #sticky-nav{
     display:flex;
     flex-direction:column;
-    justify-content:center;
+    justify-content:flex-start;
 
     color:var(--color-2);
     background-color: var(--font-color);
@@ -53,10 +53,40 @@
     color:transparent;
 }
 
-/* choosing the vertical positioning of the ul*/
+
 #sticky-nav ul{
-    margin-top: 0rem;
+    max-height:calc(100%-96px);
+    overflow-y: scroll;
 }
+
+/* styling the overflow bar (if it appears) */
+
+    /* Works on Firefox */
+    #sticky-nav ul{
+        scrollbar-width: thin;
+        scrollbar-color: var(--color-2) transparent;
+    }
+    
+    /* Works on Chrome, Edge, and Safari */
+    #sticky-nav ul::-webkit-scrollbar {
+        width: 4px;
+    }
+    
+    #sticky-nav ul::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    
+    #sticky-nav ul::-webkit-scrollbar-thumb {
+        background-color: var(--color-2);
+        border-radius: 64px;
+        border: 2px solid var(--font-color);
+    }
+
+
+
+
+
+
 
 .new-list{
     position:relative;
@@ -214,4 +244,41 @@
 /* When the bar is hidden, show the .list-icon*/
 .hide-left-bar ul li .list-icon{
     opacity:1;
+}
+
+
+/* redirect buttons */
+
+#redirect-buttons{
+    display: flex;
+    width: 100%;
+    height: 96px;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: 2.5%;
+    position:absolute;
+    bottom:0;
+    left:0;
+}
+
+#redirect-buttons button {
+    height: 40%;
+    width: max(25%,64px);
+
+    margin-top: 4px; /* for space between the two buttons */
+
+    /* undoing default styles */
+    font-size: .65rem;
+    font-family: 'Spartan';
+    font-weight: bold;
+    border: none;
+    box-shadow: none;
+    border-radius: 32px;
+    color: var(--font-color);
+    background-color: var(--color-2);
+    cursor: pointer;
+}
+
+#redirect-buttons button:hover{
+    background-color:var(--color-1);
 }
