@@ -17,6 +17,7 @@ export default function Task({ token, goal, setGoalSelected, updateGoals, handle
     }
 
     const handleGoalStatusChange = e => {
+        updateCompletion(!completion);
         goalManagement.update(
             token,
             goal['goal_id'],
@@ -27,7 +28,6 @@ export default function Task({ token, goal, setGoalSelected, updateGoals, handle
             goal['note'],
             goal['color']
         ).then( res => {
-            updateCompletion(!completion);
             updateGoals();
         });
     }
@@ -35,33 +35,41 @@ export default function Task({ token, goal, setGoalSelected, updateGoals, handle
     return (
         <>
             <li className="task">
-
+                {/* Note, the label here groups together the spans with the checkbox input. */}
                 <label>
-                    
-                    <input type="checkbox" checked={completion}/>
+                    <input data-testid="task-checkbox" type="checkbox" checked={completion} readOnly/>
                     <span 
                         className="status-box" 
-                        onClick={handleGoalStatusChange}    
+                        onClick={handleGoalStatusChange}
+                        data-testid="task-status-span"    
                     />
 
                     <span 
                         className={(completion ? "strikethrough" : "")+" goal-text"}
-                        onClick={() => {
-                            setGoalSelected(goal['goal_id']);
-                        }
-                    }>
+                        onClick={() => { setGoalSelected(goal['goal_id']); }}
+                        data-testid="task-goal-span"
+                    >
                         {goal.goal}
                     </span>
-                    {completion ? <button onClick={handleGoalDeletion}> x </button> : <></>}
+                </label>
+
+                {completion ? <button onClick={handleGoalDeletion} className="delete-goal-btn"> {X()} </button> : <></>}
                     <OrderButtons 
                         handleIncreasePriority={ () => { handleIncreasePriority(goal['goal_id']) } }
                         handleDecreasePriority={ () => { handleDecreasePriority(goal['goal_id']) } }
                     />
 
-                </label>
-
 
             </li>
+        </>
+    )
+}
+
+const X = () => {
+    return(
+        <>
+            <div className="slant-up"/>
+            <div className="slant-down"/>
         </>
     )
 }
