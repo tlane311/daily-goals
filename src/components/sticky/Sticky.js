@@ -20,17 +20,12 @@ export default function Sticky({theList, theGoals, token, setGoalSelected, updat
     // Shape of theGoals: { fetchedOnce, data }
 
     const [goals, setGoals] = useState(theGoals ? theGoals.data : []);
-    const [list, setList] = useState(theList);
 
     useEffect( () => {
         const newGoals = theGoals ? {...theGoals} : {fetchedOnce: false, data: []}
         setGoals(newGoals.data)
     }, [theGoals]);
 
-
-    useEffect( () => {
-        setList({...theList});
-    }, [theList])
 
     // if the goals aren't sorted, handle sorting
     useEffect( () => {
