@@ -11,23 +11,21 @@ import userManagement from '../../services/userManagement.js'; // for user servi
 // We did not pass setSelectedList because userManagement.update will update the db which will get passed to the app on the next db query.
 // visibility is a boolean
 // updateApp is a callback to force the app to rerender.
-// swapList is a callback that updates the Sticky component.
+// updateLists is a callback to force app to rerender.
 
 
-export default function StickiesBar({ token, lists, selectedList, setSelectedList, visibility, updateApp }) {
+export default function StickiesBar({ token, lists, selectedList, setSelectedList, visibility, updateApp, updateLists }) {
     const [newList, setNewList] = useState("");
 
     const [isHidden, setIsHidden] = useState(visibility);
 
     const handleNewListCreation = (e) => {
         if (!newList) return;
-        listManagement.create(token, newList, lists.length+1);
-        return updateApp();
+        return listManagement.create(token, newList, lists.length+1).then(res => {updateLists()});
     }
 
     const swapToThisList = id => { // look here at async behavior
         if (id !== selectedList) return (e) => {
-            
             userManagement.update(token, 'selected_list', id);
             setSelectedList(id);
         }

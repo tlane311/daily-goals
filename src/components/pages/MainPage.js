@@ -23,9 +23,9 @@ import DetailsBar from '../details-bar/DetailsBar.js';
 
 const blankList = { 'list_name': 'Create a New List', 'order_number': undefined}
 
-export default function MainPage({token, lists, selectedList, setSelectedList, goals, updateApp}){
-    
+export default function MainPage({token, lists, selectedList, setSelectedList, goals, updateApp, updateGoals, updateLists}){
 
+    
     /*
     Our data will be stored in a db. Ideally, we would like to query the database as few times as possible. If we query once, we will pull an array of columns. When we update these columns, react doesn't rerender; react fails to rerender because of the deeper shape of the array of columns. We introduce an artificial forceUpdate function to force rerenders.
     */
@@ -34,26 +34,40 @@ export default function MainPage({token, lists, selectedList, setSelectedList, g
     const forceUpdate = React.useCallback(() => updateState({}), []);
 
 
-    // first we flatten
-    const [allGoals, setAllGoals] = useState(goals.flat());
+    const [allGoals, setAllGoals] = useState( goals ? {...goals} : {});
 
     useEffect( () => {
-        setAllGoals(goals.flat());
+        setAllGoals(goals ? {...goals} : {});
     }, [goals,lists])
  
 
     // the current list might be undefined
     const [currentList, setCurrentList] = useState(lists.find(list => list['list_id'] === selectedList) || blankList );
 
+    // whenever props update, update currentList
     useEffect( () => {
         setCurrentList( lists.find(list => list['list_id'] === selectedList )|| blankList);
     }, [selectedList, lists]);
 
-    const [currentGoals, setCurrentGoals] = useState(allGoals.filter( goal => goal['list_id']===selectedList));
+    const [currentGoals, setCurrentGoals] = useState(allGoals[selectedList]);
  
+    // whenever props update, update currentGoals
     useEffect( () => {
-        setCurrentGoals(allGoals.filter( goal => goal['list_id']===selectedList));
-    }, [selectedList, allGoals, token])
+        let updatedGoals = {}
+        // allGoals has shape: { listId: {goalData}, ... }
+        Object.keys(allGoals).map(
+            listId => {
+                updatedGoals[listId] = {};
+
+                return Object.keys(allGoals[listId]).map( (key) => {
+                    let newData = allGoals[listId][key];
+                    updatedGoals[listId][key] = Array.isArray(newData) ? [...newData] : newData;
+                    return newData;
+                });
+            }
+        )
+        setCurrentGoals(updatedGoals[selectedList]);
+    }, [selectedList, allGoals])
 
     const [goalSelected, setGoalSelected] = useState(null);
     
@@ -66,24 +80,29 @@ export default function MainPage({token, lists, selectedList, setSelectedList, g
                 setSelectedList={setSelectedList}
                 visibility={true}
                 updateApp={updateApp}
+                updateLists={updateLists}
             />
-                       
+                   
             <Sticky
                 token={token}
                 theList={currentList}
                 theGoals={currentGoals}
                 setGoalSelected={setGoalSelected}
                 updateApp={updateApp}
+                updateGoals={updateGoals}
+                updateLists={updateLists}
             />
-
+ 
             <DetailsBar 
                 token={token}
                 goals={goals}
+                selectedList={selectedList}
                 goalSelected={goalSelected}
                 setGoalSelected={setGoalSelected}
                 visibility={true}
                 updateApp={updateApp}
-            />
+                updateGoals={updateGoals}
+            />   
         </>
     )
 }

@@ -4,7 +4,7 @@ import OrderButtons from './OrderButtons.js';
 import {useEffect, useState} from "react";
 import goalManagement from '../../services/goalManagement.js';
 
-export default function Task({ token, goal, setGoalSelected, updateApp, handleIncreasePriority, handleDecreasePriority}){
+export default function Task({ token, goal, setGoalSelected, updateGoals, handleIncreasePriority, handleDecreasePriority}){
     const [completion, updateCompletion] = useState(goal.status);
 
     useEffect( () => {
@@ -12,8 +12,8 @@ export default function Task({ token, goal, setGoalSelected, updateApp, handleIn
     }, [token, goal])
 
     const handleGoalDeletion = e => {
-        goalManagement.delete(token, goal['goal_id']);
-        updateApp();
+        goalManagement.delete(token, goal['goal_id'])
+            .then( res => {updateGoals() });
     }
 
     const handleGoalStatusChange = e => {
@@ -26,9 +26,10 @@ export default function Task({ token, goal, setGoalSelected, updateApp, handleIn
             !completion ? 1 : 0,
             goal['note'],
             goal['color']
-        );
-        updateCompletion(!completion);
-        updateApp();
+        ).then( res => {
+            updateCompletion(!completion);
+            updateGoals();
+        });
     }
    
     return (

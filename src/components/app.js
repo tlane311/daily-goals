@@ -4,6 +4,9 @@ import MainPage from './pages/MainPage.js';
 import LoginPage from './pages/LoginPage.js';
 import RegisterPage from './pages/RegisterPage.js';
 
+import userManagement from '../services/userManagement.js';
+
+
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 
 import axios from 'axios';
@@ -13,44 +16,129 @@ const getListsRoute = '/api/lists/me';
 const getGoalsRoute = '/api/goals/me';
 
 
+// This component will perform all the of the db queries and route to all of the pages to our site.
+
+
 export default function App(){
+    
+    
     /*
         When one logs in, the token will be stored in this component
-        Then, main page can use the token to get user data
+        Then, main page can use the token to get user data.
+        
     */
    // Note, use local storage for token
+
     const [token, setToken] = useState("");
 
     const updateToken = (token) => {
         setToken(token);
     }
-    const [dataRetrieved, setDataRetrieved] = useState(false);
-    //might have to force reload once data is retrieved
 
+    // We will pass setter functions here to children components so that they can request for the db to be queried.
+    const [initialFetchDone, setInitialFetchDone] = useState(false);
+    const [retrievedLists,setRetrievedLists] = useState(false);
+    const [retrievedGoals,setRetrievedGoals] = useState(false);
+
+
+    // This is our state for storing db query results
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
+
     const [lists, setLists] = useState([]); // An array of objects each of which represents a list. Shape: {listId, listName, orderNumber}
     const [selectedList, setSelectedList] = useState(0); // This should be the list id number
-    const [goals, setGoals] = useState([]); // An array of object each of which represents a goal. Shape: {goalId, listId, goal, orderNumber, deadline, status, note, color}
+    const [goals, setGoals] = useState({}); // An object with key-value pairs for each list. 
+    // the shape: goals[list_id] = { fetchedOnce, data=[goal0, goal1, ...] }
+    // each goal has shape: {goalId, listId, goal, orderNumber, deadline, status, note, color}
 
-
+    // handle first fetch
+    // We will do a first fetch whenever the token changes.
     useEffect( () => {
-        // Whenever the token updates, we want to do a get request to grab user data
-        if (token && !dataRetrieved){
-            grabUserData({
-                token, 
-                setUsername, 
-                setEmail,
-                setSelectedList, 
-                setLists,
-                setGoals,
-                setDataRetrieved
-            });
+        if (token) {
+            const retrieveData = async () => {
+                //await firstFetch({token, setUsername, setEmail, setSelectedList, setLists, setGoals});
+                
+                //setRetrievedLists(true);
+                //setInitialFetchDone(true);
+                let goalsData = {}
+                const [userData, listData] = await efficientFetch({token});
+
+                setUsername(userData.username);
+
+                setEmail(userData.email);
+
+                setLists(listData);
+                const selectedListExists = listData.find( list => list['list_id'] === userData['selected_list']);
+
+                // If the selectedList doesn't exist, we will need to manually update selectedList.
+                if (!selectedListExists){
+                    // If listData = [], ...
+                    if (!listData.length){
+                        userManagement.update(token, 'selected_list', 0);
+                    } else {
+                        // Otherwise ...
+                        userManagement.update(token, 'selected_list', listData[0]['selected_list']);
+                        setSelectedList(listData[0]['list_id']);
+                    }
+                    
+                } else {
+                    setSelectedList( selectedListExists['list_id'] ); 
+                }
+
+                listData.map( list => {
+                    let listId = list['list_id'];
+                    return goalsData[listId] = { 
+                        fetchedOnce: false,
+                        data: []
+                    };
+                });
+            
+                setGoals(goalsData);
+
+                setRetrievedLists(true);
+                setInitialFetchDone(true);
+
+            }
+
+            retrieveData();
+
         }
-    }, [token, dataRetrieved])
+    }, [token])
+    
+    // handle calls for goals updates
+    useEffect( () => {
+        // We only want the code to execute in a few scenarios:
+        // If retrievedGoals has been set to false
+        // OR
+        // If selectedList changes and the goal data has not been fetched, then this will execute 
+        const goalsNeedRetrieval = !retrievedGoals || !goals[selectedList] || !goals[selectedList].fetchedOnce;
+
+        if (initialFetchDone && token && goalsNeedRetrieval ){
+            grabGoalsData({token, selectedList, goals, setGoals});
+            setRetrievedGoals(true);
+        }
+
+    }, [initialFetchDone, selectedList, retrievedGoals]);
+
+    // handle calls for lists updates
+    useEffect( () => {
+
+        if (token && !retrievedLists){
+            grabListsData({token, setLists})
+            setRetrievedLists(true);
+        }
+    }, [retrievedLists]);
 
     const updateApp = () => {
-        setDataRetrieved(false);
+        setRetrievedGoals(false);
+    }
+
+    const updateGoals = () => {
+        setRetrievedGoals(false);
+    }
+
+    const updateLists = () => {
+        setRetrievedLists(false);
     }
 
 
@@ -60,12 +148,16 @@ export default function App(){
                 <Switch>
                     <Route exact path="/">
                         <MainPage
-                            token={token} 
+                            token={token}
+                            username={username}
+                            email={email} 
                             lists={lists}
                             selectedList={selectedList}
                             setSelectedList={setSelectedList}
                             goals={goals}
                             updateApp={updateApp}
+                            updateGoals={updateGoals}
+                            updateLists={updateLists}
                         />
                     </Route>
                     <Route exact path="/login">
@@ -96,11 +188,71 @@ export default function App(){
     Note, listData.length === goalsData.length and the order is the same.
 */
 
-async function grabUserData({token, setUsername, setEmail, setSelectedList, setLists, setGoals, setDataRetrieved}){
+
+
+async function grabListsData({token, setLists}){
+
+    let listData;
+
+    const getListsConfig = {
+        method: 'get',
+        url: getListsRoute,
+        headers: {
+            'x-access-token': token
+        }
+    }
+
+    await axios(getListsConfig)
+        .then( res => {
+            // We are just capturing the results and storing them in listData
+            return listData = res.data.results;
+        });
+    setLists(listData);
+}
+
+async function grabGoalsData({token, selectedList, goals, setGoals}){
+
+    // if selectedList is zero, then we will not update goals at all
+    if (!selectedList){
+        return;
+    }
+
+    // Otherwise, ...
+    // Note, if selectedList has not be verified yet, then this will not throw an error. And, that's good!
+    let goalsData = {...goals}
+    const config= {
+        method: 'get',
+        url: getGoalsRoute,
+        params: { listId: selectedList},
+        headers: {
+            'x-access-token': token,
+        }
+    }
+
+    await axios(config)
+        .then( res => {
+            // If selectedList is not already a key in goals, then we need to add it
+            if (!goalsData[selectedList]){
+                goalsData[selectedList]={
+                    fetchedOnce: false, data: []
+                }
+            }
+
+            // Reading this key-value pair everytime and writing sometimes should be faster than just writing every time 
+            if (!goalsData[selectedList].fetchedOnce) {goalsData[selectedList].fetchedOnce = true;}
+            goalsData[selectedList].data= res.data.results;
+        });
+    setGoals(goalsData);
+}
+
+async function firstFetch({token, setUsername, setEmail, setSelectedList, setLists, setGoals}){
+
+    // on first fetch: grab user data, grab list data, handle selectedList, make goals obj,
+
     let userData;
     let listData;
-    let goalsData=[];
-    
+    let goalsData={};
+
     const getUserConfig = {
         method: 'get',
         url: getUserRoute,
@@ -115,39 +267,75 @@ async function grabUserData({token, setUsername, setEmail, setSelectedList, setL
             'x-access-token': token
         }
     }
-    
+
     await axios(getUserConfig)
         .then( res => {
+            // We are just capturing the results and storing them in userData
             return userData = res.data.results;
         });
     setUsername(userData.username);   
     setEmail(userData.email);
-    setSelectedList( userData['selected_list'] ); 
+
+    const selectedList= userData['selected_list'];
+
     await axios(getListsConfig)
         .then( res => {
+            // We are just capturing the results and storing them in listData
             return listData = res.data.results;
         });
     setLists(listData);
 
-    // We are going to iterate through listsData to get the users goals
-    // Note, since we want to do some async stuff, we will use an actual for loop instead of Array.prototype.map
-    
-    for (let i =0; i < listData.length; i++){
-        const config={
-            method: 'get',
-            url: getGoalsRoute,
-            params: { listId: listData[i]['list_id']},
-            headers: {
-                'x-access-token': token,
-            }
+    // We need to manually check that the selectedList exists because we can't have a circular reference in our db.
+
+    const selectedListExists = listData.find( list => list['list_id'] === selectedList);
+
+    // If the selectedList doesn't exist, we will need to manually update selectedList.
+    if (!selectedListExists){
+        // If listData = [], ...
+        if (!listData.length){
+            await userManagement.update(token, 'selected_list', 0);
         }
-    
-        await axios(config)
-            .then( res => {
-                goalsData.push(res.data.results);
-            });
+        // Otherwise ...
+        await userManagement.update(token, 'selected_list', listData[0]['selected_list']);
+        setSelectedList(listData[0]['list_id']);
+    } else {
+        setSelectedList( selectedList ); 
     }
 
+    // For each list, we are going to add key-value pair to goalsData.
+    // When we actually fetch the goalsData, we will fill in this data.
+    listData.map( list => {
+        let listId = list['list_id'];
+        return goalsData[listId] = { 
+            fetchedOnce: false,
+            data: []
+        };
+    });
+
     setGoals(goalsData);
-    setDataRetrieved(true);
+}
+
+
+async function GrabData(config){
+    return axios(config).then(res => res.data.results);
+}
+
+async function efficientFetch({token}){
+
+    const getUserConfig = {
+        method: 'get',
+        url: getUserRoute,
+        headers: {
+            'x-access-token': token,
+        }
+    }
+    const getListsConfig = {
+        method: 'get',
+        url: getListsRoute,
+        headers: {
+            'x-access-token': token
+        }
+    }
+
+    return Promise.all([GrabData(getUserConfig), GrabData(getListsConfig)])
 }

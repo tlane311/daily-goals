@@ -4,13 +4,15 @@ import goalManagement from '../../services/goalManagement.js';
 
 
 
-// The shape of goals is [ [goal0, goal1, goal2, ... , goaln], [...], ... [...]]
-// where each subarray corresponds to a given list
-// Note, we are not implementing deadlines here because not all browsers support that input type.
+// The shape of goals is { [list_id]: { fetchedOnce, data: [goal1,goal2,...] } }
+// goals can be an empty object ie. goals = {}
+// Note, we are not implementing deadlines for the moment because not all browsers support that input type.
 // We will implement that when we find a work around.
 
 
-export default function DetailsBar({token, goals, goalSelected, setGoalSelected, updateApp}){
+
+
+export default function DetailsBar({token, goals, selectedList, goalSelected, setGoalSelected, updateGoals}){
     // have to set up routine for when to handleUpdate
     const [visibility, setVisibility] = useState(false);
 
@@ -22,7 +24,17 @@ export default function DetailsBar({token, goals, goalSelected, setGoalSelected,
         'note': '',
         'color': ''
     }
-    const [theGoal, setTheGoal] = useState(goals.flat().find( goal => goal['goal_id']===goalSelected) || blankGoal);
+
+    /* 
+        goals = {} -> theGoal = blankGoal
+        goals = (not empty) -> theGoal = selectedList ? goals[selectedList].data.find( goal => goal===goalSelected ): blankGoal 
+    */
+
+    const initialGoal = Object.keys(goals).length && selectedList && goals[selectedList] && Array.isArray(goals[selectedList].data)
+        ? goals[selectedList].data.find( goal => goal['goal_id'] === goalSelected)
+        : blankGoal;
+
+    const [theGoal, setTheGoal] = useState(initialGoal);
 
     const [updateStatus, setUpdateStatus] = useState(theGoal.status ? 1 : 0)
     const [updateGoal, setUpdateGoal] = useState(theGoal.goal)
@@ -31,7 +43,10 @@ export default function DetailsBar({token, goals, goalSelected, setGoalSelected,
 
 
     useEffect( () => {
-        setTheGoal(goals.flat().find( goal => goal['goal_id']===goalSelected) || blankGoal);
+        const nextGoal = Object.keys(goals).length && selectedList && goals[selectedList] && Array.isArray(goals[selectedList].data)
+            ? goals[selectedList].data.find( goal => goal['goal_id'] === goalSelected) || blankGoal
+            : blankGoal
+        setTheGoal(nextGoal);
         setVisibility(Boolean(goalSelected))
     }, [goalSelected])
 
@@ -50,8 +65,8 @@ export default function DetailsBar({token, goals, goalSelected, setGoalSelected,
                 theGoal.deadline, 
                 updateStatus, 
                 updateNote, 
-                updateColor);
-            return updateApp();
+                updateColor)
+                .then( res => {updateGoals()});
         }
     }
 
