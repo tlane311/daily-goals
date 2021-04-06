@@ -53,7 +53,7 @@ export default function Task({ token, goal, setGoalSelected, updateGoals, handle
                     </span>
                 </label>
 
-                {completion ? <button onClick={handleGoalDeletion} className="delete-goal-btn"> {X()} </button> : <></>}
+                {completion ? <button onClick={handleGoalDeletion} data-testid="delete-goal-btn" className="delete-goal-btn"> {X()} </button> : <></>}
                     <OrderButtons 
                         handleIncreasePriority={ () => { handleIncreasePriority(goal['goal_id']) } }
                         handleDecreasePriority={ () => { handleDecreasePriority(goal['goal_id']) } }

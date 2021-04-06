@@ -4,7 +4,7 @@
 
 import React from 'react';
 
-import {render, cleanup, fireEvent} from '@testing-library/react';
+import {render, cleanup, fireEvent, waitFor} from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 
 import Task from '../../components/task/task.js';
@@ -61,15 +61,20 @@ describe('event testing', () => {
 
     afterEach(cleanup)
 
-    it('should handle status changes', () => {
+    it('should handle status changes', async () => {
         const { getByTestId } = render(<Task {...taskData}/>);
         const checkbox = getByTestId('task-checkbox');
         const statusSpan = getByTestId('task-status-span');
         const goalSpan = getByTestId('task-goal-span');
-
+        
         fireEvent.click(statusSpan);
 
+        
+
         expect(checkbox).toBeChecked();
-        expect(goalSpan).toHaveClass('strikethrough')
+        expect(goalSpan).toHaveClass('strikethrough');
+
+        const deleteBtn = await waitFor( () => getByTestId('delete-goal-btn'));
+        expect(deleteBtn).toBeInTheDocument();
     });
 });
