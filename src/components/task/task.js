@@ -4,7 +4,7 @@ import OrderButtons from './OrderButtons.js';
 import {useEffect, useState} from "react";
 import goalManagement from '../../services/goalManagement.js';
 
-export default function Task({ token, goal, setGoalSelected, updateGoals, handleIncreasePriority, handleDecreasePriority}){
+export default function Task({ token, goal, goalSelected, setGoalSelected, updateGoals, handleIncreasePriority, handleDecreasePriority, getListDetails, setGetListDetails, detailsBarIsVisible, setDetailsBarIsVisible}){
     const [completion, updateCompletion] = useState(goal.status);
 
     useEffect( () => {
@@ -31,7 +31,24 @@ export default function Task({ token, goal, setGoalSelected, updateGoals, handle
             updateGoals();
         });
     }
-   
+    
+
+    const handleDetailsClick = e => {
+        // This is a weird function.
+        console.log(goalSelected, goal['goal_id'])
+        if (goalSelected!==goal['goal_id']){
+            setGoalSelected(goal['goal_id']);
+            setDetailsBarIsVisible(true);
+            setGetListDetails(false);
+        }
+        if (goalSelected===goal['goal_id'] && !getListDetails){
+            setDetailsBarIsVisible(!detailsBarIsVisible)
+        }
+        if (goalSelected===goal['goal_id'] && getListDetails){
+            setGetListDetails(false)
+        }
+
+    }
     return (
         <>
             <li className="task">
@@ -46,7 +63,7 @@ export default function Task({ token, goal, setGoalSelected, updateGoals, handle
 
                     <span 
                         className={(completion ? "strikethrough" : "")+" goal-text"}
-                        onClick={() => { setGoalSelected(goal['goal_id']); }}
+                        onClick={handleDetailsClick}
                         data-testid="task-goal-span"
                     >
                         {goal.goal}

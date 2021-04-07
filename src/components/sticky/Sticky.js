@@ -12,9 +12,7 @@ import userManagement from '../../services/userManagement.js';
 import useKeyDown from '../../hooks/useKeyDown.js';
 
 
-export default function Sticky({theList, theGoals, token, setGoalSelected, updateGoals, updateLists}){
-
-
+export default function Sticky({theList, theGoals, token, goalSelected, setGoalSelected, getListDetails, setGetListDetails, updateGoals, updateLists, detailsBarIsVisible, setDetailsBarIsVisible}){
     const enterKeyIsDown = useKeyDown('Enter'); // We would like for the user to be able create a new goal using "Enter" key
 
     // Shape of theGoals: { fetchedOnce, data }
@@ -182,10 +180,34 @@ export default function Sticky({theList, theGoals, token, setGoalSelected, updat
 
     }
 
+    const handleListDetails = e => {
+        // getListDetails is false and detailsBarIsVisibile is false
+        // getListDetails is false and detailsBarIsVisible is true
+        // getListDetails is true
+        
+        if (getListDetails){
+            
+            setDetailsBarIsVisible(!detailsBarIsVisible)
+            // This timeout is because of a visual bug.
+            setTimeout(() => {setGetListDetails(false);}, 500)
+        }
+        if (!getListDetails && !detailsBarIsVisible){
+            setDetailsBarIsVisible(true);
+            setGetListDetails(true);        
+        }
+
+        if (!getListDetails && detailsBarIsVisible){
+            setGetListDetails(true)
+        }
+    }
+
     return (
         <div className="sticky" id="sticky"> {/* why do I have redundant class and id*/}
-            <h3 onClick={()=>{ setRenameList(!renameList); }}> {theList['list_name']} </h3>
-            { renameList ? <RenameListInput setNewListName={setNewListName} updateList = {handleListUpdate} />: <></>}
+            <h3
+                onClick={ handleListDetails}
+            > 
+                {theList['list_name']}
+            </h3>
             <button onClick={handleListDeletion}> Delete This List </button>
             <ul>
                 {goals.map(
@@ -193,10 +215,15 @@ export default function Sticky({theList, theGoals, token, setGoalSelected, updat
                         <Task 
                             token={token}
                             goal={goal}
+                            goalSelected={goalSelected}
                             setGoalSelected={setGoalSelected}
                             handleIncreasePriority={handleIncreasePriority}
                             handleDecreasePriority={handleDecreasePriority}
                             updateGoals={updateGoals}
+                            getListDetails={getListDetails}
+                            setGetListDetails={setGetListDetails}
+                            detailsBarIsVisible={detailsBarIsVisible}
+                            setDetailsBarIsVisible={setDetailsBarIsVisible}
                         />)}
             </ul>
             <span className="new-task">

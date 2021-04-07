@@ -69,8 +69,15 @@ export default function MainPage({token, lists, selectedList, setSelectedList, g
         setCurrentGoals(updatedGoals[selectedList]);
     }, [selectedList, allGoals])
 
+
+    // goalSelected will be either null or a goal id.
     const [goalSelected, setGoalSelected] = useState(null);
     
+    const [getListDetails, setGetListDetails] = useState(false);
+
+    const [detailsBarIsVisible, setDetailsBarIsVisible] = useState(false);
+    const [stickiesBarIsVisible, setStickiesBarIsVisible] = useState(false);
+
     return(
         <>
             <StickiesBar
@@ -78,7 +85,8 @@ export default function MainPage({token, lists, selectedList, setSelectedList, g
                 lists={lists}
                 selectedList={selectedList}
                 setSelectedList={setSelectedList}
-                visibility={true}
+                visibility={stickiesBarIsVisible}
+                setGetListDetails={setGetListDetails}
                 updateApp={updateApp}
                 updateLists={updateLists}
             />
@@ -87,20 +95,32 @@ export default function MainPage({token, lists, selectedList, setSelectedList, g
                 token={token}
                 theList={currentList}
                 theGoals={currentGoals}
-                setGoalSelected={setGoalSelected}
-                updateApp={updateApp}
+                goalSelected={goalSelected}
+                setGoalSelected={(goalId) => {
+                    setGetListDetails(false);
+                    setGoalSelected(goalId);
+                }}
+                getListDetails={getListDetails}
+                setGetListDetails={setGetListDetails}
                 updateGoals={updateGoals}
                 updateLists={updateLists}
+                detailsBarIsVisible={detailsBarIsVisible}
+                setDetailsBarIsVisible={setDetailsBarIsVisible}
             />
  
             <DetailsBar 
                 token={token}
                 goals={goals}
+                lists={lists}
                 selectedList={selectedList}
                 goalSelected={goalSelected}
                 setGoalSelected={setGoalSelected}
-                visibility={true}
+                getListDetails={getListDetails}
+                deleteList={() => {console.log('deleteList has not been defined yet in MainPage')}}
+                visibility={detailsBarIsVisible}
+                setVisibility={setDetailsBarIsVisible}
                 updateApp={updateApp}
+                updateLists={updateLists}
                 updateGoals={updateGoals}
             />   
         </>

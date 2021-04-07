@@ -1,80 +1,35 @@
 import "../../component-styles/details-bar.css";
 import {useEffect, useState} from 'react';
-import goalManagement from '../../services/goalManagement.js';
+
+import GoalDetails from './GoalDetails.js';
+import ListDetails from './ListDetails.js';
 
 
 
-// The shape of goals is { [list_id]: { fetchedOnce, data: [goal1,goal2,...] } }
+// This component is a child of MainPage that is shown whenever the user wants to update either list or goal data.
+
+// NOTES ON PROPS PASSED TO THIS COMPONENT
+
+// token is set in App and used as credentials to make db queries
+// goals is defined in App and has shape { [list_id]: { fetchedOnce, data: [goal1,goal2,...] } }.
 // goals can be an empty object ie. goals = {}
-// Note, we are not implementing deadlines for the moment because not all browsers support that input type.
-// We will implement that when we find a work around.
+// goal data has shape: { list_id, goal_id, goal, note, status color }
+// lists is set in App and has shape [ {list_id, list_name, order_number}, {list_id, list_name, order_number}, ...]
+// list data has shape { list_id, list_name, order_number }
+// selectedList is a list_id (i.e. positive number) which is defined in Main Page
+// goalSelected is a goal_id which is defined in Main Page and updated by Sticky
+// setGoalSelected is the setter for goalSelected
+// getListDetails is a boolean that represents whether use wants to update a list or not.
+// deleteList is defined in MainPage and handles deleting a list. Because we are using a relational db, we must delete all goals associated to a list before we delete the list itself.
+// updateLists is a synchronous function defined in App. This function forces App to query the db for all list info. Note, this fn is not async.
+// updateGoals is a synchronous function defined in App. This function forces App to query the db for all goals info. Note, this fn is not async.
 
 
+// Note, we are not implementing deadlines for the moment because not all browsers support that input type. We will implement this in the future.
 
 
-export default function DetailsBar({token, goals, selectedList, goalSelected, setGoalSelected, updateGoals}){
-    // have to set up routine for when to handleUpdate
-    const [visibility, setVisibility] = useState(false);
-
-    const blankGoal = { //blank goal in case no goal is selected
-        'goal_id': "",
-        'status': false,
-        'goal': "",
-        'deadline': '',
-        'note': '',
-        'color': ''
-    }
-
-    /* 
-        goals = {} -> theGoal = blankGoal
-        goals = (not empty) -> theGoal = selectedList ? goals[selectedList].data.find( goal => goal===goalSelected ): blankGoal 
-    */
-
-    const initialGoal = Object.keys(goals).length && selectedList && goals[selectedList] && Array.isArray(goals[selectedList].data)
-        ? goals[selectedList].data.find( goal => goal['goal_id'] === goalSelected)
-        : blankGoal;
-
-    const [theGoal, setTheGoal] = useState(initialGoal);
-
-    const [updateStatus, setUpdateStatus] = useState(theGoal.status ? 1 : 0)
-    const [updateGoal, setUpdateGoal] = useState(theGoal.goal)
-    const [updateNote, setUpdateNote] = useState(theGoal.note)
-    const [updateColor, setUpdateColor] = useState(theGoal.color)
-
-
-    useEffect( () => {
-        const nextGoal = Object.keys(goals).length && selectedList && goals[selectedList] && Array.isArray(goals[selectedList].data)
-            ? goals[selectedList].data.find( goal => goal['goal_id'] === goalSelected) || blankGoal
-            : blankGoal
-        setTheGoal(nextGoal);
-        setVisibility(Boolean(goalSelected))
-    }, [goalSelected])
-
-    useEffect( () => {
-        setUpdateStatus(theGoal.status ? 1 : 0)
-        setUpdateGoal(theGoal.goal)
-        setUpdateNote(theGoal.note)
-    }, [theGoal])
-
-    const handleSubmission = e => {
-        if (goalSelected) {
-            goalManagement.update(token, 
-                theGoal['goal_id'], 
-                updateGoal, 
-                theGoal.orderNumber, 
-                theGoal.deadline, 
-                updateStatus, 
-                updateNote, 
-                updateColor)
-                .then( res => {updateGoals()});
-        }
-    }
-
-    const handleHide = e => {
-        setGoalSelected(false);
-    }
-
-
+export default function DetailsBar({token, goals, lists, selectedList, goalSelected, setGoalSelected, getListDetails, deleteList, updateGoals, updateLists, visibility, setVisibility}){
+    
     return (
         <div
             id="details-bar" 
@@ -84,63 +39,26 @@ export default function DetailsBar({token, goals, selectedList, goalSelected, se
                     : "component-hidden"
             }
         >
-            <div className="detail" id="goal-box"> 
-                <GoalBox
-                    goal={updateGoal}
-                    status={updateStatus}
-                    updateGoal={setUpdateGoal}
-                    updateStatus={setUpdateStatus}
-                /> 
-            </div>
-            {/*<div className="detail"> <DeadlineBox deadline={theGoal.deadline.slice(1,theGoal.deadline.length-1)}/> </div>*/}
-            <div className="detail" id="note-box"> <NoteBox note={theGoal.note} updateNote={setUpdateNote}/> </div>
-            <div className="detail"> <HighlightBox highlight={theGoal.color}/> </div>
-            <button onClick={handleSubmission}> Update </button>
-            <button onClick={handleHide}> Hide </button>
+            {getListDetails 
+                ? <ListDetails
+                    token={token}
+                    lists={lists}
+                    selectedList={selectedList}
+                    updateLists={updateLists}
+                    setVisibility={setVisibility}
+                    deleteList={deleteList}
+                />
+                : <GoalDetails 
+                    token={token}
+                    goals={goals}
+                    selectedList={selectedList}
+                    goalSelected={goalSelected}
+                    setGoalSelected={setGoalSelected}
+                    updateGoals={updateGoals}
+                    setVisibility={setVisibility}
+                />
+            }
         </div>
     )
 }
 
-
-function GoalBox({goal, status, updateGoal, updateStatus}){
-    return (
-        <>  
-            <label>
-                <input type="checkbox" checked={status} onChange={ e => {updateStatus(e.target.checked ? 1 : 0)}} />
-                <span
-                    className="status-box">
-                </span>
-                <input type="text" placeholder={goal} onChange={(e) => {updateGoal(e.target.value)}}/>
-            </label>
-
-        </>
-    );
-}
-
-function DeadlineBox({deadline}){
-    return (<>
-        <label>Deadline</label>
-        <input type="datetime-local" placeholder={deadline}/>
-    </>)
-}
-
-function NoteBox({note, updateNote}){
-    return(
-        <>
-            <label>Note</label>
-        <textarea placeholder={note || "Leave a note for your task"} onChange={(e) => {updateNote(e.target.value)}}/>
-        </>
-    )
-}
-
-function HighlightBox({highlight}){
-    return(
-        <>  <label> Highlight Color</label>
-            <select>
-                <option> Red </option>  
-                <option> Green </option>  
-                <option> Orange </option>  
-            </select>
-        </>
-    )
-}

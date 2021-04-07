@@ -1,5 +1,6 @@
 import '../../component-styles/sticky-nav.css'
 import {useState} from 'react';
+import {Link} from 'react-router-dom';
 
 import listManagement from '../../services/listManagement.js'; // for list services
 import userManagement from '../../services/userManagement.js'; // for user services
@@ -57,8 +58,8 @@ export default function StickiesBar({ token, lists, selectedList, setSelectedLis
             </ul>
 
             <div id="redirect-buttons">
-                <button> Manage Account </button>
-                <button> Sign Out </button>
+                <Link to={token ? "/":"/login"}><button onClick={() => {}}> {token ? "Manage Account" : "Login"} </button></Link>
+                <Link to={token ? "/":"/login"}><button onClick={() => {}}> {token ? "Sign Out" : "Register"} </button></Link>
             </div>
 
             <button id="hide-left-bar-btn" onClick={handleHideBar}/>
