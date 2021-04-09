@@ -15,7 +15,7 @@ import userManagement from '../../services/userManagement.js'; // for user servi
 // updateLists is a callback to force app to rerender.
 
 
-export default function StickiesBar({ token, lists, selectedList, visibility, updateLists }) {
+export default function StickiesBar({ token, lists, selectedList, setSelectedList, visibility, updateLists }) {
     const [newList, setNewList] = useState("");
 
     const [isHidden, setIsHidden] = useState(visibility);
@@ -29,8 +29,11 @@ export default function StickiesBar({ token, lists, selectedList, visibility, up
     const swapToThisList = id => { // look here at async behavior
         return e => {
             // if user is logged in, update the db
-            if (token & id!==selectedList){
-                userManagement.update(token, 'selected_List', id);
+            if (token && id!==selectedList){
+                userManagement.update(token, 'selected_List', id)
+                .then( (res) => {
+                    setSelectedList(id);
+                });
             }
         };
     }
