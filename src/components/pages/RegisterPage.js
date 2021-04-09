@@ -8,7 +8,7 @@ export default function RegisterPage({updateToken}){
     //if auth, updateToken
     const handleResponse = (res) => {
         if (res.data.auth) {
-            history.push('/');
+            history.push('/main');
             return updateToken(res.data.token);
         }
     }

@@ -3,7 +3,7 @@ import FormData from 'form-data';
 
 
 const userManagement = {
-    create: async (token,username,password,email) => {
+    create: async (username,password,email) => {
         const form = new FormData();
         form.append('username', username);
         form.append('password', password);
@@ -12,13 +12,24 @@ const userManagement = {
         const config = {
             method: 'post',
             url: '/api/register',
-            headers: {
-                'x-access-token': token,
-            },
             data: form
         }
 
         return axios(config);
+    },
+    login: async (username, password) => {
+        const form = new FormData();
+        form.append('username', username);
+        form.append('password', password);
+
+        const config = {
+            method: 'post',
+            url: '/api/login',
+            data: form
+        }
+
+        return axios(config);
+
     },
     update: async (token, field, fieldData) => {
         const form = new FormData();

@@ -144,8 +144,7 @@ router.get('/me', verifyToken, async (req, res, next) => {
 /*
     req.body = {
         username: req.body.username,
-        password: req.body.password,
-        email: req.body.email
+        password: req.body.password
     }
     The middleware, verifyLogin, will send a response if there was some issue with login credentials. If there was no issue, it will set res.userId = user_id and go next.
 */

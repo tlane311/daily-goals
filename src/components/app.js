@@ -1,14 +1,15 @@
 import React, {useEffect, useState} from 'react';
-import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
+import {BrowserRouter as Router, Switch, Route, useHistory} from 'react-router-dom';
 
 import defaultData from './default-data.js';
 
 import MainPage from './pages/MainPage.js';
 import LoginPage from './pages/LoginPage.js';
 import RegisterPage from './pages/RegisterPage.js';
+import NewUserPage from './pages/NewUserPage.js';
 
 import userManagement from '../services/userManagement.js';
-
+import createTrialAcct from '../services/createTrialAccount.js';
 
 import axios from 'axios';
 
@@ -17,10 +18,6 @@ import axios from 'axios';
 const getUserRoute = '/api/me';
 const getListsRoute = '/api/lists/me';
 const getGoalsRoute = '/api/goals/me';
-
-
-
-
 
 
 // This component will perform all the of the db queries and route to all of the pages to our site.
@@ -32,8 +29,43 @@ const getGoalsRoute = '/api/goals/me';
 
 
 export default function App() {
+    let history = useHistory();
+
+    const [createTrialAccount, setCreateTrialAccount] = useState(false);
+    const [usingTrialAccount] = useState(localStorage.trialAccount);
     const [token, setToken] = useState("");
 
+    useEffect( () => {
+        if (createTrialAccount || !usingTrialAccount){
+            (
+                async () => {
+                    const token = await createTrialAcct(); // Note, if this fails, then the token is set to false;
+                    if (token){
+                        setCreateTrialAccount(false);
+                        setToken(token);
+                        localStorage.setItem('trialAccount', true);
+                    } else {
+                        console.log('an error occured')
+                        history.push('/');
+                    }
+                }
+            )();
+        }
+    }, [createTrialAccount])
+
+    useEffect( () => {
+        if (usingTrialAccount) {
+            (
+                async () => {
+                    const username = localStorage.trialUsername;
+                    const password = localStorage.trialPassword;
+                    const response = await userManagement.login(username,password);
+                    setToken(response.data.token);
+                }
+            )();
+        }
+    }, [usingTrialAccount]);
+    
     // We will pass setter functions here to children components so that they can request for the db to be queried.
     const [initialFetchDone, setInitialFetchDone] = useState(false);
     const [retrievedLists,setRetrievedLists] = useState(false);
@@ -50,6 +82,7 @@ export default function App() {
         // the shape: goals[list_id] = { fetchedOnce, data=[goal0, goal1, ...] }
         // each goal has shape: {goalId, listId, goal, orderNumber, deadline, status, note, color}
 
+    
     // This handles the first fetch. We will do a first fetch whenever the token changes.
     useEffect( () => {
         if (token) {
@@ -133,6 +166,9 @@ export default function App() {
             <Router>
                 <Switch>
                     <Route exact path="/">
+                        <NewUserPage setCreateTrialAccount={setCreateTrialAccount}/>
+                    </Route>
+                    <Route exact path="/main">
                         <MainPage
                             token={token}
                             username={username}
