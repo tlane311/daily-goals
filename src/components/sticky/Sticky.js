@@ -12,7 +12,7 @@ import userManagement from '../../services/userManagement.js';
 import useKeyDown from '../../hooks/useKeyDown.js';
 
 
-export default function Sticky({ theList, theGoals, token, goalSelected, setGoalSelected, getListDetails, setGetListDetails, updateGoals, updateLists, detailsBarIsVisible, setDetailsBarIsVisible }){
+export default function Sticky({ token, theList, theGoals, goalSelected, setGoalSelected, getListDetails, setGetListDetails, updateGoals, updateLists, detailsBarIsVisible, setDetailsBarIsVisible }){
     const enterKeyIsDown = useKeyDown('Enter'); // We would like for the user to be able create a new goal using "Enter" key
 
     // Shape of theGoals: { fetchedOnce, data }
