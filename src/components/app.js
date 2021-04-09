@@ -1,4 +1,7 @@
 import React, {useEffect, useState} from 'react';
+import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
+
+import defaultData from './default-data.js';
 
 import MainPage from './pages/MainPage.js';
 import LoginPage from './pages/LoginPage.js';
@@ -7,33 +10,29 @@ import RegisterPage from './pages/RegisterPage.js';
 import userManagement from '../services/userManagement.js';
 
 
-import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
-
 import axios from 'axios';
+
+
 
 const getUserRoute = '/api/me';
 const getListsRoute = '/api/lists/me';
 const getGoalsRoute = '/api/goals/me';
 
 
+
+
+
+
 // This component will perform all the of the db queries and route to all of the pages to our site.
 
+ 
+// When one logs in, the token will be stored in this component
 
-export default function App(){
-    
-    
-    /*
-        When one logs in, the token will be stored in this component
-        Then, main page can use the token to get user data.
-        
-    */
-   // Note, use local storage for token
+// Note, use local storage for token
 
+
+export default function App() {
     const [token, setToken] = useState("");
-
-    const updateToken = (token) => {
-        setToken(token);
-    }
 
     // We will pass setter functions here to children components so that they can request for the db to be queried.
     const [initialFetchDone, setInitialFetchDone] = useState(false);
@@ -42,24 +41,20 @@ export default function App(){
 
 
     // This is our state for storing db query results
-    const [username, setUsername] = useState("");
-    const [email, setEmail] = useState("");
+    const [username, setUsername] = useState(defaultData.username);
+    const [email, setEmail] = useState(defaultData.email);
 
-    const [lists, setLists] = useState([]); // An array of objects each of which represents a list. Shape: {listId, listName, orderNumber}
-    const [selectedList, setSelectedList] = useState(0); // This should be the list id number
-    const [goals, setGoals] = useState({}); // An object with key-value pairs for each list. 
-    // the shape: goals[list_id] = { fetchedOnce, data=[goal0, goal1, ...] }
-    // each goal has shape: {goalId, listId, goal, orderNumber, deadline, status, note, color}
+    const [lists, setLists] = useState(defaultData.lists); // An array of objects each of which represents a list. Shape: {listId, listName, orderNumber}
+    const [selectedList, setSelectedList] = useState(defaultData.selectedList); // This should be the list id number
+    const [goals, setGoals] = useState(defaultData.goals); // An object with key-value pairs for each list. 
+        // the shape: goals[list_id] = { fetchedOnce, data=[goal0, goal1, ...] }
+        // each goal has shape: {goalId, listId, goal, orderNumber, deadline, status, note, color}
 
-    // handle first fetch
-    // We will do a first fetch whenever the token changes.
+    // This handles the first fetch. We will do a first fetch whenever the token changes.
     useEffect( () => {
         if (token) {
             const retrieveData = async () => {
-                //await firstFetch({token, setUsername, setEmail, setSelectedList, setLists, setGoals});
-                
-                //setRetrievedLists(true);
-                //setInitialFetchDone(true);
+
                 let goalsData = {}
                 const [userData, listData] = await efficientFetch({token});
 
@@ -97,11 +92,8 @@ export default function App(){
 
                 setRetrievedLists(true);
                 setInitialFetchDone(true);
-
             }
-
             retrieveData();
-
         }
     }, [token])
     
@@ -122,16 +114,11 @@ export default function App(){
 
     // handle calls for lists updates
     useEffect( () => {
-
         if (token && !retrievedLists){
             grabListsData({token, setLists})
             setRetrievedLists(true);
         }
     }, [retrievedLists]);
-
-    const updateApp = () => {
-        setRetrievedGoals(false);
-    }
 
     const updateGoals = () => {
         setRetrievedGoals(false);
@@ -140,7 +127,6 @@ export default function App(){
     const updateLists = () => {
         setRetrievedLists(false);
     }
-
 
     return(
         <>
@@ -155,16 +141,15 @@ export default function App(){
                             selectedList={selectedList}
                             setSelectedList={setSelectedList}
                             goals={goals}
-                            updateApp={updateApp}
                             updateGoals={updateGoals}
                             updateLists={updateLists}
                         />
                     </Route>
                     <Route exact path="/login">
-                        <LoginPage updateToken={updateToken}/>
+                        <LoginPage updateToken={setToken}/>
                     </Route>
                     <Route exact path="/register">
-                        <RegisterPage updateToken={updateToken}/>
+                        <RegisterPage updateToken={setToken}/>
                     </Route>
                 </Switch>
             </Router>

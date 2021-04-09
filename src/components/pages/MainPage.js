@@ -8,31 +8,37 @@ import DetailsBar from '../details-bar/DetailsBar.js';
 
 
 
-/*
-    MainPage holds the current sticky, the details-bar and the stickies-bar.
-
-    MainPage will receieve lists, selectedList and goals from App.
-
-    MainPage serves to pass on the info to its children.
-
-    updateApp will force the main app fetch data again. We call this when we make changes to db.
-
-    I need to update selectedList to be a local storage thing
-*/
+// I need to update selectedList to be a local storage thing
 
 
+// This component is a child of MainPage that displays all of the list names.
+
+// NOTES ON PROPS PASSED TO THIS COMPONENT
+
+// token is set in App and used as credentials to make db queries
+
+// goals is defined in App and has shape { [list_id]: { fetchedOnce, data: [goal1,goal2,...] } }.
+// goals can be an empty object ie. goals = {}
+// goal data has shape: { list_id, goal_id, goal, note, status color }
+
+// lists is set in App and has shape [ {list_id, list_name, order_number}, {list_id, list_name, order_number}, ...]
+// list data has shape { list_id, list_name, order_number }
+
+// selectedList is a list_id (i.e. positive number) which is defined in Main Page
+// setSelectedList is the setter for selectedList
+
+// updateLists is a synchronous function defined in App. This function forces App to query the db for all list info. Note, this fn is not async.
+// updateGoals is a synchronous function defined in App. This function forces App to query the db for all goals info. Note, this fn is not async.
+
+/* 
+ * setData is an object which holds all of the data setters (great explanation, I know). It's shape:
+ * setData = { username, email, lists, selectedList, goals } where each value is the setter for that data.
+ * In other words, setData.username = setUsername;
+ * If users want to use the site without logging in, we can't make a db queries to update state in app. Hence, we need to pass the setters.
+ */
 const blankList = { 'list_name': 'Create a New List', 'order_number': undefined}
 
-export default function MainPage({token, lists, selectedList, setSelectedList, goals, updateApp, updateGoals, updateLists}){
-
-    
-    /*
-    Our data will be stored in a db. Ideally, we would like to query the database as few times as possible. If we query once, we will pull an array of columns. When we update these columns, react doesn't rerender; react fails to rerender because of the deeper shape of the array of columns. We introduce an artificial forceUpdate function to force rerenders.
-    */
-
-    const [, updateState] = React.useState();
-    const forceUpdate = React.useCallback(() => updateState({}), []);
-
+export default function MainPage({token, goals, lists, selectedList, setSelectedList,  updateLists, updateGoals}){
 
     const [allGoals, setAllGoals] = useState( goals ? {...goals} : {});
 
@@ -46,7 +52,7 @@ export default function MainPage({token, lists, selectedList, setSelectedList, g
 
     // whenever props update, update currentList
     useEffect( () => {
-        setCurrentList( lists.find(list => list['list_id'] === selectedList )|| blankList);
+        setCurrentList( lists.find( list => list['list_id'] === selectedList )|| blankList);
     }, [selectedList, lists]);
 
     const [currentGoals, setCurrentGoals] = useState(allGoals[selectedList]);
@@ -87,7 +93,6 @@ export default function MainPage({token, lists, selectedList, setSelectedList, g
                 setSelectedList={setSelectedList}
                 visibility={stickiesBarIsVisible}
                 setGetListDetails={setGetListDetails}
-                updateApp={updateApp}
                 updateLists={updateLists}
             />
                    
@@ -119,7 +124,6 @@ export default function MainPage({token, lists, selectedList, setSelectedList, g
                 deleteList={() => {console.log('deleteList has not been defined yet in MainPage')}}
                 visibility={detailsBarIsVisible}
                 setVisibility={setDetailsBarIsVisible}
-                updateApp={updateApp}
                 updateLists={updateLists}
                 updateGoals={updateGoals}
             />   

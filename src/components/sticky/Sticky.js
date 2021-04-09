@@ -12,7 +12,7 @@ import userManagement from '../../services/userManagement.js';
 import useKeyDown from '../../hooks/useKeyDown.js';
 
 
-export default function Sticky({theList, theGoals, token, goalSelected, setGoalSelected, getListDetails, setGetListDetails, updateGoals, updateLists, detailsBarIsVisible, setDetailsBarIsVisible}){
+export default function Sticky({ theList, theGoals, token, goalSelected, setGoalSelected, getListDetails, setGetListDetails, updateGoals, updateLists, detailsBarIsVisible, setDetailsBarIsVisible }){
     const enterKeyIsDown = useKeyDown('Enter'); // We would like for the user to be able create a new goal using "Enter" key
 
     // Shape of theGoals: { fetchedOnce, data }
@@ -35,6 +35,7 @@ export default function Sticky({theList, theGoals, token, goalSelected, setGoalS
             // If order numbers are inconsistent, we will update db and the rerender app.
             // If order numbers are consistent, we will sort theGoals and store as state.
 
+            // This const is just so that we always have a well-defined theGoals-like obj. Hence: 'reliable'.
             const reliableGoals = theGoals ? {...theGoals} : {fetchedOnce: false, data: []}
 
             // containsRepeats returns a boolean representing if the arr contains repeats
@@ -65,36 +66,35 @@ export default function Sticky({theList, theGoals, token, goalSelected, setGoalS
             const sorted = [...reliableGoals.data].sort( (a,b) => a['order_number'] - b['order_number']);
             setGoals(sorted);
         }
-
-        asyncEffect();
+        if (token){  
+            asyncEffect();
+        }
 
     }, [theGoals])
 
     const [newTask, setNewTask] = useState("");
-    const [renameList, setRenameList] = useState(false)
-    const [newListName, setNewListName] = useState("");
 
     const handleNewGoalCreation = async e => {
-        await goalManagement.create(token, theList['list_id'], newTask, theGoals.data.length+1);
-        setNewTask("");
-        updateGoals();
-    }
-
-    const handleListUpdate = async e => {
-        setRenameList(false);
-        await listManagement.update(token, 'list_name', newListName, theList['list_id']);
-        setNewListName("");
-        updateLists();
-    }
-
-    const handleListDeletion = async e => {
-        if (theGoals.data.length){
-            const idsArray = theGoals.data.map(goal => goal['goal_id']);
-            await goalManagement.deleteMany(token, idsArray);
+        // if user is logged in, update the db and the tell App to fetch the updated data
+        if (token){
+            await goalManagement.create(token, theList['list_id'], newTask, theGoals.data.length+1);
+            setNewTask("");
+            updateGoals();
         }
-        await listManagement.delete(token, theList['list_id']);
-        await userManagement.update(token, 'selected_list', null);
-        updateLists();
+    }
+    // C O M E   B A C K   T O   T H I S   O N E
+    // This needs to be moved up to MainPage
+    const handleListDeletion = async e => {
+        // if user is logged in, update the db and the tell App to fetch the updated data
+        if (token){
+            if (theGoals.data.length){
+                const idsArray = theGoals.data.map(goal => goal['goal_id']);
+                await goalManagement.deleteMany(token, idsArray);
+            }
+            await listManagement.delete(token, theList['list_id']);
+            await userManagement.update(token, 'selected_list', null);
+            updateLists();
+        }
     }
 
     useEffect( () => { // Note, we had some trouble using onKeyDown, so we make use of useEffect to handle the keydown "event".
@@ -105,40 +105,46 @@ export default function Sticky({theList, theGoals, token, goalSelected, setGoalS
     }, [enterKeyIsDown])
 
     const handleIncreasePriority = (id) => {
-        // Here, we will update the priority in the db and then update the app
+        if (token) {
+            // Here, we will update the priority in the db and then update the app
 
-        const targetIndex = goals.findIndex( goal => goal['goal_id'] === id);
+            const targetIndex = goals.findIndex( goal => goal['goal_id'] === id);
 
-        // If target is the first element of the array OR for some reason the id is not found
-        if (targetIndex<=0) return;
+            // If target is the first element of the array OR for some reason the id is not found
+            if (targetIndex<=0) return;
 
-        // Otherwise,
-        
-        const targetGoal = goals[targetIndex];
-        const previousGoal = goals[targetIndex - 1]; // Note, if the function reaches here, targetIndex - 1 >= 0
+            // Otherwise,
+            
+            const targetGoal = goals[targetIndex];
+            const previousGoal = goals[targetIndex - 1]; // Note, if the function reaches here, targetIndex - 1 >= 0
 
-        goalManagement.update(token,
-            targetGoal['goal_id'],
-            targetGoal['goal'],
-            targetIndex - 1,
-            targetGoal['deadline'],
-            targetGoal['status'],
-            targetGoal['note'],
-            targetGoal['color']
-        ).then(res => {
-                return goalManagement.update(token,
-                    previousGoal['goal_id'],
-                    previousGoal['goal'],
-                    targetIndex,
-                    previousGoal['deadline'],
-                    previousGoal['status'],
-                    previousGoal['note'],
-                    previousGoal['color']
-                );
+            goalManagement.update(token,
+                targetGoal['goal_id'],
+                targetGoal['goal'],
+                targetIndex - 1,
+                targetGoal['deadline'],
+                targetGoal['status'],
+                targetGoal['note'],
+                targetGoal['color']
+            ).then(res => {
+                    return goalManagement.update(token,
+                        previousGoal['goal_id'],
+                        previousGoal['goal'],
+                        targetIndex,
+                        previousGoal['deadline'],
+                        previousGoal['status'],
+                        previousGoal['note'],
+                        previousGoal['color']
+                    );
+                })
+            .then( res => {
+                return updateGoals();
             })
-        .then( res => {
-            return updateGoals();
-        })
+        } else {
+            
+        }
+
+
     }
 
     const handleDecreasePriority = (id) => {
