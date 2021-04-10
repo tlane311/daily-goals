@@ -1,3 +1,5 @@
+import '../../component-styles/order-buttons.css';
+
 export default function OrderButtons({handleIncreasePriority, handleDecreasePriority}){
     return(
         <div className="order-buttons">

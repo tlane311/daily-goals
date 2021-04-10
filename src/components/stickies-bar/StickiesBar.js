@@ -4,7 +4,7 @@ import {Link} from 'react-router-dom';
 
 import listManagement from '../../services/listManagement.js'; // for list services
 import userManagement from '../../services/userManagement.js'; // for user services
-
+import OrderButtons from '../task/OrderButtons.js';
 
 // Token is an authentication token. This is necessary to query db.
 // lists is an array with all list data: [ {list_id, list_name, order_number}, {...}, ..., {...}]
@@ -42,6 +42,58 @@ export default function StickiesBar({ token, lists, selectedList, setSelectedLis
         setIsHidden(!isHidden);
     }
 
+    const handleIncreasePriority = (id) => {
+        // Here, we will update the priority in the db and then update the app
+
+        const targetIndex = lists.findIndex( list => list['list_id'] === id);
+
+        // If target is the first element of the array OR for some reason the id is not found
+        if (targetIndex<=0) return;
+
+        // Otherwise,
+
+        listManagement.update(token,
+            'order_number',
+           targetIndex - 1,
+           id
+        ).then(res => {
+                return listManagement.update(token,
+                    'order_number',
+                    targetIndex,
+                    id
+                );
+            })
+        .then( res => {
+            return updateLists();
+        })
+    }
+
+    const handleDecreasePriority = (id) => {
+        // Here, we will update the priority in the db and then update the app
+
+        const targetIndex = lists.findIndex( list => list['list_id'] === id);
+
+        // If target is the last element of the array OR for some reason the id is not found
+        if (targetIndex===lists.length - 1 || targetIndex<0) return;
+
+        // Otherwise,
+
+        listManagement.update(token,
+            'order_number',
+           targetIndex - 1,
+           id
+        ).then(res => {
+                return listManagement.update(token,
+                    'order_number',
+                    targetIndex,
+                    id
+                );
+            })
+        .then( res => {
+            return updateLists();
+        })
+    }
+
     return(
         <nav id="sticky-nav" className={!isHidden ? "": ' hide-left-bar'}>
             <ul>
@@ -51,7 +103,11 @@ export default function StickiesBar({ token, lists, selectedList, setSelectedLis
                             onClick={swapToThisList(list['list_id'])} 
                             className={list['list_id'] === selectedList ? ' selected-list' : ""}> 
                             <span className="list-name">{list['list_name']}</span>
-                            <span className="list-icon">{list['list_name'][0].toUpperCase()}</span>
+                            <span className="list-icon">{list['list_name'][0].toUpperCase()+list['list_name'][1]}</span>
+                            <OrderButtons
+                                handleIncreasePriority={e=>{handleIncreasePriority(list['list_id'])}}
+                                handleDecreasePriority={e=>{handleDecreasePriority(list['list_id'])}}
+                            />
                         </li>
                     );
                 })}

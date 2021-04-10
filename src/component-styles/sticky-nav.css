@@ -282,3 +282,25 @@
 #redirect-buttons button:hover{
     background-color:var(--color-1);
 }
+
+
+/* Styling the Order Buttons */
+
+#sticky-nav .order-buttons{
+    margin-left: .3rem;
+}
+
+#sticky-nav .order-buttons button{
+    border-bottom-color: var(--color-2);
+}
+
+#sticky-nav .selected-list .order-buttons button{
+    border-bottom-color: var(--font-color);
+}
+#sticky-nav .order-buttons button:hover{
+    border-bottom-color:var(--color-2);
+}
+
+#sticky-nav li:hover button{
+    border-bottom-color:var(--font-color);
+}

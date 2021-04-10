@@ -1,0 +1,38 @@
+*{
+	--order-btn-size: .6rem;
+}
+
+
+/* Styling the Order Buttons */
+.order-buttons{
+	display:flex;
+	flex-direction:column;
+	height: calc(2*var(--order-btn-size));
+	justify-content:space-around;
+}
+
+
+.order-buttons button{ 
+	/* make them triangles */
+	height:0px;
+	width:0px;
+	border-left: calc(.5773*var(--order-btn-size)) solid transparent;
+	border-right: calc(.5773*var(--order-btn-size)) solid transparent;
+	border-bottom: var(--order-btn-size) solid black;
+	
+	/* undoing default settings for btns */
+	border-top:none; 
+	box-shadow:none;
+	background-color:transparent;
+
+	transition: .15s linear;
+	cursor:pointer;
+}
+
+.down-btn{
+	transform: translate(11.8%) rotate(60deg);
+}
+
+.order-buttons button:hover{
+	border-bottom-color: white;
+}
