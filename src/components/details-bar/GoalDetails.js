@@ -94,13 +94,14 @@ export default function GoalDetails({ token, goals, selectedList, goalSelected, 
     }
 
     const handleHide = e => {
-        setGoalSelected(false);
+        setVisibility(false);
     }
 
     const handleDelete = e => {
         if (theGoal['goal_id']){
             goalManagement.delete(token, theGoal['goal_id'])
-                .then(updateGoals);
+                .then(updateGoals)
+                .then( () => {setVisibility(false);});
         }
     }
 
