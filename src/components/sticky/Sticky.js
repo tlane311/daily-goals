@@ -186,24 +186,12 @@ export default function Sticky({ token, theList, theGoals, goalSelected, setGoal
     }
 
     const handleListDetails = e => {
-        // getListDetails is false and detailsBarIsVisibile is false
-        // getListDetails is false and detailsBarIsVisible is true
-        // getListDetails is true
-        
-        if (getListDetails){
-            
+        if (!getListDetails){ // If user wasn't already looking at the list details, set visibility to true
+            setDetailsBarIsVisible(true)
+        } else { // If the user is looking at list details, toggle visibility
             setDetailsBarIsVisible(!detailsBarIsVisible)
-            // This timeout is because of a visual bug.
-            setTimeout(() => {setGetListDetails(false);}, 500)
         }
-        if (!getListDetails && !detailsBarIsVisible){
-            setDetailsBarIsVisible(true);
-            setGetListDetails(true);        
-        }
-
-        if (!getListDetails && detailsBarIsVisible){
-            setGetListDetails(true)
-        }
+        setGetListDetails(true);
     }
 
     return (

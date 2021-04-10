@@ -34,20 +34,38 @@ export default function Task({ token, goal, goalSelected, setGoalSelected, updat
     
 
     const handleDetailsClick = e => {
-        // This is a weird function.
-        if (goalSelected!==goal['goal_id']){
-            setGoalSelected(goal['goal_id']);
+        if (goalSelected === goal['goal_id']){
+            if (getListDetails) { // If user was looking at a list, don't hide the DetailsBar
+                setDetailsBarIsVisible(true)
+            } else { // If user hasn't been looking at lists, toggle the DetailsBar on click
+                setDetailsBarIsVisible(!detailsBarIsVisible)
+            }
+            
+        } else {
             setDetailsBarIsVisible(true);
-            setGetListDetails(false);
+            setGoalSelected(goal['goal_id']);
         }
-        if (goalSelected===goal['goal_id'] && !getListDetails){
-            setDetailsBarIsVisible(!detailsBarIsVisible)
-        }
-        if (goalSelected===goal['goal_id'] && getListDetails){
-            setGetListDetails(false)
-        }
-
+        setGetListDetails(false);
     }
+
+    /*
+        booleans
+            getListDetails
+            visibility
+            goalSelected
+
+        actions:
+            clickList
+            clickSameTask
+            clickDifferentTask
+
+        t t
+
+        t f
+        
+        
+    */
+
     return (
         <>
             <li className="task">
