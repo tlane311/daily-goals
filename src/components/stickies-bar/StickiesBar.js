@@ -43,55 +43,68 @@ export default function StickiesBar({ token, lists, selectedList, setSelectedLis
     }
 
     const handleIncreasePriority = (id) => {
-        // Here, we will update the priority in the db and then update the app
+        // We will return an event handler that depends upon the id input
 
-        const targetIndex = lists.findIndex( list => list['list_id'] === id);
+        return e => {
+            // Here, we will update the priority in the db and then update the app
 
-        // If target is the first element of the array OR for some reason the id is not found
-        if (targetIndex<=0) return;
+            const targetIndex = lists.findIndex( list => list['list_id'] === id);
 
-        // Otherwise,
+            // If target is the first element of the array OR for some reason the id is not found
+            if (targetIndex<=0) return;
 
-        listManagement.update(token,
-            'order_number',
-           targetIndex - 1,
-           id
-        ).then(res => {
-                return listManagement.update(token,
-                    'order_number',
-                    targetIndex,
-                    id
-                );
+            // Otherwise,
+
+            listManagement.update(token,
+                'order_number',
+            targetIndex - 1,
+            id
+            ).then(res => {
+                    return listManagement.update(token,
+                        'order_number',
+                        targetIndex,
+                        id
+                    );
+                })
+            .then( res => {
+                return updateLists();
             })
-        .then( res => {
-            return updateLists();
-        })
+        }
+
+
     }
 
     const handleDecreasePriority = (id) => {
-        // Here, we will update the priority in the db and then update the app
 
-        const targetIndex = lists.findIndex( list => list['list_id'] === id);
+        // We will return an event handler that depends upon the id input
 
-        // If target is the last element of the array OR for some reason the id is not found
-        if (targetIndex===lists.length - 1 || targetIndex<0) return;
+        return e => {
+            // Here, we will update the priority in the db and then update the app
 
-        // Otherwise,
+            const targetIndex = lists.findIndex( list => list['list_id'] === id);
 
-        listManagement.update(token,
-            'order_number',
-           targetIndex - 1,
-           id
-        ).then(res => {
-                return listManagement.update(token,
-                    'order_number',
-                    targetIndex,
-                    id
-                );
+            // If target is the last element of the array OR for some reason the id is not found
+            if (targetIndex===lists.length - 1 || targetIndex<0) return;
+
+            // Otherwise,
+
+            listManagement.update(token,
+                'order_number',
+            targetIndex - 1,
+            id
+            ).then(res => {
+                    return listManagement.update(token,
+                        'order_number',
+                        targetIndex,
+                        id
+                    );
+                })
+            .then( res => {
+                return updateLists();
             })
-        .then( res => {
-            return updateLists();
-        })
+        }
+        
+
     }
 
     return(
@@ -105,8 +118,8 @@ export default function StickiesBar({ token, lists, selectedList, setSelectedLis
                             <span className="list-name">{list['list_name']}</span>
                             <span className="list-icon">{list['list_name'][0].toUpperCase()+list['list_name'][1]}</span>
                             <OrderButtons
-                                handleIncreasePriority={e=>{handleIncreasePriority(list['list_id'])}}
-                                handleDecreasePriority={e=>{handleDecreasePriority(list['list_id'])}}
+                                handleIncreasePriority={ handleIncreasePriority( list['list_id'] ) }
+                                handleDecreasePriority={ handleDecreasePriority( list['list_id'] ) }
                             />
                         </li>
                     );
