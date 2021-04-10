@@ -24,7 +24,6 @@ export default function StickiesBar({ token, lists, selectedList, setSelectedLis
             const repeatsExist = containsRepeats(lists.map(list => list['order_number']));
 
             const gapsExist = lists.filter( list => list['order_number'] >= lists.length).length;
-            console.log('repeats', repeatsExist, 'gaps', gapsExist)
             // If no gaps exist, then every element has order number less than the length.
             // If there are no repeats and no gaps, then theGoals.data.map(goal => goal['order_number']) = [0,1,2,3, ..., theGoals.length - 1];
 
@@ -206,7 +205,7 @@ function containsRepeats(arr){
     let newArr = [];
 
     for (let index =0; index < arr.length; index++){
-        if ( newArr.includes(arr[index]) ) {console.log(arr); return true;};
+        if ( newArr.includes(arr[index]) ) { return true;};
         newArr.push(arr[index]);
     }
 
