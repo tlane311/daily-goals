@@ -15,7 +15,7 @@ import OrderButtons from '../task/OrderButtons.js';
 // updateLists is a callback to force app to rerender.
 
 
-export default function StickiesBar({ token, lists, selectedList, setSelectedList, visibility, updateLists }) {
+export default function StickiesBar({ token, lists, selectedList, setSelectedList, visibility, setDetailsBarIsVisible, updateLists }) {
     const [sortedLists, setSortedLists] = useState(lists) // This will be sorted in an effect.
     // ordering lists
     useEffect( () => {
@@ -80,6 +80,7 @@ export default function StickiesBar({ token, lists, selectedList, setSelectedLis
             if (token && id!==selectedList){
                 userManagement.update(token, 'selected_List', id)
                 .then( (res) => {
+                    setDetailsBarIsVisible(false);
                     setSelectedList(id);
                 });
             }

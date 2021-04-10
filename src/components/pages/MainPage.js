@@ -111,6 +111,7 @@ export default function MainPage({token, goals, lists, selectedList, setSelected
                 setSelectedList={setSelectedList}
                 visibility={stickiesBarIsVisible}
                 setGetListDetails={setGetListDetails}
+                setDetailsBarIsVisible={setDetailsBarIsVisible}
                 updateLists={updateLists}
             />
                    
