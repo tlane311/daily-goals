@@ -28,7 +28,7 @@ import ListDetails from './ListDetails.js';
 // Note, we are not implementing deadlines for the moment because not all browsers support that input type. We will implement this in the future.
 
 
-export default function DetailsBar({token, goals, lists, selectedList, goalSelected, setGoalSelected, getListDetails, deleteList, updateGoals, updateLists, visibility, setVisibility, setData}){
+export default function DetailsBar({token, goals, lists, selectedList, goalSelected, setGoalSelected, getListDetails, handleDeleteList, updateGoals, updateLists, visibility, setVisibility, setData}){
     
     return (
         <div
@@ -46,7 +46,7 @@ export default function DetailsBar({token, goals, lists, selectedList, goalSelec
                     selectedList={selectedList}
                     updateLists={updateLists}
                     setVisibility={setVisibility}
-                    deleteList={deleteList}
+                    handleDeleteList={handleDeleteList}
                 />
                 : <GoalDetails 
                     token={token}

@@ -14,7 +14,7 @@ import listManagement from '../../services/listManagement.js';
 // setVisibility is a setter defined in DetailsBar. If visiblity is truthy, then detailsbar is shown and also the inverse of that statement.
 // deleteList is defined in MainPage and handles deleting a list. Because we are using a relational db, we must delete all goals associated to a list before we delete the list itself.
 
-export default function ListDetails({token, lists, selectedList, updateLists, setVisibility, deleteList}){
+export default function ListDetails({token, lists, selectedList, updateLists, setVisibility, handleDeleteList}){
 
     const blankList = { 'list_id': "", 'list_name': "", "order_number": 1 }
 
@@ -54,6 +54,7 @@ export default function ListDetails({token, lists, selectedList, updateLists, se
             </div>
             <button onClick={handleSubmission}> Update </button>
             <button onClick={handleHide}> Hide </button>
+            <button onClick={handleDeleteList}> Delete </button>
         </>
     )
 

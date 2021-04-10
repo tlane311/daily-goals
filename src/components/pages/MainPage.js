@@ -4,6 +4,9 @@ import React, {useState, useEffect} from 'react';
 import Sticky from '../sticky/Sticky.js';
 import StickiesBar from '../stickies-bar/StickiesBar.js';
 import DetailsBar from '../details-bar/DetailsBar.js';
+import goalManagement from '../../services/goalManagement.js';
+import listManagement from '../../services/listManagement.js';
+import userManagement from '../../services/userManagement.js';
 
 
 
@@ -84,6 +87,21 @@ export default function MainPage({token, goals, lists, selectedList, setSelected
     const [detailsBarIsVisible, setDetailsBarIsVisible] = useState(false);
     const [stickiesBarIsVisible, setStickiesBarIsVisible] = useState(false);
 
+    const handleListDeletion = async e => {
+        if (token && currentList['list_id']) {
+            if (currentGoals.data.length) {
+                const idsArray = currentGoals.data.map(goal => goal['goal_id']);
+                await goalManagement.deleteMany(token, idsArray);
+            }
+
+            await listManagement.delete(token, currentList['list_id']);
+            const nextListId = lists.map(list => list['list_id']).find( id => id !== selectedList); // Note, this either returns a new list id or undefined
+            await userManagement.update(token, 'selected_list', nextListId); //
+            setSelectedList(nextListId);
+            updateLists();
+        }
+    }
+
     return(
         <>
             <StickiesBar
@@ -107,6 +125,7 @@ export default function MainPage({token, goals, lists, selectedList, setSelected
                 }}
                 getListDetails={getListDetails}
                 setGetListDetails={setGetListDetails}
+                handleListDeletion={handleListDeletion}
                 updateGoals={updateGoals}
                 updateLists={updateLists}
                 detailsBarIsVisible={detailsBarIsVisible}
@@ -121,7 +140,7 @@ export default function MainPage({token, goals, lists, selectedList, setSelected
                 goalSelected={goalSelected}
                 setGoalSelected={setGoalSelected}
                 getListDetails={getListDetails}
-                deleteList={() => {console.log('deleteList has not been defined yet in MainPage')}}
+                handleDeleteList={handleListDeletion}
                 visibility={detailsBarIsVisible}
                 setVisibility={setDetailsBarIsVisible}
                 updateLists={updateLists}

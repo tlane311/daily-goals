@@ -12,7 +12,7 @@ import userManagement from '../../services/userManagement.js';
 import useKeyDown from '../../hooks/useKeyDown.js';
 
 
-export default function Sticky({ token, theList, theGoals, goalSelected, setGoalSelected, getListDetails, setGetListDetails, updateGoals, updateLists, detailsBarIsVisible, setDetailsBarIsVisible }){
+export default function Sticky({ token, theList, theGoals, goalSelected, setGoalSelected, getListDetails, setGetListDetails, handleListDeletion, updateGoals, updateLists, detailsBarIsVisible, setDetailsBarIsVisible }){
     const enterKeyIsDown = useKeyDown('Enter'); // We would like for the user to be able create a new goal using "Enter" key
 
     // Shape of theGoals: { fetchedOnce, data }
@@ -87,20 +87,6 @@ export default function Sticky({ token, theList, theGoals, goalSelected, setGoal
             await goalManagement.create(token, theList['list_id'], newTask, theGoals.data.length+1);
             setNewTask("");
             updateGoals();
-        }
-    }
-    // C O M E   B A C K   T O   T H I S   O N E
-    // This needs to be moved up to MainPage
-    const handleListDeletion = async e => {
-        // if user is logged in, update the db and the tell App to fetch the updated data
-        if (token){
-            if (theGoals.data.length){
-                const idsArray = theGoals.data.map(goal => goal['goal_id']);
-                await goalManagement.deleteMany(token, idsArray);
-            }
-            await listManagement.delete(token, theList['list_id']);
-            await userManagement.update(token, 'selected_list', null);
-            updateLists();
         }
     }
 
@@ -227,10 +213,9 @@ export default function Sticky({ token, theList, theGoals, goalSelected, setGoal
             > 
                 {theList['list_name']}
             </h3>
-            <button onClick={handleListDeletion}> Delete This List </button>
             <ul>
                 {goals.map(
-                    (goal,index) => 
+                    goal => 
                         <Task 
                             token={token}
                             goal={goal}
