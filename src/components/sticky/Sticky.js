@@ -105,46 +105,40 @@ export default function Sticky({ token, theList, theGoals, goalSelected, setGoal
     }, [enterKeyIsDown])
 
     const handleIncreasePriority = (id) => {
-        if (token) {
-            // Here, we will update the priority in the db and then update the app
+        // Here, we will update the priority in the db and then update the app
 
-            const targetIndex = goals.findIndex( goal => goal['goal_id'] === id);
+        const targetIndex = goals.findIndex( goal => goal['goal_id'] === id);
 
-            // If target is the first element of the array OR for some reason the id is not found
-            if (targetIndex<=0) return;
+        // If target is the first element of the array OR for some reason the id is not found
+        if (targetIndex<=0) return;
 
-            // Otherwise,
-            
-            const targetGoal = goals[targetIndex];
-            const previousGoal = goals[targetIndex - 1]; // Note, if the function reaches here, targetIndex - 1 >= 0
+        // Otherwise,
+        
+        const targetGoal = goals[targetIndex];
+        const previousGoal = goals[targetIndex - 1]; // Note, if the function reaches here, targetIndex - 1 >= 0
 
-            goalManagement.update(token,
-                targetGoal['goal_id'],
-                targetGoal['goal'],
-                targetIndex - 1,
-                targetGoal['deadline'],
-                targetGoal['status'],
-                targetGoal['note'],
-                targetGoal['color']
-            ).then(res => {
-                    return goalManagement.update(token,
-                        previousGoal['goal_id'],
-                        previousGoal['goal'],
-                        targetIndex,
-                        previousGoal['deadline'],
-                        previousGoal['status'],
-                        previousGoal['note'],
-                        previousGoal['color']
-                    );
-                })
-            .then( res => {
-                return updateGoals();
+        goalManagement.update(token,
+            targetGoal['goal_id'],
+            targetGoal['goal'],
+            targetIndex - 1,
+            targetGoal['deadline'],
+            targetGoal['status'],
+            targetGoal['note'],
+            targetGoal['color']
+        ).then(res => {
+                return goalManagement.update(token,
+                    previousGoal['goal_id'],
+                    previousGoal['goal'],
+                    targetIndex,
+                    previousGoal['deadline'],
+                    previousGoal['status'],
+                    previousGoal['note'],
+                    previousGoal['color']
+                );
             })
-        } else {
-            
-        }
-
-
+        .then( res => {
+            return updateGoals();
+        })
     }
 
     const handleDecreasePriority = (id) => {
