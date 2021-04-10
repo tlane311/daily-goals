@@ -35,7 +35,6 @@ export default function Task({ token, goal, goalSelected, setGoalSelected, updat
 
     const handleDetailsClick = e => {
         // This is a weird function.
-        console.log(goalSelected, goal['goal_id'])
         if (goalSelected!==goal['goal_id']){
             setGoalSelected(goal['goal_id']);
             setDetailsBarIsVisible(true);
