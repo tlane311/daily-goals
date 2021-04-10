@@ -12,7 +12,7 @@
     transition: transform .5s linear;
 
     --skill-icon-size: 37.5px;
-    --skill-icon-margin: calc(.5*calc(min(max(5vw, 50px), 75px) - var(--skill-icon-size)));
+    --skill-icon-margin: calc(.42*calc(min(max(5vw, 50px), 75px)) - .5*var(--skill-icon-size));
     /* This is a precise calculation for the perfect margin for our .skill-icon. */
 }
 
@@ -57,6 +57,7 @@
 #sticky-nav ul{
     max-height:calc(100%-96px);
     overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 /* styling the overflow bar (if it appears) */
@@ -225,7 +226,7 @@
     width: var(--skill-icon-size);
     margin-right: var(--skill-icon-margin);
 
-    border-radius: 100%;
+    border-radius: 0rem;
     opacity: 0; /* Notice the default opacity. */
     transition: all .5s ease-out;
     background-color: var(--color-2);
@@ -237,6 +238,7 @@
 
     font-weight: bold;
     font-size: 1.618rem;
+    display:none;
 }
 .hide-left-bar .list-icon:hover{
     background-color:var(--color-1);
@@ -244,6 +246,7 @@
 /* When the bar is hidden, show the .list-icon*/
 .hide-left-bar ul li .list-icon{
     opacity:1;
+    display:flex;
 }
 
 
@@ -287,7 +290,12 @@
 /* Styling the Order Buttons */
 
 #sticky-nav .order-buttons{
-    margin-left: .3rem;
+    margin-left: auto;
+}
+
+.hide-left-bar .order-buttons{
+    opacity:0;
+    display:none;
 }
 
 #sticky-nav .order-buttons button{

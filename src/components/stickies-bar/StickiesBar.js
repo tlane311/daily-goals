@@ -1,5 +1,5 @@
 import '../../component-styles/sticky-nav.css'
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import {Link} from 'react-router-dom';
 
 import listManagement from '../../services/listManagement.js'; // for list services
@@ -16,13 +16,62 @@ import OrderButtons from '../task/OrderButtons.js';
 
 
 export default function StickiesBar({ token, lists, selectedList, setSelectedList, visibility, updateLists }) {
+    const [sortedLists, setSortedLists] = useState(lists) // This will be sorted in an effect.
+    // ordering lists
+    useEffect( () => {
+        const asyncEffect = async () => {
+
+            const repeatsExist = containsRepeats(lists.map(list => list['order_number']));
+
+            const gapsExist = lists.filter( list => list['order_number'] >= lists.length).length;
+            console.log('repeats', repeatsExist, 'gaps', gapsExist)
+            // If no gaps exist, then every element has order number less than the length.
+            // If there are no repeats and no gaps, then theGoals.data.map(goal => goal['order_number']) = [0,1,2,3, ..., theGoals.length - 1];
+
+            const sortingNeeded = gapsExist || repeatsExist;
+
+            if (sortingNeeded){
+                // We order the given list by the order-numbers presented.
+                // Then, we will change the order-numbers so that no repeats or gaps exist
+                // If we do not first order reliableGoals, then really chaotic reorderings can happen if the user spams the order-buttons.
+
+                const orderedLists = [...lists]; // We order in the next line.
+                
+                orderedLists.sort( (first,second) => first['order_number'] - second['order_number']);
+                // Note, for a compare fn, positive difference means reverse order, nonpositive difference means preserve order
+                
+                for (let i=0; i < orderedLists.length; i++){
+                    await listManagement.update(
+                        token,
+                        'order_number',
+                        i,
+                        orderedLists[i]['list_id']
+                    )
+                }
+                return updateLists();
+            }
+
+            // If sorting not needed ...
+            const sorted = [...lists].sort((first,second) => first['order_number'] - second['order_number']);
+            // Note, for a compare fn, positive difference means reverse order, nonpositive difference means preserve order
+            setSortedLists(sorted);
+
+        }
+
+        if (token && lists){
+            asyncEffect();
+        }
+    }, [lists])
+    
+    
+    
     const [newList, setNewList] = useState("");
 
     const [isHidden, setIsHidden] = useState(visibility);
 
     const handleNewListCreation = (e) => {
         if (!newList) return;
-        return listManagement.create(token, newList, lists.length+1).then(updateLists);
+        return listManagement.create(token, newList, sortedLists.length+1).then(updateLists);
     }
 
     // This function returns an event handler.
@@ -48,12 +97,16 @@ export default function StickiesBar({ token, lists, selectedList, setSelectedLis
         return e => {
             // Here, we will update the priority in the db and then update the app
 
-            const targetIndex = lists.findIndex( list => list['list_id'] === id);
+            const targetIndex = sortedLists.findIndex( list => list['list_id'] === id);
+
+
 
             // If target is the first element of the array OR for some reason the id is not found
             if (targetIndex<=0) return;
 
             // Otherwise,
+
+            const previousList = sortedLists[targetIndex - 1] // This is the list that appears right before the target list.
 
             listManagement.update(token,
                 'order_number',
@@ -63,7 +116,7 @@ export default function StickiesBar({ token, lists, selectedList, setSelectedLis
                     return listManagement.update(token,
                         'order_number',
                         targetIndex,
-                        id
+                        previousList['list_id']
                     );
                 })
             .then( res => {
@@ -81,22 +134,23 @@ export default function StickiesBar({ token, lists, selectedList, setSelectedLis
         return e => {
             // Here, we will update the priority in the db and then update the app
 
-            const targetIndex = lists.findIndex( list => list['list_id'] === id);
+            const targetIndex = sortedLists.findIndex( list => list['list_id'] === id);
 
             // If target is the last element of the array OR for some reason the id is not found
-            if (targetIndex===lists.length - 1 || targetIndex<0) return;
+            if (targetIndex===sortedLists.length - 1 || targetIndex<0) return;
 
             // Otherwise,
+            const nextList = sortedLists[targetIndex+1] // This is the list that appears right after the target list.
 
             listManagement.update(token,
                 'order_number',
-            targetIndex - 1,
-            id
+                targetIndex + 1,
+                id
             ).then(res => {
                     return listManagement.update(token,
                         'order_number',
                         targetIndex,
-                        id
+                        nextList['list_id']
                     );
                 })
             .then( res => {
@@ -110,13 +164,16 @@ export default function StickiesBar({ token, lists, selectedList, setSelectedLis
     return(
         <nav id="sticky-nav" className={!isHidden ? "": ' hide-left-bar'}>
             <ul>
-                {lists.map( list => {
+                {sortedLists.map( list => {
+                    const listName = list['list_name'];
                     return (
                         <li 
                             onClick={swapToThisList(list['list_id'])} 
                             className={list['list_id'] === selectedList ? ' selected-list' : ""}> 
                             <span className="list-name">{list['list_name']}</span>
-                            <span className="list-icon">{list['list_name'][0].toUpperCase()+list['list_name'][1]}</span>
+                            <span className="list-icon">
+                                { listName[0].toUpperCase()+listName[1] }
+                            </span>
                             <OrderButtons
                                 handleIncreasePriority={ handleIncreasePriority( list['list_id'] ) }
                                 handleDecreasePriority={ handleDecreasePriority( list['list_id'] ) }
@@ -139,4 +196,19 @@ export default function StickiesBar({ token, lists, selectedList, setSelectedLis
             <button id="hide-left-bar-btn" onClick={handleHideBar}/>
         </nav>
     )
+}
+
+
+// Helper function for ordering goals/lists
+function containsRepeats(arr){
+    if (!Array.isArray(arr)) return undefined;
+    
+    let newArr = [];
+
+    for (let index =0; index < arr.length; index++){
+        if ( newArr.includes(arr[index]) ) {console.log(arr); return true;};
+        newArr.push(arr[index]);
+    }
+
+    return false;
 }

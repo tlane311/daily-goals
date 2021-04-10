@@ -47,15 +47,21 @@ export default function Sticky({ token, theList, theGoals, goalSelected, setGoal
             const sortingNeeded = gapsExist || repeatsExist;
             
             if (sortingNeeded) {
-                for (let i=0; i < reliableGoals.data.length; i++){                
+                // We order the given reliableGoals by the order-numbers presented.
+                // Then, we will change the order-numbers so that no repeats or gaps exist
+                // If we do not first order reliableGoals, then really chaotic reorderings can happen if the user spams the order-buttons.
+                const orderedGoals = [...reliableGoals.data];
+                orderedGoals.sort( (first, second) => first['order_number'] - second['order_number']);
+                // Note, for a compare fn, positive difference means reverse order, nonpositive difference means preserve order
+                for (let i=0; i < orderedGoals.length; i++){                
                     await goalManagement.update( token,
-                        reliableGoals.data[i]['goal_id'], //goalId
-                        reliableGoals.data[i]['goal'], //goal
+                        orderedGoals[i]['goal_id'], //goalId
+                        orderedGoals[i]['goal'], //goal
                         i, //orderNumber.
-                        reliableGoals.data[i]['deadline'], //deadline
-                        reliableGoals.data[i]['status'], //status
-                        reliableGoals.data[i]['note'], //note
-                        reliableGoals.data[i]['color'], //color
+                        orderedGoals[i]['deadline'], //deadline
+                        orderedGoals[i]['status'], //status
+                        orderedGoals[i]['note'], //note
+                        orderedGoals[i]['color'], //color
                     )
                 }
 
@@ -64,6 +70,7 @@ export default function Sticky({ token, theList, theGoals, goalSelected, setGoal
 
             // If sorting not needed ...
             const sorted = [...reliableGoals.data].sort( (a,b) => a['order_number'] - b['order_number']);
+            // Note, for a compare fn, positive difference means reverse order, nonpositive difference means preserve order
             setGoals(sorted);
         }
         if (token){  
