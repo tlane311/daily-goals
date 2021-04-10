@@ -75,8 +75,6 @@ export default function Task({ token, goal, goalSelected, setGoalSelected, updat
                         handleIncreasePriority={ () => { handleIncreasePriority(goal['goal_id']) } }
                         handleDecreasePriority={ () => { handleDecreasePriority(goal['goal_id']) } }
                     />
-
-
             </li>
         </>
     )
