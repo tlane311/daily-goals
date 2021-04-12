@@ -39,6 +39,14 @@
     display: flex;
     justify-content: flex-start;
 }
+
+.list-name{
+    width:100%;
+    display:inline-block;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    overflow:hidden;
+}
 .hide-left-bar li { /* When this bar is hidden, the list elements are ...*/
     color:transparent;
 }
