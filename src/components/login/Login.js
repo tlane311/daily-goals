@@ -93,15 +93,18 @@ export default function Login({loginRoute, loginIdentifier, next, handleError}){
                 onChange={ e => {return setLoginPassword(e.target.value)} }
             />
 
-            <label for="remember-me"> Remember Me </label>
-            <input 
-                type="checkbox" 
-                name="remember-me" 
-                onChange={handleRememberMe}
-                checked={rememberMe}
-            />
+
 
             <button type="submit"> Login </button>
+            <label className='remember-me' for="remember-me">
+                Remember Me
+                <input 
+                    type="checkbox" 
+                    name="remember-me" 
+                    onChange={handleRememberMe}
+                    checked={rememberMe}
+                />
+            </label>
         </form>
     );
 }

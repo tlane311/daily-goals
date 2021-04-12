@@ -1,4 +1,4 @@
-#register-page{
+#login-page{
     height: 75%;
     width: 100%;
     position: absolute;
@@ -11,7 +11,7 @@
     align-items: center;
 }
 
-#register{
+#login{
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
@@ -21,7 +21,7 @@
 }
 
 
-#register input {
+#login input {
     height: 2rem;
     width: 100%;
     font-family: inherit;
@@ -33,7 +33,20 @@
     border-radius: 8px;
 }
 
-#register button{
+#login-page .remember-me{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    font-size: 1rem;
+}
+#login-page .remember-me input{
+    height:1rem;
+    width:1rem;
+    margin-left:2.5%;
+}
+
+#login button{
     height: 2.2rem;
     width: 105%;
     margin-top: 10%;
@@ -50,25 +63,26 @@
     transition:.5s;
 }
 
-#register button:hover{
+#login button:hover{
     background-color:var(--color-1);
 }
 
-#register-page h3, #register-page a{
+#login-page h3, #login-page a{
     width:100%;
     text-align: center;
 }
 
-#register-page h3{
+#login-page h3{
     font-size:2rem;
+    letter-spacing:1rem;
 }
-#register-page a{
+#login-page a{
     font-size:.75rem;
     color:inherit;
     text-decoration: none;
 }
 
-#register-to-try{
+#login-to-try{
     margin-top:2.5%;
 }
 
