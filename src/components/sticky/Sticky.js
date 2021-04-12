@@ -84,7 +84,7 @@ export default function Sticky({ token, theList, theGoals, goalSelected, setGoal
     const handleNewGoalCreation = async e => {
         // if user is logged in, update the db and the tell App to fetch the updated data
         if (token){
-            await goalManagement.create(token, theList['list_id'], newTask, theGoals.data.length+1);
+            await goalManagement.create(token, theList['list_id'], newTask, theGoals.data.length);
             setNewTask("");
             updateGoals();
         }

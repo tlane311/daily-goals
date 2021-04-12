@@ -89,7 +89,10 @@ export default function GoalDetails({ token, goals, selectedList, goalSelected, 
                 updatedStatus, 
                 updatedNote, 
                 updatedColor)
-                .then( res => {updateGoals()});
+                .then( res => {
+                    setVisibility(false);
+                    updateGoals();
+                });
         }
     }
 
