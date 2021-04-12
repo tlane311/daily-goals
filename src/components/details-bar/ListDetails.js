@@ -57,9 +57,13 @@ export default function ListDetails({token, lists, selectedList, updateLists, se
                     placeholder={theList['list_name']}
                     onChange={(e) => {setUpdatedListName(e.target.value)}}/>
             </div>
-            <button onClick={handleSubmission}> Update </button>
-            <button onClick={handleHide}> Hide </button>
-            <button onClick={handleDeleteListAndHide}> Delete </button>
+
+            <div id="details-bar-buttons-container">
+                <button onClick={handleSubmission}> Update </button>
+                <button onClick={handleHide}> Hide </button>
+                <button onClick={handleDeleteListAndHide}> Delete </button>
+            </div>
+
         </>
     )
 

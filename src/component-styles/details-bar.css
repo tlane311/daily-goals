@@ -163,3 +163,34 @@
 
 
 
+
+
+#details-bar-buttons-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: flex-end;
+    height: 2rem;
+    width: auto;
+    margin-top: min(1rem,16px);
+}
+
+#details-bar-buttons-container button{
+    background: inherit;
+    color: var(--color-1);
+    letter-spacing: .05rem;
+    border-radius: 64px;
+    width: 3.236rem;
+    height: 2rem;
+    border: none;
+    background-color: var(--font-color);
+    font-family: inherit;
+    cursor: pointer;
+    transition:.5s;
+    font-weight:bold
+}
+
+#details-bar-buttons-container button:hover{
+    background-color: var(--color-4);
+    color:var(--font-color);
+}

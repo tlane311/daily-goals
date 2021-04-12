@@ -127,10 +127,12 @@ export default function GoalDetails({ token, goals, selectedList, goalSelected, 
             <div className="detail">
                 <HighlightBox color={updatedColor} setColor={setUpdatedColor} />
             </div>
-            
-            <button onClick={handleSubmission}> Update </button>
-            <button onClick={handleHide}> Hide </button>
-            <button onClick={handleDelete}> Delete </button>
+            <div id="details-bar-buttons-container">
+                <button onClick={handleSubmission}> Update </button>
+                <button onClick={handleHide}> Hide </button>
+                <button onClick={handleDelete}> Delete </button>
+            </div>
+
         </>
     )
 }
