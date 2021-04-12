@@ -120,7 +120,7 @@
     /* relative pos for children elements */
     position:relative;
 }
-#goal-box label input{
+#goal-box label textarea{
     cursor: pointer;
 
     /* positioning */

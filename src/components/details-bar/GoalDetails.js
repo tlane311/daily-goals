@@ -143,7 +143,7 @@ function GoalBox({goal, status, updateGoal, updateStatus}){
                 <span
                     className="status-box">
                 </span>
-                <input type="text" placeholder={goal} onChange={(e) => {updateGoal(e.target.value)}}/>
+                <textarea type="text" value={goal} onChange={(e) => {updateGoal(e.target.value)}}/>
             </label>
 
         </>
@@ -155,7 +155,7 @@ function NoteBox({note, updateNote}){
         <>
             <label>Note</label>
             <textarea
-                placeholder = {note || "Leave a note for your task"}
+                value = {note || "Leave a note for your task"}
                 onChange={(e) => {updateNote(e.target.value)}}
             />
         </>
