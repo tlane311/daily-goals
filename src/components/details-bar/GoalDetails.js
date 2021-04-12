@@ -61,9 +61,8 @@ export default function GoalDetails({ token, goals, selectedList, goalSelected, 
     // This state is used to store onChange events for the input elements below.
     const [updatedStatus, setUpdatedStatus] = useState(theGoal.status ? 1 : 0)
     const [updatedGoal, setUpdatedGoal] = useState(theGoal.goal)
-    const [updatedNote, setUpdatedNote] = useState(theGoal.note)
+    const [updatedNote, setUpdatedNote] = useState(theGoal.note==="null" || theGoal.note==="undefined" ? null : theGoal.note);
     const [updatedColor, setUpdatedColor] = useState(theGoal.color)
-
 
     useEffect( () => {
         const nextGoal = Object.keys(goals).length && selectedList && goals[selectedList] && Array.isArray(goals[selectedList].data)
@@ -73,9 +72,10 @@ export default function GoalDetails({ token, goals, selectedList, goalSelected, 
     }, [goalSelected])
 
     useEffect( () => {
-        setUpdatedStatus(theGoal.status ? 1 : 0)
-        setUpdatedGoal(theGoal.goal)
-        setUpdatedNote(theGoal.note)
+        setUpdatedStatus(theGoal.status ? 1 : 0);
+        setUpdatedGoal(theGoal.goal);
+        setUpdatedNote(theGoal.note==="null" || theGoal.note==="undefined" ? null : theGoal.note);
+        setUpdatedColor(theGoal.color);
     }, [theGoal])
 
 
@@ -120,12 +120,12 @@ export default function GoalDetails({ token, goals, selectedList, goalSelected, 
 
             <div className="detail" id="note-box">
                 <NoteBox 
-                    note={theGoal.note}
+                    note={updatedNote}
                     updateNote={setUpdatedNote}/>
             </div>
             
             <div className="detail">
-                <HighlightBox highlight={theGoal.color}/>
+                <HighlightBox color={updatedColor} setColor={setUpdatedColor} />
             </div>
             
             <button onClick={handleSubmission}> Update </button>
@@ -164,13 +164,15 @@ function NoteBox({note, updateNote}){
 
 
 // This component still needs work.
-function HighlightBox({highlight}){
+function HighlightBox({color, setColor}){
     return(
         <>  <label> Highlight Color</label>
-            <select>
-                <option> Red </option>  
-                <option> Green </option>  
-                <option> Orange </option>  
+            <select value={color ? color : null} onChange={ e => { setColor(e.target.value) } }>
+                <option value="null"> None </option>
+                <option value="blue"> Blue </option>
+                <option value="green"> Green </option>  
+                <option value="orange"> Orange </option>   
+                <option value="pink"> Pink </option>  
             </select>
         </>
     )

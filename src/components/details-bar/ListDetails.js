@@ -44,6 +44,11 @@ export default function ListDetails({token, lists, selectedList, updateLists, se
         setVisibility(false);
     }
 
+    const handleDeleteListAndHide = e => {
+        handleDeleteList();
+        setVisibility(false);
+    }
+
     return (
         <>
             <div className="detail" id="list-name-box">
@@ -54,7 +59,7 @@ export default function ListDetails({token, lists, selectedList, updateLists, se
             </div>
             <button onClick={handleSubmission}> Update </button>
             <button onClick={handleHide}> Hide </button>
-            <button onClick={handleDeleteList}> Delete </button>
+            <button onClick={handleDeleteListAndHide}> Delete </button>
         </>
     )
 

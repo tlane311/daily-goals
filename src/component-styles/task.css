@@ -169,3 +169,9 @@ to display checked status*/
 .slant-down{
     transform: translate(-50%, -50%) rotate( 45deg ) scale(1);
 }
+
+/* We use a mark element for highlighting tasks. This comes with some default stylings which we unset. */
+mark{
+    color:inherit;
+    background: inherit;
+}
