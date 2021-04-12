@@ -43,37 +43,40 @@ export default function Register({registerRoute, next, handleError}){
     }
 
     return (
-        <form id="register" onSubmit={handleSubmit}>
+        <>
+            <h3> Create A New Account </h3>
+            <form id="register" onSubmit={handleSubmit}>
 
-            <FormInput
-                name={'username'}
-                placeholder={'username'}
-                type={'text'}
-                isRequired={true}
-                value={registerName}
-                handleChange={e => {return setRegisterName(e.target.value)}}
-            />
+                <FormInput
+                    name={'username'}
+                    placeholder={'username'}
+                    type={'text'}
+                    isRequired={true}
+                    value={registerName}
+                    handleChange={e => {return setRegisterName(e.target.value)}}
+                />
 
-            <FormInput
-                name={'email'}
-                placeholder={'email'}
-                type={'email'}
-                isRequired={true}
-                value={registerEmail}
-                handleChange={e => {return setRegisterEmail(e.target.value)}}
-            />
+                <FormInput
+                    name={'email'}
+                    placeholder={'email'}
+                    type={'email'}
+                    isRequired={true}
+                    value={registerEmail}
+                    handleChange={e => {return setRegisterEmail(e.target.value)}}
+                />
 
-            <FormInput
-                name={'password'}
-                placeholder={'password'}
-                type={'password'}
-                isRequired={true}
-                value={registerPassword}
-                handleChange={e => {return setRegisterPassword(e.target.value)}}
-            />
+                <FormInput
+                    name={'password'}
+                    placeholder={'password'}
+                    type={'password'}
+                    isRequired={true}
+                    value={registerPassword}
+                    handleChange={e => {return setRegisterPassword(e.target.value)}}
+                />
 
-            <button type="submit"> Register </button>
-        </form>
+                <button type="submit"> Register </button>
+            </form>
+        </>
     );
 }
 
