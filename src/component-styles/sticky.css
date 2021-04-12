@@ -22,6 +22,12 @@
     font-size:2rem;
     margin: 3rem 0rem .67rem 3rem;
     /* note, margin-right is 3rem*/
+
+    width:100%;
+    display:inline-block;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    overflow:hidden;
 }
 
 /* control margins of individual tasks*/
