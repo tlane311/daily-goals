@@ -74,7 +74,7 @@ export default function GoalDetails({ token, goals, selectedList, goalSelected, 
     useEffect( () => {
         setUpdatedStatus(theGoal.status ? 1 : 0);
         setUpdatedGoal(theGoal.goal);
-        setUpdatedNote(theGoal.note==="null" || theGoal.note==="undefined" ? null : theGoal.note);
+        setUpdatedNote(theGoal.note==="null" || theGoal.note==="undefined" ? "" : theGoal.note);
         setUpdatedColor(theGoal.color);
     }, [theGoal])
 
@@ -155,7 +155,8 @@ function NoteBox({note, updateNote}){
         <>
             <label>Note</label>
             <textarea
-                value = {note || "Leave a note for your task"}
+                placeholder = {note || "Leave a note for your task"}
+                value = {note}
                 onChange={(e) => {updateNote(e.target.value)}}
             />
         </>
