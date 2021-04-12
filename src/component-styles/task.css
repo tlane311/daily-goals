@@ -66,7 +66,7 @@ to display checked status*/
 .goal-text{
 	margin-left:calc(1.618*var(--checkbox-size));
 	cursor: pointer;
-    width:85%;
+    max-width:85%;
     display:inline-block;
     text-overflow:ellipsis;
     white-space:nowrap;
