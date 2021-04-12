@@ -182,10 +182,10 @@ export default function App() {
                         />
                     </Route>
                     <Route exact path="/login">
-                        <LoginPage updateToken={setToken}/>
+                        <LoginPage updateToken={setToken} setCreateTrialAccount={setCreateTrialAccount}/>
                     </Route>
                     <Route exact path="/register">
-                        <RegisterPage updateToken={setToken}/>
+                        <RegisterPage updateToken={setToken} setCreateTrialAccount={setCreateTrialAccount}/>
                     </Route>
                 </Switch>
             </Router>
