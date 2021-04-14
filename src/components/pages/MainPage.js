@@ -43,7 +43,7 @@ import useWindowDimensions from '../../hooks/useWindowDimensions.js';
  */
 const blankList = { 'list_name': 'Create a New List', 'order_number': undefined}
 
-export default function MainPage({token, goals, lists, selectedList, setSelectedList,  updateLists, updateGoals}){
+export default function MainPage({token, goals, lists, selectedList, setSelectedList,  updateLists, updateGoals, setToken}){
 
     const [allGoals, setAllGoals] = useState( goals ? {...goals} : {});
 
@@ -96,6 +96,9 @@ export default function MainPage({token, goals, lists, selectedList, setSelected
         setStickiesBarIsVisible(windowDimensions.width <= windowDimensions.height);
     }, [windowDimensions])
 
+    const signOut = () => {
+        setToken(false);
+    }
 
     const handleListDeletion = async e => {
         if (token && currentList['list_id']) {
@@ -123,6 +126,7 @@ export default function MainPage({token, goals, lists, selectedList, setSelected
                 setGetListDetails={setGetListDetails}
                 setDetailsBarIsVisible={setDetailsBarIsVisible}
                 updateLists={updateLists}
+                signOut = {signOut}
             />
                    
             <Sticky

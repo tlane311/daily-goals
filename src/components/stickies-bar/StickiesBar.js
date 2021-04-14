@@ -15,7 +15,7 @@ import OrderButtons from '../task/OrderButtons.js';
 // updateLists is a callback to force app to rerender.
 
 
-export default function StickiesBar({ token, lists, selectedList, setSelectedList, visibility, setDetailsBarIsVisible, updateLists }) {
+export default function StickiesBar({ token, lists, selectedList, setSelectedList, visibility, setDetailsBarIsVisible, updateLists, signOut }) {
     const [sortedLists, setSortedLists] = useState(lists) // This will be sorted in an effect.
     // ordering lists
     useEffect( () => {
@@ -194,7 +194,7 @@ export default function StickiesBar({ token, lists, selectedList, setSelectedLis
 
             <div id="redirect-buttons">
                 <Link to={token ? "/account":"/login"}> <button> {token ? "Manage Account" : "Login"} </button></Link>
-                <Link to={token ? "/":"/register"}> <button> {token ? "Sign Out" : "Register"} </button></Link>
+                <Link to={token ? "/":"/register"}> <button onClick={signOut}> {token ? "Sign Out" : "Register"} </button></Link>
             </div>
 
             <button id="hide-left-bar-btn" onClick={handleHideBar}/>

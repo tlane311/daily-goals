@@ -176,6 +176,7 @@ export default function App() {
                 goals={goals}
                 updateGoals={updateGoals}
                 updateLists={updateLists}
+                setToken={setToken}
             />)
             : (<Redirect to="/"/>)
     }
