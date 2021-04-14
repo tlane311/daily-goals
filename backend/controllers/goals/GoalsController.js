@@ -63,7 +63,7 @@ router.post('/new', verifyToken, async (req, res, next) => {
     const goalsHaveCorrectShape = goals.reduce( (accumulator, currentValue) => {
         
         // bool determines if each member has truthy values for the desired keys
-        const bool = currentValue.listId && currentValue.goal && currentValue.orderNumber;
+        const bool = currentValue.listId && currentValue.goal && (typeof currentValue.orderNumber==='number') && currentValue.orderNumber >= 0;
 
         // note, the listId should be positive, the goal shouldn't be an empty string, the orderNumber should be positive 
         // if bad data is passed in (i.e. say a string for the listId), the db will throw an error
