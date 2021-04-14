@@ -1,8 +1,9 @@
 {
   "name": "daily-goals",
-  "jest": {
-
-  },
+  "engines": {
+        "node": "12.18.2",
+        "npm": "6.14.5"
+    },
   "type": "module",
   "version": "0.1.0",
   "private": true,
