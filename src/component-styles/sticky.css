@@ -1,6 +1,6 @@
 .sticky{
-    /* this is just 800px when 1024px=100vh */
-    --sticky-length: 78.125vh; 
+    /* this is just 800px when 1024px=100vh/100vw */
+    --sticky-length: min(78.125vh,78.125vw); 
 
     /* position relative so adjust position of new task*/
     position:relative; 
@@ -9,13 +9,14 @@
     color: var(--font-color);
     
 
-    height: var(--sticky-length); /* sticky should be square */
-    width: var(--sticky-length);
+    min-height: var(--sticky-length); /* sticky should be square */
+    min-width: var(--sticky-length);
 
     max-width: 70vw; /* We want entire sticky to always be visible*/
 
     box-shadow: 4px 4px rgba(0,0,0,.1); /* 3d effect */
     overflow-y:scroll;
+    overflow-x:hidden;
 }
 
 .sticky h3{

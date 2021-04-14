@@ -8,6 +8,8 @@ import goalManagement from '../../services/goalManagement.js';
 import listManagement from '../../services/listManagement.js';
 import userManagement from '../../services/userManagement.js';
 
+import useWindowDimensions from '../../hooks/useWindowDimensions.js';
+
 
 
 
@@ -85,7 +87,15 @@ export default function MainPage({token, goals, lists, selectedList, setSelected
     const [getListDetails, setGetListDetails] = useState(false);
 
     const [detailsBarIsVisible, setDetailsBarIsVisible] = useState(false);
-    const [stickiesBarIsVisible, setStickiesBarIsVisible] = useState(false);
+
+
+    const windowDimensions = useWindowDimensions(); //this hook grabs the viewport width and height and returns { width, height }
+    const [stickiesBarIsVisible, setStickiesBarIsVisible] = useState(windowDimensions.width <= windowDimensions.height);
+    
+    useEffect(()=>{
+        setStickiesBarIsVisible(windowDimensions.width <= windowDimensions.height);
+    }, [windowDimensions])
+
 
     const handleListDeletion = async e => {
         if (token && currentList['list_id']) {

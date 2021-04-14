@@ -204,7 +204,7 @@
     height: calc(.75*var(--skill-icon-size));
 
     /* positioning in the bottom right-hand corner*/
-    bottom:5%; 
+    bottom: calc(2rem + 2.5% + 8px);
     right:3.125%; /* When the bar is hidden, there is exactly 25% remaining. Because the button takes 12.5%, so to center it exactly, move to the right 6.25%. Since we are going to hide half button (see below), we move it to the right by half of half the width of the button: 3.125%. */
 
 
@@ -263,7 +263,7 @@
 #redirect-buttons{
     display: flex;
     width: 100%;
-    height: 96px;
+    height: calc(4rem + 32px);
     flex-direction: column;
     align-items: flex-start;
     position:absolute;
@@ -274,6 +274,7 @@
 #redirect-buttons button {
     height: 2rem;
     width: 6rem;
+    max-width: 75%;
 
     margin-top: 8px;
     margin-bottom: 8px;

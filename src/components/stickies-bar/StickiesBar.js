@@ -68,6 +68,10 @@ export default function StickiesBar({ token, lists, selectedList, setSelectedLis
 
     const [isHidden, setIsHidden] = useState(visibility);
 
+    useEffect( () => {
+        setIsHidden(visibility);
+    }, [visibility])
+
     const handleNewListCreation = (e) => {
         if (!newList) return;
         return listManagement.create(token, newList, sortedLists.length+1).then(updateLists);
