@@ -1,6 +1,7 @@
 import '../../component-styles/account-page.css';
 
 import {useState} from 'react';
+import {Link} from 'react-router-dom';
 import userManagement from '../../services/userManagement.js';
 
 export default function AccountMgmtPage(){
@@ -66,6 +67,7 @@ export default function AccountMgmtPage(){
                 { confirmDelete ? <p> Deleting your account is irreversible. Are you sure? </p> : null }
                 { confirmDelete ? <button onClick={ handleAccountDeletion }> Confirm Delete </button> : null }
             </div>
+            <Link to='/main'>Go back</Link>
 
         </div>
     )

@@ -1,15 +1,23 @@
 import '../../component-styles/new-user-page.css';
 
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import HighlightedText from '../task/HighlightedText.js';
 
-import {Link} from 'react-router-dom';
+import {Link, useHistory} from 'react-router-dom';
 
 
-export default function NewUserPage({setCreateTrialAccount}){
+export default function NewUserPage({token, setCreateTrialAccount}){
+    const history = useHistory();
+
     const handleTrialAccount = e => {
         setCreateTrialAccount(true);
     }
+    useEffect(() => {
+        if (token){
+            history.push('/main')
+        }
+    }, [token, history])
+
     
     return(
         <div id="new-user-page">

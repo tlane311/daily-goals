@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {BrowserRouter as Router, Switch, Route, useHistory} from 'react-router-dom';
+import {BrowserRouter as Router, Switch, Route, useHistory, Redirect} from 'react-router-dom';
 
 import defaultData from './default-data.js';
 
@@ -30,24 +30,26 @@ const getGoalsRoute = '/api/goals/me';
 
 
 export default function App() {
-    let history = useHistory();
 
     const [createTrialAccount, setCreateTrialAccount] = useState(false);
-    const [usingTrialAccount] = useState(localStorage.trialAccount);
+    const [userAlreadyHasTrialAccount, setUserAlreadyHasTrialAccount] = useState(localStorage.trialAccount);
     const [token, setToken] = useState("");
 
+
+    // This effect creates the trial account (if needed). Note, this runs before the user has selected any options.
     useEffect( () => {
-        if (createTrialAccount || !usingTrialAccount){
+        // If user requested a trial account and there aren't already trial account stored locally.
+        if (createTrialAccount && !userAlreadyHasTrialAccount){
             (
                 async () => {
                     const token = await createTrialAcct(); // Note, if this fails, then the token is set to false;
                     if (token){
+                        localStorage.setItem('trialAccount', true);
                         setCreateTrialAccount(false);
                         setToken(token);
-                        localStorage.setItem('trialAccount', true);
+                        setUserAlreadyHasTrialAccount(true);
                     } else {
                         console.log('an error occured')
-                        history.push('/');
                     }
                 }
             )();
@@ -55,7 +57,7 @@ export default function App() {
     }, [createTrialAccount])
 
     useEffect( () => {
-        if (usingTrialAccount) {
+        if (userAlreadyHasTrialAccount && !token) {
             (
                 async () => {
                     const username = localStorage.trialUsername;
@@ -65,7 +67,7 @@ export default function App() {
                 }
             )();
         }
-    }, [usingTrialAccount]);
+    }, [userAlreadyHasTrialAccount]);
     
     // We will pass setter functions here to children components so that they can request for the db to be queried.
     const [initialFetchDone, setInitialFetchDone] = useState(false);
@@ -162,25 +164,30 @@ export default function App() {
         setRetrievedLists(false);
     }
 
+    const handleMainRender = () => {
+        return token
+            ? (<MainPage
+                token={token}
+                username={username}
+                email={email} 
+                lists={lists}
+                selectedList={selectedList}
+                setSelectedList={setSelectedList}
+                goals={goals}
+                updateGoals={updateGoals}
+                updateLists={updateLists}
+            />)
+            : (<Redirect to="/"/>)
+    }
+
     return(
         <>
             <Router>
                 <Switch>
                     <Route exact path="/">
-                        <NewUserPage setCreateTrialAccount={setCreateTrialAccount}/>
+                        <NewUserPage token={token} setCreateTrialAccount={setCreateTrialAccount}/>
                     </Route>
-                    <Route exact path="/main">
-                        <MainPage
-                            token={token}
-                            username={username}
-                            email={email} 
-                            lists={lists}
-                            selectedList={selectedList}
-                            setSelectedList={setSelectedList}
-                            goals={goals}
-                            updateGoals={updateGoals}
-                            updateLists={updateLists}
-                        />
+                    <Route exact path="/main" render={ handleMainRender }>
                     </Route>
                     <Route exact path="/login">
                         <LoginPage updateToken={setToken} setCreateTrialAccount={setCreateTrialAccount}/>
@@ -201,6 +208,24 @@ export default function App() {
     )
 }
 
+
+/*
+<Route
+    {...rest}
+    render = {
+        ({ location }) => auth.user 
+            ? (children) 
+            : (
+                <Redirect
+                    to={{
+                        pathname: "/login",
+                        state: { from: location }
+                    }}
+                />
+            )
+    }
+/>
+*/
 
 /*
     This function takes in a token and returns the user's data.

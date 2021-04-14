@@ -11,6 +11,10 @@ export default function LoginPage({updateToken, setCreateTrialAccount}){
     const handleResponse = (res) => {
         if (res.data.auth) {
             history.push('/main');
+            localStorage.removeItem('trialAccount');
+            localStorage.removeItem('trialEmail');
+            localStorage.removeItem('trialPassword');
+            localStorage.removeItem('trialUsername');
             return updateToken(res.data.token);
         }
     }
