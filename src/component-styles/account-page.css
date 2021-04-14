@@ -1,0 +1,112 @@
+#account-page{
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    overflow:scroll;
+}
+
+#account-page h3{
+    font-size:2rem;
+    letter-spacing:.25rem;
+    margin-top:10%;
+}
+
+#account-page button{
+    min-height:2.2rem;
+    width: 50%;
+    max-width: 512px;
+    margin-top: 5%;
+    font-family: inherit;
+    background-color: var(--color-3);
+    font-size: 1rem;
+    font-weight: bold;
+    letter-spacing: .25rem;
+    color: var(--font-color);
+    border: solid 2px var(--font-color);    
+    padding-left: 8px;
+    border-radius: 8px;
+    cursor:pointer;
+    transition:.5s;
+}
+
+#account-actions-container{
+    height:75%;
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    align-items:center;
+}
+
+@keyframes verticalOpen{
+
+}
+
+.account-mgmt-form{
+    min-height: 33vh;
+    width: 100%;
+    display:flex;
+    flex-direction:column;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+@keyframes backToOriginalPosition{
+    0%{
+
+    }
+    100%{transform: translateY(0%)};
+}
+
+.account-mgmt-form label:first-child{
+    transform:translateY(453%);
+    animation: backToOriginalPosition .25s ease-in forwards;
+    animation-delay:.4s;
+}
+
+.account-mgmt-form label:nth-child(2){
+    transform:translateY(302%);
+    animation: backToOriginalPosition .15s ease-in forwards;
+    animation-delay:.8s;
+}
+.account-mgmt-form label:nth-child(3){
+    transform:translateY(151%);
+    animation: backToOriginalPosition .05s ease-in forwards;
+    animation-delay:1.2s;
+}
+
+
+
+#account-page .account-mgmt-form button{
+    width:40%;
+    margin-top:0%;
+    background-color: var(--color-1);
+    z-index:2;
+}
+
+.account-mgmt-form label{
+    width:100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.account-mgmt-form input{
+    height:2rem;
+    width:38%;
+    max-width:512px;
+    font-family: inherit;
+    background-color: var(--color-3);
+    font-size: 1rem;
+    color: var(--font-color);
+    border: solid 2px var(--font-color);    
+    padding-left: 8px;
+    border-radius: 8px;
+}

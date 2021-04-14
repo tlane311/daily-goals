@@ -32,10 +32,6 @@ to display checked status*/
 	transform: translate(0%,-10%)
 }
 
-/*
-.task:hover input ~ .status-box{
-	background-color: var(--color-4);
-}*/
 
 .status-box:hover{
     background-color: var(--color-4);

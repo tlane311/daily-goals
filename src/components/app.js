@@ -7,6 +7,7 @@ import MainPage from './pages/MainPage.js';
 import LoginPage from './pages/LoginPage.js';
 import RegisterPage from './pages/RegisterPage.js';
 import NewUserPage from './pages/NewUserPage.js';
+import AccountMgmtPage from './pages/AccountMgmtPage.js';
 
 import userManagement from '../services/userManagement.js';
 import createTrialAcct from '../services/createTrialAccount.js';
@@ -186,6 +187,9 @@ export default function App() {
                     </Route>
                     <Route exact path="/register">
                         <RegisterPage updateToken={setToken} setCreateTrialAccount={setCreateTrialAccount}/>
+                    </Route>
+                    <Route exact path="/account">
+                        <AccountMgmtPage/>
                     </Route>
                 </Switch>
             </Router>
