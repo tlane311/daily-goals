@@ -1,6 +1,6 @@
 import '../../component-styles/login-page.css';
 
-import Login from '../login/login.js';
+import Login from '../login/Login.js';
 
 import {useHistory, Link} from 'react-router-dom';
 
