@@ -189,8 +189,8 @@ export default function StickiesBar({ token, lists, selectedList, setSelectedLis
             </ul>
 
             <div id="redirect-buttons">
-                <Link to={token ? "/":"/login"}><button onClick={() => {}}> {token ? "Manage Account" : "Login"} </button></Link>
-                <Link to={token ? "/":"/login"}><button onClick={() => {}}> {token ? "Sign Out" : "Register"} </button></Link>
+                <Link to={token ? "/account":"/login"}> <button> {token ? "Manage Account" : "Login"} </button></Link>
+                <Link to={token ? "/":"/register"}> <button> {token ? "Sign Out" : "Register"} </button></Link>
             </div>
 
             <button id="hide-left-bar-btn" onClick={handleHideBar}/>

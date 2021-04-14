@@ -7,20 +7,16 @@ const HighlightedText = ({text,color}) => {
 
     }
 
-    const randomNumberBetween = (min,max) => {
-        const difference = max - min;
-        return difference*Math.random()+min;
-    }
-    
+   
     // This function takes in a rgb color and returns a background with two linear gradients
     const background = ({r,g,b}) => {
-        const firstAngle = randomNumberBetween(99,103); // returns a random number between 103 and 99
-        const firstSpread = [randomNumberBetween(.7,1.5),2.4,5.8,93, randomNumberBetween(94,97), 98]
+        const firstAngle = 101; // returns a random number between 103 and 99
+        const firstSpread = [.9,2.4,5.8,93, 96, 98]
         const firstDensity = [0,1.25,0.5,0.3,0.7,0]
 
 
-        const secondAngle = randomNumberBetween(273,277);
-        const secondSpread = [0,7.9,randomNumberBetween(13,20)];
+        const secondAngle = 275;
+        const secondSpread = [0,7.9,16];
         const secondDensity = [0,0.3,0]
 
         return `linear-gradient(${firstAngle}deg, rgba(${r},${g},${b},${firstDensity[0]}) ${firstSpread[0]}%,rgba(${r},${g},${b},${firstDensity[1]}) ${firstSpread[1]}%,rgba(${r},${g},${b},${firstDensity[2]}) ${firstSpread[2]}%,rgba(${r},${g},${b},${firstDensity[3]}) ${firstSpread[3]}%,rgba(${r},${g},${b},${firstDensity[4]}) ${firstSpread[4]}%,rgba(${r},${g},${b},${firstDensity[5]}) ${firstSpread[5]}%), linear-gradient(${secondAngle}deg, rgba(${r},${g},${b},${secondDensity[0]}) ${secondSpread[0]}%,rgba(${r},${g},${b},${secondDensity[1]}) ${secondSpread[1]}%,rgba(${r},${g},${b},${secondDensity[2]}) ${secondSpread[2]}%)`;
