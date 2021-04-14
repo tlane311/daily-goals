@@ -5,6 +5,7 @@
         "npm": "6.14.5"
     },
   "type": "module",
+  "main": "./backend/server.js",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
