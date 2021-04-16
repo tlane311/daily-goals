@@ -20,7 +20,7 @@ app.use(express.urlencoded({ extended: false })); //restricts urlencoded so that
 app.use(upload.none()); //this allows us to parse form data
 app.use(express.static('../build'));
 
-const port = process.env.SERVERPORT || 0; 
+const port = process.env.PORT || process.env.SERVERPORT || 0; 
 
 //if the server receives a get request at '/', it will send back a string
 //if we were going to make a real website, we would instead serve something else
