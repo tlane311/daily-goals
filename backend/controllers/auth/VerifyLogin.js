@@ -19,7 +19,7 @@ export default async function verifyLogin(req,res,next){
 
         const queryCallback = (err, results, fields) => {
             if (err) return res.status(500).send({
-                message:'Server error',
+                message:'Server error. Problem with query.',
                 error: err
             });
 
