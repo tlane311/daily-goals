@@ -1,6 +1,6 @@
 import {useState} from 'react';
-import FormData from 'form-data';
-import axios from 'axios';
+import userManagement from '../../services/userManagement.js'
+import listManagement from '../../services/listManagement.js'
 
 
 // register route is the url for the post request
@@ -13,33 +13,26 @@ export default function Register({registerRoute, next, handleError}){
     const [registerName, setRegisterName] = useState("");
     const [registerPassword, setRegisterPassword] = useState("");
     const [registerEmail, setRegisterEmail] = useState("");
+    const [error, setError] = useState("")
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async e => {
 
-        e.preventDefault(); // This stops the browser from handling the form on its own.
+        e.preventDefault(); // This stops the browser from attempting to handle the form on its own.
+        try{
+            const response = await userManagement.create(registerName, registerPassword, registerEmail);
+            const token = response.data.token;
 
-        const form = new FormData();
-        form.append('username', registerName);
-        form.append('password', registerPassword);
-        form.append('email', registerEmail);
 
-        //reseting the password
-        setRegisterPassword("");
-        const config = {
-            method: 'post',
-            url: registerRoute,
-            data: form,
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            }
+            //cleaning up state
+            setRegisterPassword("");
+
+            await listManagement.create(token, 'Today', 1);
+            await listManagement.create(token, 'Important', 2);
+            await listManagement.create(token, 'Goals', 3);
+        } catch(e) {
+            setError('There was an error with registration.');
         }
-
-        try {
-        axios(config)
-            .then( next )
-        } catch (e) {
-            handleError(e);
-        }
+        
     }
 
     return (
@@ -75,6 +68,7 @@ export default function Register({registerRoute, next, handleError}){
                 />
 
                 <button type="submit"> Register </button>
+                {error}
             </form>
         </>
     );
