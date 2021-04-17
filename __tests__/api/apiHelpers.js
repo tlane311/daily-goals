@@ -83,7 +83,7 @@ export async function CreateGoals( {token, data}){
 
 export async function GetGoals( {token, listId} ) {
     return await request(app)
-        .get('/api/goals/me')
+        .get(`/api/goals/me?listId=${listId}`)
         .set('x-access-token', token)
         .send({ listId });
 }

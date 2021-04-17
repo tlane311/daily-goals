@@ -1,10 +1,9 @@
 {
   "name": "daily-goals",
   "jest": {
+      "setupFiles":["dotenv/config"],
       "modulePathIgnorePatterns":[
           "__tests__/api/apiHelpers.js",
-          "__tests__/api/goalsAPI.test.js",
-          "__tests__/api/listsAPI.test.js",
           "src/__tests__"
         ]
   },

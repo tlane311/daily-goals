@@ -321,21 +321,18 @@ describe( 'GET /api/goals/me', () => {
         // shape
         expect(response.body).toHaveProperty('auth');
         expect(response.body).toHaveProperty('message');
-        expect(response.body).toHaveProperty('results');
         // accuracy
         expect(response.body.auth).toBe(true);
-        expect(response.body.message).toBe('These are all goals from that list.');
-        expect(response.body.results.length).toBe(0);
+        expect(response.body.message).toBe('Bad request');
         // status
-        expect(response.status).toBe(200);
+        expect(response.status).toBe(400);
     });
 
     it('gets users goals', async () => {
         //attempting to get a user/list goals
         const response = await request(app)
-            .get('/api/goals/me')
-            .set('x-access-token', token)
-            .send({ listId });
+            .get(`/api/goals/me?listId=${listId}`)
+            .set('x-access-token', token);
         
         // expecting: response.body = { auth: true, message: ..., token: ... }
 
