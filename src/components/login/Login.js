@@ -3,9 +3,11 @@ import useLocalStorage from '../../hooks/useLocalStorage.js'
 import FormData from 'form-data';
 import axios from 'axios';
 
+import userManagement from '../../services/userManagement.js';
+
 
 // login route is the url for the post request
-// loginIdentifier is a string e.g. email or username
+// loginIdentifier is a string e.g. email or username. In this app, it is set to 'username'
 // next is a callback that takes in the response object and tells axios what to do next
 // handleError is a callback that tkes in the error object and tells axios what to do next
 export default function Login({loginRoute, loginIdentifier, next, handleError}){
@@ -19,14 +21,16 @@ export default function Login({loginRoute, loginIdentifier, next, handleError}){
     const [loginName, setLoginName] = useState("");
     const [loginPassword, setLoginPassword] = useState("");
     const [rememberMe, setRememberMe] = useState(false);
+    const [error, setError] = useState("");
 
 
     // When this component first loads, it will check to see if localStorage has stored login info.
-    // If so, useEffect will automatically update the state.
+    // If so, this useEffect will automatically update the state.
     useEffect( ()=> {
-        if (store[loginIdentifier]){
+        const storedId = localStorage[loginIdentifier]
+        if (storedId){
             setRememberMe(true);
-            setLoginName(store[loginIdentifier]);
+            setLoginName(storedId);
         }
     }, []);
 
@@ -34,37 +38,25 @@ export default function Login({loginRoute, loginIdentifier, next, handleError}){
         return setRememberMe(e.target.checked);
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async e => {
 
         e.preventDefault(); // This stops the browser from handling the form on its own.
 
         // Add loginName to localStorage if "Remember Me" box is checked.
         if (rememberMe) {
-            addItem(loginIdentifier, loginName);
-        } else { // Otherwise, clear local storage.
-            clearStore();
+            localStorage.setItem(loginIdentifier, loginName);
         }
-
-        const form = new FormData();
-        form.append(loginIdentifier, loginName);
-        form.append('password', loginPassword);
-
-        //reseting the password
-        setLoginPassword("");
-        const config = {
-            method: 'post',
-            url: loginRoute,
-            data: form,
-            headers: {
-                'Content-Type': 'multipart/form-data',
+        try{
+            const response = await userManagement.login(loginName,loginPassword);
+            //reseting the password
+            setLoginPassword("");
+            next(response);
+        } catch(e) {
+            if (!e.response.data.auth) {
+                setError('Bad credentials');
+            } else {
+                setError('There was an error with login.');
             }
-        }
-
-        try {
-        axios(config)
-            .then( next )
-        } catch (e) {
-            handleError(e);
         }
     }
 
@@ -92,10 +84,6 @@ export default function Login({loginRoute, loginIdentifier, next, handleError}){
                 name="password" 
                 onChange={ e => {return setLoginPassword(e.target.value)} }
             />
-
-
-
-            <button type="submit"> Login </button>
             <label className='remember-me' for="remember-me">
                 Remember Me
                 <input 
@@ -105,6 +93,10 @@ export default function Login({loginRoute, loginIdentifier, next, handleError}){
                     checked={rememberMe}
                 />
             </label>
+
+            <button type="submit"> Login </button>
+            {error ? <p id="login-error"> {error} </p> : null }
+            
         </form>
     );
 }

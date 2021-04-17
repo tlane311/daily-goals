@@ -18,10 +18,13 @@ export default async function verifyLogin(req,res,next){
         const sqlStatement = `SELECT * FROM users WHERE username = ? `;
 
         const queryCallback = (err, results, fields) => {
-            if (err) return res.status(500).send({
-                message:'Server error. Problem with query.',
-                error: err
-            });
+            if (err) {
+                const { code, errno, sqlMessage } = err; // Note, the standard error message includes a key for the sql statement submitted. We don't want this heading back to the user since it can contain senstive info.
+                return res.status(500).send({
+                    message: 'Server error. Problem with query.', 
+                    error: { code, errno, sqlMessage}
+                });
+            }
 
             //if no user is found with that username
             if (!results.length) return res.status(400).send({

@@ -3,9 +3,6 @@ dotenv.config();
 
 
 describe('env', () => {
-    it('should have a PORT', () => {
-        expect(process.env.PORT).toBeDefined();
-    });
     it('should define secret', () => {
         expect(process.env.SECRET).toBeDefined();
     });

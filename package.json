@@ -1,5 +1,14 @@
 {
   "name": "daily-goals",
+  "jest": {
+      "setupFiles":["./.env"],
+      "modulePathIgnorePatterns":[
+          "__tests__/api/apiHelpers.js",
+          "__tests__/api/goalsAPI.test.js",
+          "__tests__/api/listsAPI.test.js",
+          "src/__tests__"
+        ]
+  },
   "engines": {
         "node": "12.18.2",
         "npm": "6.14.5"

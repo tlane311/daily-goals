@@ -62,7 +62,15 @@ router.post('/register', async (req,res,next) => {
 
     const queryCallback = (err, results, fields) => {
         //if there is an error with the query
-        if (err) return res.status(500).send({message: 'There was a problem registering the user.', error: err});
+        
+        if (err) {
+            const { code, errno, sqlMessage } = err; // Note, the standard error message includes a key for the sql statement submitted. We don't want this heading back to the user since it can contain senstive info.
+            return res.status(500).send({
+                message: 'There was a problem registering the user.', 
+                error: { code, errno, sqlMessage}
+            });
+        }
+            
 
 
         //creating token
@@ -206,10 +214,16 @@ router.put('/update', verifyToken, async (req, res, next) =>{
     const sqlStatement = `UPDATE users SET ?? = ? WHERE user_id = ?;`; // ? for value and ?? for column name
 
     const queryCallback = (err, results, fields) => {
-        if (err) return res.status(500).send({
-            message: 'Server error. There was a problem updating info.',
-            error: err
-        });
+        if (err) {
+            const { code, errno, sqlMessage } = err; // Note, the standard error message includes a key for the sql statement submitted. We don't want this heading back to the user since it can contain senstive info.
+                
+            return res.status(500).send({
+                message: 'Server error. There was a problem updating info.',
+                error: { code, errno, sqlMessage}
+            });
+        }
+
+        
         
         //if the number of changedRows is positive we send the following
         if (results.changedRows) return res.status(200).send({
@@ -224,8 +238,7 @@ router.put('/update', verifyToken, async (req, res, next) =>{
     try{
         const pool = await poolPromise; //if this resolves, it returns a mysql connection
         
-        await pool.query(sqlStatement,[req.body.field, fieldData, req.userId],queryCallback
-        ); //the array escapes those values before they are placed in our sql statement
+        await pool.query(sqlStatement, [req.body.field, fieldData, req.userId], queryCallback); //the array escapes those values before they are placed in our sql statement
     
     }catch(e){
         res.status(500).send({
@@ -265,10 +278,14 @@ router.delete('/delete', verifyLogin, verifyToken, async (req, res) =>{
     const sqlStatement = `DELETE FROM users WHERE user_id = ? AND username = ?;`
 
     const queryCallback = (err, results, fields) => {
-        if (err) return res.status(500).send({
-            message:'Server error. There was a problem.',
-            error: err                
-        });
+        if (err) {
+            const { code, errno, sqlMessage } = err;
+            
+            return res.status(500).send({
+                message:'Server error. There was a problem.',
+                error: { code, errno, sqlMessage}               
+            });
+        }
         //if the number of changedRows is positive we send the following
         if (results.affectedRows) return res.status(200).send({
             message: 'User data was deleted.',

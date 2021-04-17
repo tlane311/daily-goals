@@ -10,8 +10,8 @@ export default function RegisterPage({updateToken, setCreateTrialAccount}){
     //if auth, updateToken
     const handleResponse = (res) => {
         if (res.data.auth) {
+            updateToken(res.data.token);
             history.push('/main');
-            return updateToken(res.data.token);
         }
     }
 
@@ -21,10 +21,8 @@ export default function RegisterPage({updateToken, setCreateTrialAccount}){
 
     return(
         <div id="register-page">
-            <Register 
-                registerRoute={"/api/register"} 
+            <Register
                 next={handleResponse}
-                handleError={err => {console.log(err)}}
             />
             <Link id="register-to-login" to="/login">Already have an account? Login.</Link>
             <Link id="register-to-try" to="/main" onClick={handleTryTheApp}>Try the app without making an account</Link>    

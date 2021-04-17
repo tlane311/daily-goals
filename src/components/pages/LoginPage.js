@@ -11,6 +11,7 @@ export default function LoginPage({updateToken, setCreateTrialAccount}){
     const handleResponse = (res) => {
         if (res.data.auth) {
             history.push('/main');
+            // Note, we might have to clean up trial account info in localStorage.
             localStorage.removeItem('trialAccount');
             localStorage.removeItem('trialEmail');
             localStorage.removeItem('trialPassword');
@@ -25,8 +26,7 @@ export default function LoginPage({updateToken, setCreateTrialAccount}){
     return(
         <div id="login-page">
             <h3> Login</h3>
-            <Login 
-                loginRoute={"/api/login"} 
+            <Login
                 loginIdentifier="username" 
                 next={handleResponse}
                 handleError={err => {}}

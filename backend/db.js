@@ -1,6 +1,7 @@
 import mysql from 'mysql'; //mysql driver
 import dotenv from 'dotenv'
 dotenv.config({path: '../.env'})
+console.log('this file ran')
 
 //we are going to use a connection pool for better performance
 //the connection pool allows to have X many connections sitting on standby
