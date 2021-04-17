@@ -1,5 +1,4 @@
 import app from '../../backend/server.js';
-
 import request from 'supertest';
 
 // a function used to create a new user in the database with given credentials (credentials is an object with shape {username,password,email})
@@ -164,12 +163,12 @@ describe('GET /api/me', () => {
         const response = await request(app)
             .get('/api/me');
 
-        /* expecting
-            response = {
-                auth: false,
-                message: ...
-            }
-        */
+        // expecting
+        //    response = {
+        //        auth: false,
+        //        message: ...
+        //    }
+    
 
         //checking shape
         expect(response.body).toHaveProperty('auth');
@@ -188,12 +187,12 @@ describe('GET /api/me', () => {
             .get('/api/me')
             .set( 'x-access-token', '12345');
 
-        /* expecting
-            response = {
-                auth: false,
-                message: ...
-            }
-        */
+        // expecting
+        //    response = {
+        //       auth: false,
+        //        message: ...
+        //    }
+        
 
         //checking shape
         expect(response.body).toHaveProperty('auth');
@@ -219,16 +218,15 @@ describe('GET /api/me', () => {
             .get('/api/me')
             .set('x-access-token',token);
         
-        /* expecting
-            response = {
-                auth: true,
-                message: ... ,
-                results: {
-                    username: ... ,
-                    email: ...
-                }
-            }
-        */
+        // expecting
+        //    response = {
+        //        auth: true,
+        //        message: ... ,
+        //        results: {
+        //            username: ... ,
+        //            email: ...
+        //        }
+        //    }
 
         //checking shape
         expect(response.body).toHaveProperty('auth');
@@ -379,15 +377,13 @@ describe('POST /api/login', ()=>{
                 password: "some_password"
             });
 
-        /*
-        expected:
-            response.body = {
-                auth: true,
-                message: ...
-                token: ...
-            }
-            
-        */
+        
+        //expected:
+        //    response.body = {
+        //        auth: true,
+        //        message: ...
+        //        token: ...
+        //    }
 
         // shape
         expect(response.body).toHaveProperty('auth');
@@ -673,12 +669,12 @@ describe('DELETE /api/delete', ()=>{
             .set('x-access-token', token)
             .send(deleteData);
 
-        /* expecting:
-            response.body = {
-                auth: true,
-                message: ...
-            }
-        */
+        // expecting:
+        //    response.body = {
+        //        auth: true,
+        //        message: ...
+        //    }
+        
 
         expect(response.body).toHaveProperty('auth');
         expect(response.body).toHaveProperty('message');
@@ -687,7 +683,6 @@ describe('DELETE /api/delete', ()=>{
         expect(response.body.message).toBe('User data was deleted.');
     });
 }); //done
-
 
 /* test suite format
 describe( 'reqeust', () => {

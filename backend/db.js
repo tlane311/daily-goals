@@ -1,7 +1,6 @@
 import mysql from 'mysql'; //mysql driver
 import dotenv from 'dotenv'
 dotenv.config({path: '../.env'})
-console.log('this file ran')
 
 //we are going to use a connection pool for better performance
 //the connection pool allows to have X many connections sitting on standby
@@ -20,7 +19,7 @@ const poolConfig = {
 //we are creating a promise here to export and use in all of ours routes
 //promises are eager so it is created the first time this code is run
 export const poolPromise = new Promise( (resolve, reject) => {
-    
+    console.log('poolPromise tried', process.env.SECRET ? 'defined' : 'undefined')
     try{
         const pool = mysql.createPool(poolConfig);
         resolve(pool);

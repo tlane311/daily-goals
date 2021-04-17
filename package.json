@@ -1,7 +1,6 @@
 {
   "name": "daily-goals",
   "jest": {
-      "setupFiles":["./.env"],
       "modulePathIgnorePatterns":[
           "__tests__/api/apiHelpers.js",
           "__tests__/api/goalsAPI.test.js",
